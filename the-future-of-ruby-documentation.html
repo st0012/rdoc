@@ -229,6 +229,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 10: BEFORE — DARKFISH -->
 <section class="slide visible" data-section="Here's What We Did" data-budget="14-16 min"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
   <h2 class="reveal">Before: Darkfish</h2>
   <div class="reveal" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center"><img src="images/darkfish-theme.png" alt="Darkfish theme" style="max-width:100%;max-height:min(65vh,600px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)"></div>
 </div><div class="slide-num">10</div>
@@ -237,6 +238,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 11: AFTER — ALIKI (LIGHT) -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(95vw,1400px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
   <h2 class="reveal">After: Aliki</h2>
   <div class="reveal" style="margin-top:var(--element-gap)">
     <img src="images/aliki-light.png" alt="Aliki theme — light mode" style="width:100%;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
@@ -247,6 +249,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 11b: AFTER — ALIKI (DARK) -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(95vw,1400px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
   <h2 class="reveal">After: Aliki (dark mode)</h2>
   <div class="reveal" style="margin-top:var(--element-gap)">
     <img src="images/aliki-dark.png" alt="Aliki theme — dark mode" style="width:100%;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
@@ -271,6 +274,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 12: SERVER MODE DEMO -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Server mode</p>
   <h2 class="reveal"><code>rdoc --server</code></h2>
   <div class="reveal" style="margin-top:var(--content-gap)">
     <video src="images/rdoc-server-demo.mp4" style="max-width:100%;max-height:min(60vh,550px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer" onclick="this.paused?this.play():this.pause()" loop="" muted=""></video>
@@ -281,6 +285,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 13: SERVER MODE DETAILS -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Server mode</p>
   <h2 class="reveal"><code>rdoc --server</code></h2>
   <ul class="reveal">
     <li>Changes reflected in browser automatically</li>
@@ -293,6 +298,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 12: THE PARSER PROBLEM -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
   <h2 class="reveal">The parser problem</h2>
   <ul class="reveal">
     <li>RDoc's Ruby parser used Ripper — slow, token-stream based</li>
@@ -305,6 +311,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 13: TOMPNG'S REWRITES -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
   <h2 class="reveal">tompng's rewrites</h2>
   <div class="reveal" style="display:flex;flex-direction:column;gap:var(--element-gap)">
     <div style="padding:clamp(0.5rem,1vw,0.8rem) clamp(0.8rem,1.5vw,1.2rem);background:var(--accent-light);border-radius:6px;border-left:3px solid var(--accent)"><strong>How RDoc parses Ruby</strong> — Ripper → Prism</div>
@@ -318,6 +325,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 14: FORMATTING BUG EXAMPLE -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
   <h2 class="reveal">Bug fix example: <code>__FILE__</code></h2>
   <p class="reveal" style="font-size:var(--body-size);margin-top:var(--content-gap)">Source: <code># Returns __FILE__ as a string</code></p>
   <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
@@ -341,6 +349,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 15: PARSER BEFORE/AFTER -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
   <h2 class="reveal">What the rewrites changed</h2>
   <div class="reveal two-col">
     <div><h3 style="color:var(--text-dim)">Before (Ripper tokens)</h3><div class="code-block" style="background:#2d2d2d"><span class="cm"># Token-stream parsing</span>
@@ -363,6 +372,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 15: MARKDOWN IN RDOC -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">Markdown in RDoc</h2>
   <ul class="reveal">
     <li>RDoc has supported Markdown since 2011</li>
@@ -375,6 +385,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 16: MARKDOWN COUPLING DIAGRAM -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">The coupling problem</h2>
   <div class="reveal" style="display:flex;flex-direction:column;align-items:center;gap:clamp(0.8rem,1.5vw,1.2rem);margin-top:var(--content-gap)">
     <div style="display:flex;gap:clamp(2rem,6vw,6rem);justify-content:center">
@@ -398,6 +409,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 17: STRIKETHROUGH EXAMPLE -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">Example: <code>~~strikethrough~~</code></h2>
   <div class="reveal" style="display:flex;align-items:center;gap:clamp(0.3rem,1vw,0.8rem);margin-top:var(--content-gap);justify-content:center">
     <div class="diagram-box" style="font-family:var(--font-mono);font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1vw,1rem)">~~text~~</div>
@@ -413,8 +425,9 @@ If you're interested in how this connects with Ruby's tooling and type system, m
   <div class="speaker-notes">Here's a concrete example. Markdown strikethrough — tilde-tilde-text — the parser outputs it as a del HTML string. That string goes to the shared InlineParser, which didn't recognize del. So strikethrough was silently broken for years. Fixing it means modifying the shared InlineParser, then verifying RDoc markup still works too.</div>
 </section>
 
-<!-- SLIDE 18: BASH SYNTAX HIGHLIGHTING -->
-<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+<!-- SLIDE 18: BASH SYNTAX HIGHLIGHTING (hidden) -->
+<section class="slide visible" style="display:none"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">Bash syntax highlighting</h2>
   <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
     <div style="flex:1;display:flex;flex-direction:column">
@@ -438,6 +451,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 19: C SYNTAX HIGHLIGHTING -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">C syntax highlighting</h2>
   <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
     <div style="flex:1;display:flex;flex-direction:column">
@@ -468,6 +482,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 19: TABLE INLINE STYLING FIX -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">Inline styling in tables</h2>
   <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
     <div style="flex:1;display:flex;flex-direction:column">
@@ -497,6 +512,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 20: GFM COMPATIBILITY TABLE -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">GFM compatibility</h2>
   <div class="reveal" style="overflow:hidden;border-radius:8px;border:1px solid var(--border);margin-top:var(--content-gap)">
     <table style="width:100%;border-collapse:collapse;font-size:var(--small-size)">
@@ -524,6 +540,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 19: RBS TYPE SIGNATURES -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Type signatures</p>
   <h2 class="reveal">RBS type signatures</h2>
   <div class="reveal code-block"><span class="cm"># The #: inline annotation syntax</span>
 <span style="color:#7ee787">#: (String name, ?Integer age) -&gt; User</span>
@@ -537,6 +554,7 @@ If you're interested in how this connects with Ruby's tooling and type system, m
 
 <!-- SLIDE 20: RBS HTML DEMO -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Type signatures</p>
   <h2 class="reveal">RBS in HTML output</h2>
   <div class="reveal" style="margin-top:var(--element-gap)">
     <img src="images/rbs-html-output.png" alt="RBS type signatures in Aliki HTML output" style="width:100%;max-height:min(60vh,550px);object-fit:contain;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
@@ -545,8 +563,29 @@ If you're interested in how this connects with Ruby's tooling and type system, m
   <div class="speaker-notes">This is what it looks like in the Aliki theme. The type signature appears as a card above the method documentation — you can see the parameter types and return type at a glance. The type names are clickable links. Types aren't just decoration — they're navigation.</div>
 </section>
 
+<!-- SLIDE: RDOC 8.0 -->
+<section class="slide"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--title-size)">Coming in RDoc <span class="accent">8.0</span></h2>
+  <ul class="reveal" style="text-align:left;display:inline-block;margin-top:var(--content-gap)">
+    <li>Prism parser (default)</li>
+    <li>Server mode</li>
+    <li>RBS type signatures in HTML and <code>ri</code></li>
+    <li>More Markdown improvements</li>
+  </ul>
+</div><div class="slide-num">00</div>
+  <div class="speaker-notes">Everything I just showed you — the Prism parser, server mode, RBS type signatures, Markdown fixes — these are all shipping in RDoc 8.0. That's the next major release, bundled with Ruby 4.0.</div>
+</section>
+
+<!-- SLIDE: SECTION 3 TRANSITION -->
+<section class="slide" data-section="What's Still Ahead" data-budget="8-9 min"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--title-size)">So how does RDoc fit into the <span class="accent">AI</span> future?</h2>
+</div><div class="slide-num">00</div>
+  <div class="speaker-notes">That's the foundation we've rebuilt. Now the question from the beginning — how does RDoc fit into the AI future? Let me share where we're headed.</div>
+</section>
+
 <!-- SLIDE 21: RDOC'S PRIORITY -->
-<section class="slide" data-section="What's Still Ahead" data-budget="8-9 min"><div class="slide-content" style="max-width:min(90vw,1100px)">
+<section class="slide"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Contributing</p>
   <h2 class="reveal">RDoc's priority</h2>
   <ul class="reveal">
     <li>Better contributing experience</li>
@@ -557,8 +596,8 @@ If you're interested in how this connects with Ruby's tooling and type system, m
   <div class="speaker-notes">Looking ahead, the priority is clear: make it easier to contribute to Ruby documentation. That means both docs.ruby-lang.org and gem documentation. Lower the barriers for writing, reviewing, and maintaining docs.</div>
 </section>
 
-<!-- SLIDE 24: SETTING GOOD STANDARDS -->
-<section class="slide"><div class="slide-content" style="max-width:min(90vw,1100px)">
+<!-- SLIDE 24: SETTING GOOD STANDARDS (hidden) -->
+<section class="slide" style="display:none"><div class="slide-content" style="max-width:min(90vw,1100px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Contributing</p>
   <h2 class="reveal">Setting good standards</h2>
   <ul class="reveal">
@@ -568,6 +607,20 @@ If you're interested in how this connects with Ruby's tooling and type system, m
   </ul>
 </div><div class="slide-num">30</div>
   <div class="speaker-notes">RBS signatures are a start — structured, machine-readable contracts in the source. We'll revisit supported directives to make them clearer. And I want to be explicit: whether users adopt a type checker is their choice. RDoc will support both typed and untyped codebases.</div>
+</section>
+
+<!-- SLIDE: FULL MARKDOWN MIGRATION -->
+<section class="slide"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Contributing</p>
+  <h2 class="reveal">Fully migrate to Markdown</h2>
+  <ul class="reveal">
+    <li>Automatic RDoc markup → Markdown translation</li>
+    <li>Migrate Ruby core's documentation to Markdown</li>
+    <li>Change RDoc's default markup to Markdown</li>
+  </ul>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">This will take a while. Hopefully with AI tools, not years.</p>
+</div><div class="slide-num">00</div>
+  <div class="speaker-notes">The long-term goal is a full migration to Markdown. That means building an automatic translator from RDoc markup to Markdown, migrating Ruby core's documentation — which is massive — and eventually making Markdown the default markup format. This is a lot of work. But with AI-assisted tooling, I'm hoping we can get there faster than it would have taken a few years ago.</div>
 </section>
 
 <!-- SLIDE 25: BETTER TOOLS FOR WRITING -->
