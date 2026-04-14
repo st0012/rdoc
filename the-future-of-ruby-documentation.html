@@ -115,16 +115,16 @@ body.edit-active [contenteditable] { outline: 1px dashed var(--accent); outline-
 </style>
 </head>
 <body class="">
-<div class="progress-bar" id="progressBar" style="width: 48.7805%;"></div>
-<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot active" aria-label="Go to slide 20"></button><button class="dot" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button><button class="dot" aria-label="Go to slide 40"></button><button class="dot" aria-label="Go to slide 41"></button></nav>
+<div class="progress-bar" id="progressBar" style="width: 33.3333%;"></div>
+<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot active" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot" aria-label="Go to slide 20"></button><button class="dot" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button></nav>
 <div class="edit-hotzone" id="editHotzone"></div>
 <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✓</button>
 <div class="edit-banner" id="editBanner">Saved!</div>
 <div class="blackout-overlay" id="blackoutOverlay"></div>
 <div class="notes-panel" id="notesPanel">
   <div class="notes-panel-header">
-    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">20</span>/36)</span>
-    <span class="notes-status" id="noteStatus"></span>
+    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">13</span>/36)</span>
+    <span class="notes-status" id="noteStatus">Saved</span>
   </div>
   <textarea id="notesTextarea" placeholder="Type your speaker notes here..."></textarea>
 </div>
@@ -166,15 +166,14 @@ I'm part of the Ruby Developer Experience team at Shopify. We built and maintain
     <img src="images/terrasa-talk.png" alt="Alexandre Terrasa — Blazing-fast Code Indexing for Smarter Ruby Tools" style="max-width:min(60vw,550px);border-radius:8px;border:1px solid var(--grid-color)">
   </div>
 </div><div class="slide-num">03</div>
-  <div class="speaker-notes">Speaking of Rubydex, it's a new Ruby code indexer my team is building. It provides static code intelligence for Ruby: such as class/module resolution, method lookup, reference finding, etc. It runs very fast and it was built to be a good foundation for other tools.
-If you're interested in how this connects with Ruby's tooling and type system, my colleague Alexandre Terrasa is giving a talk about it tomorrow. Please check it out.</div>
+  <div class="speaker-notes">Speaking of Rubydex, it's a new Ruby code indexer my team is building. It provides static code intelligence for Ruby — class and module resolution, method lookup, reference finding, and so on. It's fast and it's built to be a foundation for other tools. My colleague Alexandre Terrasa is giving a talk about it tomorrow — please check it out. But Rubydex is about understanding code. The other half of the picture is documentation.</div>
 </section>
 
 <!-- SLIDE 4: BOLD CLAIM -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
   <h2 class="reveal" style="font-size:var(--title-size)">The future of Ruby's documentation is about <span class="accent">AI</span></h2>
 </div><div class="slide-num">04</div>
-  <div class="speaker-notes">Let's get back to my talk. I want to start with a direct claim. The future of Ruby's documentation is about AI. That might sound like a stretch, but let me explain what I mean.</div>
+  <div class="speaker-notes">And I think the future of Ruby's documentation is about AI. That might sound like a stretch, but let me explain what I mean.</div>
 </section>
 
 <!-- SLIDE 5: WHAT AI NEEDS FROM DOCUMENTATION -->
@@ -189,15 +188,16 @@ If you're interested in how this connects with Ruby's tooling and type system, m
   <div class="speaker-notes">AI needs three things from documentation. First, accuracy — AI trains on docs and builds assumptions based on them. It also grabs docs when making plans, and references them when generating code. Second, AI prefers simpler content formats — ones that don't waste context on markup noise. Right now that's Markdown, but the specific format could change. Third, clear intent — type signatures give AI structured information about what a method expects and returns.</div>
 </section>
 
-<!-- SLIDE 6: WHAT HELPS AI WRITE DOCUMENTATION -->
+<!-- SLIDE 6: WHAT AI NEEDS FROM TOOLING -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
-  <h2 class="reveal">What helps AI write documentation</h2>
+  <h2 class="reveal">What AI needs from tooling</h2>
   <ul class="reveal">
-    <li><strong style="color:var(--text)">Quick, deterministic feedback</strong></li>
-    <li>Coverage checks, missing reference warnings</li>
+    <li><strong style="color:var(--text)">Quick, deterministic feedback</strong> — coverage checks, reference validation</li>
+    <li><strong style="color:var(--text)">Live preview</strong> — see changes without regenerating everything</li>
+    <li><strong style="color:var(--text)">Accessible reading experience</strong> — mobile, search, navigation</li>
   </ul>
 </div><div class="slide-num">06</div>
-  <div class="speaker-notes">When AI agents write or update documentation, they need fast feedback — did I break a cross-reference, is there a missing description? Deterministic checks like coverage reports and reference validation let agents iterate without guessing.</div>
+  <div class="speaker-notes">That's the content side. But AI also needs good tooling around documentation. When an agent writes or updates docs, it needs fast feedback — did I break a cross-reference, is there a missing description? It needs live preview to verify the output looks right. And the reading experience matters too — if the generated docs are hard to navigate or don't work on mobile, that's a tooling failure, not a content failure.</div>
 </section>
 
 <!-- SLIDE 7: THE TWIST -->
@@ -205,31 +205,40 @@ If you're interested in how this connects with Ruby's tooling and type system, m
   <h2 class="reveal" style="font-size:var(--title-size)">All of these help <span class="accent">human</span> developers too.</h2>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">These aren't AI requirements — they're good documentation requirements.</p>
 </div><div class="slide-num">07</div>
-  <div class="speaker-notes">Here's the thing. Everything I just described — clear docs, simpler formats, type signatures, fast feedback — these aren't just AI requirements. They're what makes documentation better for everyone. It's just now that improving the same things creates more leverage because of AI.</div>
+  <div class="speaker-notes">Here's the thing. Everything I just described — accurate docs, simpler formats, type signatures, fast feedback, good reading experience — these aren't just AI requirements. They're what makes documentation better for everyone. Improving these things now just creates more leverage because AI amplifies the benefit.</div>
 </section>
 
-<!-- SLIDE 8: RDOC WASN'T PROVIDING THESE -->
+<!-- SLIDE 8a: RDOC WASN'T DELIVERING — CONTENT -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
-  <h2 class="reveal">RDoc wasn't providing these</h2>
+  <h2 class="reveal">RDoc wasn't delivering</h2>
   <ul class="reveal">
-    <li>Darkfish theme: dated design, no mobile support</li>
-    <li>No live preview — regenerate and open HTML files manually to see changes</li>
-    <li>Incomplete Markdown support, no RBS info</li>
-    <li>Parser couldn't handle modern Ruby</li>
+    <li>Parser couldn't handle modern Ruby — inaccurate docs</li>
+    <li>Incomplete Markdown support</li>
+    <li>No RBS type signatures</li>
   </ul>
 </div><div class="slide-num">08</div>
-  <div class="speaker-notes">RDoc has been Ruby's documentation tool for 20+ years. It kinda works. But the Darkfish theme was dated without even mobile support, which gives readers an awful impression on the language in the age of 2020. 
-There was no live preview — you had to regenerate and open HTML files manually after every change. 
-Its Markdown support was incomplete, RBS signatures weren't supported, and the parser couldn't handle modern Ruby syntax. 
-None of this was good enough — for developers or for the AI tools that depend on our docs.</div>
+  <div class="speaker-notes">RDoc has been Ruby's documentation tool for 20+ years. It kinda works. But on the content side, it failed to match many expectations we just metnioned. The parser couldn't handle modern Ruby syntax — so the generated docs were just wrong. Markdown support was incomplete, which makes writing documentation harder for everyone. And there was no RBS integration — both humans and AI were missing key type information when reading the docs.</div>
+</section>
+
+<!-- SLIDE 8b: RDOC WASN'T DELIVERING — TOOLING -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">RDoc wasn't delivering</h2>
+  <ul class="reveal">
+    <li>No live preview — regenerate and open HTML files manually</li>
+    <li>Darkfish theme: dated design, no mobile support</li>
+  </ul>
+</div><div class="slide-num">09</div>
+  <div class="speaker-notes">And on the tooling side, it wasn't much better. No live preview — you had to regenerate and manually open HTML files to see your changes. That's a slow feedback loop we should avoid. 
+And finally, the Darkfish theme was dated, without even mobile support. This gives readers an awful first impression of the language and poor reading experience.</div>
 </section>
 
 <!-- SLIDE 9: TRANSITION -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
   <h2 class="reveal" style="font-size:var(--title-size)">So here's what we did.</h2>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">...to make RDoc work for us, and our agents.</p>
-</div><div class="slide-num">09</div>
-  <div class="speaker-notes">Here's what changed in the past 2 years.</div>
+</div><div class="slide-num">10</div>
+  <div class="speaker-notes">So even though we want to prepare RDoc for the age of AI, there's a long list of things we need to fix first.
+Here's what changed in the past 2 years.</div>
 </section>
 
 <!-- SLIDE 10: BEFORE — DARKFISH -->
@@ -237,8 +246,8 @@ None of this was good enough — for developers or for the AI tools that depend 
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
   <h2 class="reveal">Before: Darkfish</h2>
   <div class="reveal" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center"><img src="images/darkfish-theme.png" alt="Darkfish theme" style="max-width:100%;max-height:min(65vh,600px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)"></div>
-</div><div class="slide-num">10</div>
-  <div class="speaker-notes">This is Darkfish — the theme RDoc has shipped for many years. In year 2020, it's clearly dated and doesn't match most people's needs.</div>
+</div><div class="slide-num">11</div>
+  <div class="speaker-notes">First is the visual change. The Darkfish theme was built 15 years ago. And it's clearly dated for 2020</div>
 </section>
 
 <!-- SLIDE 11: AFTER — ALIKI (LIGHT) -->
@@ -248,8 +257,8 @@ None of this was good enough — for developers or for the AI tools that depend 
   <div class="reveal" style="margin-top:var(--element-gap)">
     <img src="images/aliki-light.png" alt="Aliki theme — light mode" style="width:100%;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
   </div>
-</div><div class="slide-num">11</div>
-  <div class="speaker-notes">And this is Aliki — the new default theme shipping in Ruby 4.0. Here's the light mode. Clean layout, redesigned left sidebar, better contrast and highlight, and "On This Page" outline on the right for navigation.</div>
+</div><div class="slide-num">12</div>
+  <div class="speaker-notes">So I created Aliki — the new default theme shipped with Ruby 4.0. Here's the light mode. Clean layout, redesigned left sidebar, better contrast and highlight, and better navigation and search experience.</div>
 </section>
 
 <!-- SLIDE 11b: AFTER — ALIKI (DARK) -->
@@ -259,8 +268,8 @@ None of this was good enough — for developers or for the AI tools that depend 
   <div class="reveal" style="margin-top:var(--element-gap)">
     <img src="images/aliki-dark.png" alt="Aliki theme — dark mode" style="width:100%;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
   </div>
-</div><div class="slide-num">12</div>
-  <div class="speaker-notes">And here's dark mode — follows your system preference automatically. With Aliki, we hope to give Ruby developers a good impression that matches Ruby's aesthetics.</div>
+</div><div class="slide-num">13</div>
+  <div class="speaker-notes">It also has a dark mode, which is turned on based on your system preferences. With Aliki, we hope to give Ruby developers a good impression that matches Ruby's aesthetics.</div>
 </section>
 
 <!-- SLIDE 11c: ALIKI FEATURES (hidden — considering merging into slide 11) -->
@@ -284,7 +293,7 @@ None of this was good enough — for developers or for the AI tools that depend 
   <div class="reveal" style="margin-top:var(--content-gap)">
     <video src="images/rdoc-server-demo.mp4" style="max-width:100%;max-height:min(60vh,550px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer" onclick="this.paused?this.play():this.pause()" loop="" muted=""></video>
   </div>
-</div><div class="slide-num">13</div>
+</div><div class="slide-num">14</div>
   <div class="speaker-notes">Aliki improves reading docs. Server mode improves writing them. This is rdoc --server — edit a file, the browser refreshes automatically to show you the latest changes.
 [Click to play the demo.]</div>
 </section>
@@ -299,7 +308,7 @@ None of this was good enough — for developers or for the AI tools that depend 
     <li>Incremental re-parsing — shorter response, not instant (yet)</li>
     <li><code>make html-server</code> — contributing to Ruby docs has become easier</li>
   </ul>
-</div><div class="slide-num">14</div>
+</div><div class="slide-num">15</div>
   <div class="speaker-notes">The server mode has 0 external dependencies — it uses Ruby's built-in TCPServer. It has a background watcher monitoring files and only re-parses files that changed. It has a latency between 100 to 200 milliseconds. But with future improvements on the overall parsing and rendering performance, I hope we can make it feel instant someday.
 Finally, I integrated this feature to Ruby itself. So now you can preview core documentation the same way.</div>
 </section>
@@ -313,7 +322,7 @@ Finally, I integrated this feature to Ruby itself. So now you can preview core d
     <li>Tomoya Ishida (@tompng) rewrote it on Prism, fixing many issues along the way</li>
     <li>Fixed 7 long-standing bugs — some open since 2016</li>
   </ul>
-</div><div class="slide-num">15</div>
+</div><div class="slide-num">16</div>
   <div class="speaker-notes">RDoc's Ruby parser was built on Ripper. It's slower than Prism and couldn't handle modern Ruby syntax. Pen-san — Tomoya Ishida — rewrote it on Prism and fixed many issues along the way, many of them reported many years ago.</div>
 </section>
 
@@ -350,8 +359,8 @@ Finally, I integrated this feature to Ruby itself. So now you can preview core d
     <li>~30% faster (0.69s vs 0.97s on 112 files)</li>
     <li>New Ruby syntax is handled by Prism — not by RDoc</li>
   </ul>
-</div><div class="slide-num">16</div>
-  <div class="speaker-notes">The new parser is roughly half the code — 1,243 lines vs 2,241. We benchmarked both on RDoc's own codebase — 112 Ruby files — and Prism is about 30% faster. And the best part: when Ruby adds new syntax, Prism handles it. We don't have to manually teach RDoc about every new feature anymore.</div>
+</div><div class="slide-num">17</div>
+  <div class="speaker-notes">So what did the rewrite get us? The new parser is roughly half the code — 1,243 lines versus 2,241. We benchmarked both on RDoc's own codebase — 112 Ruby files — and Prism came out about 30% faster. But the best part is the last point. When Ruby adds new syntax, Prism already knows how to parse it. We don't have to manually teach RDoc about every new feature anymore.</div>
 </section>
 
 <!-- SLIDE: ENDLESS METHOD BUG EXAMPLE -->
@@ -383,7 +392,7 @@ Finally, I integrated this feature to Ruby itself. So now you can preview core d
       </div>
     </div>
   </div>
-</div><div class="slide-num">17</div>
+</div><div class="slide-num">18</div>
   <div class="speaker-notes">Here's one example: The old Ripper parser works on tokens — it tracks where methods end by looking for the end keyword. 
 But endless methods don't have one. So Ripper thinks def bar = 42 never closes, and Baz gets nested inside Foo. 
 With Prism, we get an AST — the parser already knows how to handle method and class boundaries. So RDoc can easily know there's just one method inside the Foo class. And Baz is outside of its scope</div>
@@ -398,7 +407,7 @@ With Prism, we get an AST — the parser already knows how to handle method and 
     <li>But the parser was buggy — low compatibility with GitHub Flavored Markdown</li>
     <li>The internal pipeline made fixes difficult</li>
   </ul>
-</div><div class="slide-num">18</div>
+</div><div class="slide-num">19</div>
   <div class="speaker-notes">Finally, let's talk about RDoc's improvements around Markdown.
 RDoc has actually supported Markdown since 2011. But the support was incomplete and buggy — features like strikethrough, tables, and heading anchors were all half working. If you're used to using Markdown on GitHub, you'd be frustrated by RDoc's lack of support pretty quickly.</div>
 </section>
@@ -438,7 +447,7 @@ fenced code block
     </div>
   </div>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">RDoc has its own markup language — and it's still the default.</p>
-</div><div class="slide-num">19</div>
+</div><div class="slide-num">20</div>
   <div class="speaker-notes">I believe many of you don't know that RDoc has its own markup language, and it's the default instead of Markdown. And the way RDoc handles 2 markup languages makes fixing Markdown support harder.</div>
 </section>
 
@@ -459,7 +468,7 @@ fenced code block
     <div style="font-size:var(--h3-size);color:var(--text-dim)">↓</div>
     <div class="diagram-box" style="text-align:center">HTML output</div>
   </div>
-</div><div class="slide-num">20</div>
+</div><div class="slide-num">21</div>
   <div class="speaker-notes">The Markdown parser and RDoc markup parser are tightly coupled. The Markdown parser has to translate some of its syntax into RDoc format before passing it into a shared inline parser. So fixing a Markdown bug often means changing two places.</div>
 </section>
 
@@ -590,8 +599,8 @@ fenced code block
     </table>
   </div>
   <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--body-size);color:var(--text-secondary)">Slowly ticking up. Tracked with a GFM spec comparison test suite.</p>
-</div><div class="slide-num">24</div>
-  <div class="speaker-notes">This is the current state of GFM compatibility. The bold items in the "RDoc now" column are things we fixed since v6.11.0. We're not at full GFM compatibility yet — ordered lists and tilde fences are still on the list. But we now have a spec comparison test suite that tracks exactly where we stand, so we can measure progress systematically.</div>
+</div><div class="slide-num">22</div>
+  <div class="speaker-notes">Despite the coupling problem, we've been making progress. This table shows where we stand with GFM compatibility. The bold items in the "RDoc now" column are things we fixed since version 6.11.0. We're not there yet — ordered lists and tilde fences are still broken. But we now have a spec comparison test suite that tracks exactly where we stand, so we can measure progress instead of guessing.</div>
 </section>
 
 <!-- SLIDE 19: RBS TYPE SIGNATURES -->
@@ -604,8 +613,8 @@ fenced code block
   <span class="cm"># ...</span>
 <span class="kw">end</span></div>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size)">RDoc extracts <code>#:</code> annotations and displays type signatures in HTML and <code>ri</code>. Type names are linked to their documentation.</p>
-</div><div class="slide-num">25</div>
-  <div class="speaker-notes">RBS inline annotations use the #: syntax. You write the type signature directly above the method. RDoc parses these, validates them through the RBS parser, and displays them in both HTML output and ri terminal docs. The type names in the output are clickable links.</div>
+</div><div class="slide-num">23</div>
+  <div class="speaker-notes">Now let's talk about type signatures. RBS inline annotations use the hash-colon syntax — you write the type signature as a comment directly above the method. RDoc picks these up, validates them through the RBS parser, and displays them in both the HTML output and ri in the terminal. And the type names in the output are clickable — they link to the documentation of that type.</div>
 </section>
 
 <!-- SLIDE 20: RBS HTML DEMO -->
@@ -615,8 +624,8 @@ fenced code block
   <div class="reveal" style="margin-top:var(--element-gap)">
     <img src="images/rbs-html-output.png" alt="RBS type signatures in Aliki HTML output" style="width:100%;max-height:min(60vh,550px);object-fit:contain;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
   </div>
-</div><div class="slide-num">26</div>
-  <div class="speaker-notes">This is what it looks like in the Aliki theme. The type signature appears as a card above the method documentation — you can see the parameter types and return type at a glance. The type names are clickable links. Types aren't just decoration — they're navigation.</div>
+</div><div class="slide-num">24</div>
+  <div class="speaker-notes">Here's what it looks like in Aliki. The type signature shows up as a card right above the method documentation. You can see the parameter types and return type at a glance. And like I said, the type names are clickable — so types aren't just decoration, they're navigation.</div>
 </section>
 
 <!-- SLIDE: RDOC 8.0 -->
@@ -628,15 +637,15 @@ fenced code block
     <li>RBS type signatures in HTML and <code>ri</code></li>
     <li>More Markdown improvements</li>
   </ul>
-</div><div class="slide-num">27</div>
-  <div class="speaker-notes">Everything I just showed you — the Prism parser, server mode, RBS type signatures, Markdown fixes — these are all shipping in RDoc 8.0. That's the next major release, bundled with Ruby 4.0.</div>
+</div><div class="slide-num">25</div>
+  <div class="speaker-notes">So, everything I just showed you — the Prism parser, server mode, RBS type signatures, Markdown fixes — all of this is shipping in RDoc 8.0. That's the next major release, bundled with Ruby 4.0.</div>
 </section>
 
 <!-- SLIDE: SECTION 3 TRANSITION -->
 <section class="slide visible" data-section="What's Still Ahead" data-budget="8-9 min"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
   <h2 class="reveal" style="font-size:var(--title-size)">So how does RDoc fit into the <span class="accent">AI</span> future?</h2>
-</div><div class="slide-num">28</div>
-  <div class="speaker-notes">That's the foundation we've rebuilt. Now the question from the beginning — how does RDoc fit into the AI future? Let me share where we're headed.</div>
+</div><div class="slide-num">26</div>
+  <div class="speaker-notes">That's the foundation we've rebuilt. Now let's come back to the question from the beginning — how does RDoc fit into the AI future?</div>
 </section>
 
 <!-- SLIDE 21: RDOC'S PRIORITY -->
@@ -648,8 +657,8 @@ fenced code block
     <li>Target: Ruby's official docs and gem docs</li>
     <li>Make documentation easier to write and maintain</li>
   </ul>
-</div><div class="slide-num">29</div>
-  <div class="speaker-notes">Looking ahead, the priority is clear: make it easier to contribute to Ruby documentation. That means both docs.ruby-lang.org and gem documentation. Lower the barriers for writing, reviewing, and maintaining docs.</div>
+</div><div class="slide-num">27</div>
+  <div class="speaker-notes">For me, the priority is clear — make it easier to contribute to Ruby documentation. That means both docs.ruby-lang.org and gem documentation. Lower the barriers for writing, reviewing, and maintaining docs.</div>
 </section>
 
 <!-- SLIDE 24: SETTING GOOD STANDARDS (hidden) -->
@@ -675,8 +684,8 @@ fenced code block
     <li>Change RDoc's default markup to Markdown</li>
   </ul>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">This will take a while. Hopefully with AI tools, not years.</p>
-</div><div class="slide-num">30</div>
-  <div class="speaker-notes">The long-term goal is a full migration to Markdown. That means building an automatic translator from RDoc markup to Markdown, migrating Ruby core's documentation — which is massive — and eventually making Markdown the default markup format. This is a lot of work. But with AI-assisted tooling, I'm hoping we can get there faster than it would have taken a few years ago.</div>
+</div><div class="slide-num">28</div>
+  <div class="speaker-notes">The long-term goal is to fully migrate to Markdown. That means building an automatic translator from RDoc markup to Markdown, migrating Ruby core's documentation — which is massive — and eventually making Markdown the default. This is a lot of work. But with AI-assisted tooling, I'm hoping we can get there faster than it would have taken a few years ago.</div>
 </section>
 
 <!-- SLIDE: AI SKILLS — WHY -->
@@ -689,8 +698,8 @@ fenced code block
     <li>Writing documentation — server mode, coverage checks, directives</li>
   </ul>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">Teach AI agents how to use RDoc properly, so developers get better results.</p>
-</div><div class="slide-num">31</div>
-  <div class="speaker-notes">Imagine installing an RDoc skill and your AI agent just knows how to set up RDoc in your project, write proper RBS signatures, use server mode for previewing, run coverage checks, and follow the right documentation conventions. The agent stops guessing and starts using the tool correctly. That's the goal.</div>
+</div><div class="slide-num">29</div>
+  <div class="speaker-notes">Now, another thing I've been thinking about. Imagine installing an RDoc skill and your AI agent just knows how to set up RDoc in your project, write proper RBS signatures, use server mode for previewing, run coverage checks, and follow the right conventions. The agent stops guessing and starts using the tool correctly.</div>
 </section>
 
 <!-- SLIDE: AI SKILLS — IDEAL STRUCTURE -->
@@ -716,8 +725,8 @@ fenced code block
     </div>
   </div>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-secondary)">Each project maintains its own skill. The registry curates and points to them.</p>
-</div><div class="slide-num">32</div>
-  <div class="speaker-notes">Here's what I'd like to see for Ruby. A central registry — ruby/ruby-skills — that curates skills for the Ruby ecosystem. Each project maintains its own skill in its own repo. The registry just points to them. Third-party skills could be included too, with clear quality criteria. This keeps maintenance distributed — each team knows their tool best.</div>
+</div><div class="slide-num">30</div>
+  <div class="speaker-notes">Here's what I'd like to see. A central registry — ruby/ruby-skills — that curates skills for the Ruby ecosystem. Each project maintains its own skill in its own repo. The registry just points to them. Third-party skills could be included too, with clear quality criteria. This way maintenance stays distributed — each team knows their tool best.</div>
 </section>
 
 <!-- SLIDE: AI SKILLS — LIMITATIONS -->
@@ -730,8 +739,8 @@ fenced code block
     <li>Supporting specific vendors first may be acceptable — but it requires discussion</li>
   </ul>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">We'll work on an RDoc skill after 8.0 ships.</p>
-</div><div class="slide-num">33</div>
-  <div class="speaker-notes">The SKILL.md format is now an open standard — Claude Code, Copilot, Cursor, Gemini CLI, Codex, and 30+ tools support it. Write it once, it works everywhere. But distribution is fragmented. Every tool has its own marketplace, or none at all. There's no universal install mechanism that doesn't heavily favor one or two vendors. That trade-off may be acceptable, but it's a decision the Ruby community should make together, not something one maintainer should decide. We'll focus on the RDoc skill after 8.0 ships.</div>
+</div><div class="slide-num">31</div>
+  <div class="speaker-notes">The good news is the format is solved. SKILL.md is supported by 30+ tools — Claude Code, Copilot, Cursor, Gemini CLI, and more. Write it once, it works everywhere. The hard part is distribution. Every tool has its own marketplace, or none at all. There's no universal install mechanism that doesn't favor one or two vendors. That trade-off may be acceptable, but it's a decision the Ruby community should make together, not something one maintainer should decide. We'll focus on the RDoc skill after 8.0 ships.</div>
 </section>
 
 <!-- SLIDE 25: BETTER TOOLS FOR WRITING (hidden) -->
@@ -751,8 +760,8 @@ fenced code block
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
   <h2 class="reveal">For AI doc consumption: we evaluated and found nothing proven yet</h2>
-</div><div class="slide-num">34</div>
-  <div class="speaker-notes">We looked at the options for making documentation more consumable by AI tools. Nothing we found has proven impact yet. Let me walk through what we evaluated.</div>
+</div><div class="slide-num">32</div>
+  <div class="speaker-notes">Now, shifting to the other side — making documentation more consumable by AI tools. We looked at what's out there. And honestly, nothing we found has proven impact yet. Let me walk you through what we evaluated.</div>
 </section>
 
 <!-- SLIDE 27: RUSTDOC RFC -->
@@ -765,8 +774,8 @@ fenced code block
     <li>Community consensus: "This should be an external tool"</li>
   </ul>
   <p class="reveal" style="position:absolute;bottom:clamp(0.8rem, 2vw, 1.5rem);left:clamp(1rem, 3vw, 2rem);font-size:clamp(0.65rem, 1vw, 0.8rem);color:var(--text-dim)">¹ github.com/rust-lang/rfcs/pull/3751</p>
-</div><div class="slide-num">35</div>
-  <div class="speaker-notes">Rustdoc had an RFC proposing LLM-friendly text output. Both the community and a T-rustdoc team member pushed back. workingjubilee from the rustdoc team said: the format you build today very likely isn't the format you'll need in three months, let alone three years. The broader community agreed it should be an external tool consuming rustdoc's existing JSON output.</div>
+</div><div class="slide-num">33</div>
+  <div class="speaker-notes">First, the Rust community. Someone proposed an RFC for LLM-friendly text output in Rustdoc. Both the community and a Rustdoc team member pushed back. workingjubilee said — the format you build today very likely isn't the format you'll need in three months, let alone three years. The broader community agreed this should be an external tool consuming Rustdoc's existing JSON output, not something built into Rustdoc itself.</div>
 </section>
 
 <!-- SLIDE 28: EXDOC SHIPPED IT -->
@@ -778,8 +787,8 @@ fenced code block
     <li>Enabled by default — every Elixir project gets it</li>
     <li>First major doc tool to ship AI-oriented output</li>
   </ul>
-</div><div class="slide-num">36</div>
-  <div class="speaker-notes">Meanwhile, Elixir's ExDoc took the opposite approach. Version 0.40.0 shipped a Markdown formatter and llms.txt generation, enabled by default. Every Elixir project now produces machine-readable documentation out of the box. As far as I know, they're the first major doc tool to ship AI-oriented output features.</div>
+</div><div class="slide-num">34</div>
+  <div class="speaker-notes">Then there's Elixir. ExDoc took the opposite approach. Version 0.40.0 shipped a Markdown formatter and llms.txt generation, enabled by default. So now every Elixir project produces machine-readable documentation out of the box. As far as I know, they're the first major doc tool to ship AI-oriented output.</div>
 </section>
 
 <!-- SLIDE 29: LLMS.TXT -->
@@ -792,8 +801,8 @@ fenced code block
     <li>No major LLM provider officially consumes it</li>
   </ul>
   <p class="reveal" style="position:absolute;bottom:clamp(0.8rem, 2vw, 1.5rem);left:clamp(1rem, 3vw, 2rem);font-size:clamp(0.65rem, 1vw, 0.8rem);color:var(--text-dim)">¹ SE Ranking, "LLMs.txt: Why Brands Rely On It and Why It Doesn't Work" (seranking.com/blog/llms-txt)</p>
-</div><div class="slide-num">37</div>
-  <div class="speaker-notes">I actually prototyped llms.txt generation for RDoc. Then I looked at the data. SE Ranking studied 300,000 domains — only 10% adoption. An XGBoost model for predicting AI citations actually improved when llms.txt was removed as a variable. No major LLM provider officially supports it. We decided it's not worth the complexity right now.</div>
+</div><div class="slide-num">35</div>
+  <div class="speaker-notes">I actually prototyped llms.txt generation for RDoc. Then I looked at the data. SE Ranking studied 300,000 domains — only about 10% had adopted it. And here's the kicker — their model for predicting AI citations actually got better when llms.txt was removed as a variable. No major LLM provider officially consumes it. So we decided it's not worth the complexity right now.</div>
 </section>
 
 <!-- SLIDE 30: RDOC'S POSITION -->
@@ -805,8 +814,8 @@ fenced code block
     <li>Priority now: make the documentation better at the source</li>
     <li>Any AI-specific format risks being obsolete in months</li>
   </ul>
-</div><div class="slide-num">38</div>
-  <div class="speaker-notes">Different communities are making different bets. We're studying these approaches — what works, what doesn't — while we focus on improving the foundation of RDoc. Better docs at the source benefit every consumption method, current and future. We're not opposed to shipping AI-specific output, but we want to do it when the landscape settles, not chase a moving target.</div>
+</div><div class="slide-num">36</div>
+  <div class="speaker-notes">So different communities are making different bets. We're watching what works and what doesn't, while we focus on the foundation. Better docs at the source benefit every consumption method — current and future. We're not opposed to shipping AI-specific output. But we'd rather do it when the landscape settles than chase a moving target.</div>
 </section>
 
 <!-- SLIDE 31: SUMMARY -->
@@ -817,8 +826,8 @@ fenced code block
     <li>RDoc's priority: make docs easier to write and maintain</li>
     <li>The foundation is rebuilt: Prism, Markdown, server mode, RBS, Aliki</li>
   </ul>
-</div><div class="slide-num">39</div>
-  <div class="speaker-notes">Three takeaways. AI reads Ruby's documentation too now — so improving it helps both developers and the tools they use. RDoc's priority is making docs easier to write and maintain. And the foundation is rebuilt — Prism parser, Markdown support, server mode, RBS type signatures, Aliki theme.</div>
+</div><div class="slide-num">37</div>
+  <div class="speaker-notes">Let me wrap up with three takeaways. One — AI reads Ruby's documentation too now, so improving it helps both developers and the tools they use. Two — RDoc's priority is making docs easier to write and maintain. And three — the foundation is rebuilt. Prism parser, Markdown support, server mode, RBS type signatures, Aliki theme. We're ready for what comes next.</div>
 </section>
 
 <!-- SLIDE 35: CALL TO ACTION -->
@@ -832,8 +841,8 @@ fenced code block
     <code style="font-size:var(--body-size);background:none;color:var(--text)">github.com/ruby/rdoc</code>
     <code style="font-size:var(--body-size);background:none;color:var(--text)">docs.ruby-lang.org</code>
   </div>
-</div><div class="slide-num">40</div>
-  <div class="speaker-notes">The most important message: it's now much easier to contribute to Ruby documentation. If you've ever wanted to improve Ruby's docs but didn't know the markup, that barrier is gone — it's Markdown. If you maintain a gem, try rdoc --server. It takes thirty seconds.</div>
+</div><div class="slide-num">38</div>
+  <div class="speaker-notes">If there's one thing I want you to take away — it's now much easier to contribute to Ruby documentation. If you've ever wanted to improve Ruby's docs but didn't know the markup, that barrier is gone. It's Markdown. And if you maintain a gem, try rdoc --server. It takes thirty seconds.</div>
 </section>
 
 <!-- SLIDE 36: THANK YOU -->
@@ -846,8 +855,8 @@ fenced code block
       <span>BlueSky: <span style="color:var(--accent)">@st0012.dev</span></span>
     </div>
   </div>
-  <div class="slide-num">41</div>
-  <div class="speaker-notes">Thank you for your time. I want to thank tompng — Tomoya Ishida — for the three subsystem rewrites that made everything else possible. The Shopify Ruby DX team for countless ideas and support. And the Ruby committers who reviewed the many PRs. I'll be around for questions.</div>
+  <div class="slide-num">39</div>
+  <div class="speaker-notes">Thank you. I want to give a big thank you to tompng — Tomoya Ishida — for the three subsystem rewrites that made everything else possible. The Shopify Ruby DX team for all the ideas and support. And the Ruby committers who reviewed the many PRs. I'll be around if you have questions.</div>
 </section>
 
 <script>
@@ -1352,4 +1361,4 @@ document.addEventListener('keydown', (e) => {
 </script>
 
 
-<browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div></body></html>
+<browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div></body></html>
