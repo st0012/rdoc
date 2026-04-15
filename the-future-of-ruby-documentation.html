@@ -115,16 +115,16 @@ body.edit-active [contenteditable] { outline: 1px dashed var(--accent); outline-
 </style>
 </head>
 <body class="">
-<div class="progress-bar" id="progressBar" style="width: 52.5%;"></div>
-<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot" aria-label="Go to slide 20"></button><button class="dot active" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button><button class="dot" aria-label="Go to slide 40"></button></nav>
+<div class="progress-bar" id="progressBar" style="width: 95%;"></div>
+<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot" aria-label="Go to slide 20"></button><button class="dot" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot active" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button><button class="dot" aria-label="Go to slide 40"></button></nav>
 <div class="edit-hotzone" id="editHotzone"></div>
 <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✎</button>
 <div class="edit-banner" id="editBanner">Saved!</div>
 <div class="blackout-overlay" id="blackoutOverlay"></div>
 <div class="notes-panel" id="notesPanel">
   <div class="notes-panel-header">
-    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">21</span>/<span id="noteTotalSlides">40</span>)</span>
-    <span class="notes-status" id="noteStatus">Saved</span>
+    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">38</span>/<span id="noteTotalSlides">40</span>)</span>
+    <span class="notes-status" id="noteStatus"></span>
   </div>
   <textarea id="notesTextarea" placeholder="Type your speaker notes here..."></textarea>
 </div>
@@ -460,8 +460,8 @@ fenced code block
     <div class="diagram-box" style="text-align:center">HTML output</div>
   </div>
 </div><div class="slide-num">20</div>
-  <div class="speaker-notes">The RDoc and Markdown parsers actually share an inline parser that's built for RDoc markup initially.
-So the Markdown parser even has to translate some of the Markdown into RDoc format before passing it into the shared inline parser. This means fixing a Markdown bug often means changing two places, while trying to maintain the behavior for RDoc markup.
+  <div class="speaker-notes">The RDoc and Markdown parsers actually share a inline parser that's built for RDoc markup initially. 
+So Markdown parser even has to translate some of the markdown into RDoc format before passing it into the shared inline parser. This means fixing a Markdown bug often means changing two places, while trying to maintain the behavior for RDoc markup.
 
 This is the main reason why many seemingly small issues take a long time to address. Because the solution needs to navigate through a complex pipeline.</div>
 </section>
@@ -654,7 +654,7 @@ The server mode will dramatically increase developers' productivity when it come
     <li>Changes reflected in browser automatically</li>
     <li>Zero external dependencies — uses Ruby's <code>TCPServer</code></li>
     <li>Incremental re-parsing — shorter response, not instant (yet)</li>
-    <li><code>make html-server</code> — contributing to Ruby docs has become easier</li>
+    <li><code>make html-server</code>&nbsp;in ruby/ruby — contributing to Ruby docs has become easier</li>
   </ul>
 </div><div class="slide-num">26</div>
   <div class="speaker-notes">The server mode has zero external dependencies — it uses Ruby's built-in TCPServer. It has a background watcher monitoring files and only re-parses the ones that changed. The latency is between 100 to 200 milliseconds right now. With future improvements on parsing and rendering performance, I hope we can make it feel instant someday. 
@@ -721,7 +721,59 @@ And I integrated this into Ruby itself — so now you can preview core documenta
   <div class="speaker-notes">The long-term goal is to fully migrate to Markdown. That means building an automatic translator from RDoc markup to Markdown, migrating Ruby core's documentation — which is massive — and eventually making Markdown the default. This is a lot of work. But with AI-assisted tooling, I'm hoping we can get there faster than it would have taken a few years ago.</div>
 </section>
 
-<!-- 30: AI SKILLS — WHY -->
+<!-- 30: DOCUMENTATION DIRECTIVES -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Contributing</p>
+  <h2 class="reveal">Make documentation reflect code design</h2>
+  <ul class="reveal">
+    <li>New directives: <code>@abstract</code>, <code>@override</code>, <code>@interface</code></li>
+    <li>Link abstract methods to their implementations</li>
+    <li>Show override relationships across class hierarchies</li>
+  </ul>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">Design intent in the docs — useful for both humans and AI.</p>
+</div><div class="slide-num"></div>
+  <div class="speaker-notes">Another thing I want to explore is documentation directives that reflect code design.
+Concepts like abstract methods, overrides, and interfaces are useful for documentation regardless of whether you use a type checker.
+Imagine RDoc understanding that a method is abstract and automatically linking to all its concrete implementations. Or showing that a method overrides a parent, with a link back.
+Right now readers have to figure out these relationships themselves. Both humans and AI would benefit from having this information explicit in the docs.</div>
+</section>
+
+<!-- 31: DIRECTIVE EXAMPLE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Contributing</p>
+  <h2 class="reveal">Example: <code>@abstract</code> + <code>@override</code></h2>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,4vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1">
+      <div class="code-block" style="background:#2d2d2d;font-size:var(--small-size)"><span class="kw">class</span> <span class="fn">Formatter</span>
+  <span class="cm"># @abstract</span>
+  <span class="cm"># Converts a document to output.</span>
+  <span class="kw">def</span> <span class="fn">convert</span>(doc)
+    <span class="kw">raise</span> NotImplementedError
+  <span class="kw">end</span>
+<span class="kw">end</span></div>
+    </div>
+    <div style="flex:1">
+      <div class="code-block" style="font-size:var(--small-size)"><span class="kw">class</span> <span class="fn">HtmlFormatter</span> &lt; <span class="fn">Formatter</span>
+  <span class="cm"># @override</span>
+  <span class="kw">def</span> <span class="fn">convert</span>(doc)
+    <span class="cm"># ...</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></div>
+    </div>
+  </div>
+  <div class="reveal" style="margin-top:var(--content-gap);display:flex;align-items:center;justify-content:center;gap:clamp(0.5rem,1.5vw,1rem)">
+    <div style="border:1px solid var(--border);border-radius:6px;padding:0.4em 0.8em;font-size:var(--small-size);background:var(--card-bg)">Formatter#convert <span style="color:var(--accent)">abstract</span></div>
+    <div style="font-size:var(--body-size);color:var(--text-dim)">⟷</div>
+    <div style="border:1px solid var(--accent);border-radius:6px;padding:0.4em 0.8em;font-size:var(--small-size);background:var(--card-bg)">HtmlFormatter#convert <span style="color:var(--accent)">override</span></div>
+  </div>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-secondary);text-align:center">Docs link abstract methods to implementations, and overrides back to the parent.</p>
+</div><div class="slide-num"></div>
+  <div class="speaker-notes">Here's what it could look like. On the left, a base class with an abstract method. On the right, a subclass that overrides it.
+In the generated docs, the abstract method page would list all its implementations — clickable links. And each override would link back to the parent method.
+You wouldn't need to search for "who implements convert" — the docs would just tell you.</div>
+</section>
+
+<!-- 32: AI SKILLS — WHY -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">AI skills</p>
   <h2 class="reveal">An RDoc skill for AI agents</h2>
@@ -772,7 +824,7 @@ And I integrated this into Ruby itself — so now you can preview core documenta
   </ul>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">We'll work on an RDoc skill after 8.0 ships.</p>
 </div><div class="slide-num">33</div>
-  <div class="speaker-notes">But as of now, there's no standard for distributing skills. Right now, only Claude Code has a plugin system for installing and updating skills similar to what I described. 
+  <div class="speaker-notes">But as of now, there's no standard for distributing skills. Only Claude Code has a plugin system for installing and updating skills similar to what I described. 
 Every other tool either has only a same-repository plugin registry or less mature plugin systems. 
 Before we ship an RDoc skill, and any other Ruby-related skills, we need to figure out a distribution approach that works across agent harnesses, not just one. We'll tackle this after 8.0 ships.</div>
 </section>
