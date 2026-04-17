@@ -888,73 +888,102 @@ So before we ship an RDoc skill, and any other Ruby-related skills, we need to f
   <div class="speaker-notes">For humans, server mode gives you live preview while writing. For AI agents, rdoc -C gives coverage reports — what's undocumented, what has broken references. And ri --format=markdown lets agents query Ruby documentation directly in a format they're fluent in.</div>
 </section>
 
-<!-- 33: FOR CONSUMING DOCUMENTATION -->
-<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
-  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
-  <h2 class="reveal">For AI doc consumption: we evaluated and found nothing proven yet</h2>
-</div><div class="slide-num">35</div>
-  <div class="speaker-notes">OK, back to documentation specifically. The other question is — can we make the docs themselves more consumable by AI? We looked at what's out there, but we haven't found a concrete path forward yet. Let me show you a few community examples.</div>
-</section>
-
-<!-- 34: RUST — PROPOSED TWICE, REJECTED TWICE -->
-<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
-  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
-  <h2 class="reveal">Rust: proposed twice, rejected twice</h2>
-  <ul class="reveal">
-    <li>2024: RFC #3751 — LLM-friendly text output for Rustdoc</li>
-    <li>2026: cargo #16720 — Markdown output from <code>cargo doc</code></li>
-    <li>Both rejected: "Output to JSON format is enough for now. This should be an external tool"</li>
-  </ul>
-  <p class="reveal" style="position:absolute;bottom:clamp(0.8rem, 2vw, 1.5rem);left:clamp(1rem, 3vw, 2rem);font-size:clamp(0.65rem, 1vw, 0.8rem);color:var(--text-dim)">¹ rust-lang/rfcs#3751 &nbsp; ² rust-lang/cargo#16720</p>
-</div><div class="slide-num">36</div>
-  <div class="speaker-notes">Let's start with Rust. There have been two proposals — one in 2024 for Rustdoc, another this March for Cargo — both asking for Markdown or LLM-friendly output. Both got rejected for the same reasons. 
-The maintainers think the AI space is moving too fast — a new output format could become obsolete the moment a new standard shows up. And Rustdoc already supports JSON output, so the community can build whatever format they need as a plugin.</div>
-</section>
-
-<!-- 35: EXDOC SHIPPED IT -->
-<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
-  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
-  <h2 class="reveal">ExDoc: shipped it</h2>
-  <ul class="reveal">
-    <li>ExDoc v0.40.0 (Jan 2026): Markdown output formatter + llms.txt</li>
-    <li>Enabled by default — every Elixir project gets it</li>
-    <li>First major doc tool to ship AI-oriented output</li>
-  </ul>
-</div><div class="slide-num">37</div>
-  <div class="speaker-notes">Elixir went the other way. ExDoc 0.40.0 shipped a Markdown formatter and llms.txt generation — both enabled by default. So now every Elixir project gets them out of the box. As far as I know, they're the first major doc tool to actually ship this.</div>
-</section>
-
-<!-- 36: LLMS.TXT -->
+<!-- 33: HTML WASTES AI CONTEXT -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
-  <h2 class="reveal">We prototyped llms.txt</h2>
-  <ul class="reveal">
-    <li>The most complete standard for LLM-friendly docs</li>
-    <li><strong style="color:var(--text)">~10% adoption</strong> across 300K domains, <strong style="color:var(--accent)">zero measurable impact</strong> on AI citations ¹</li>
-    <li>Only 0.1% of AI bot traffic touches llms.txt files ²</li>
-    <li>Google: "No AI system currently uses llms.txt" ²</li>
-  </ul>
-  <p class="reveal" style="position:absolute;bottom:clamp(0.8rem, 2vw, 1.5rem);left:clamp(1rem, 3vw, 2rem);font-size:clamp(0.65rem, 1vw, 0.8rem);color:var(--text-dim)">¹ SE Ranking (seranking.com/blog/llms-txt) &nbsp; ² Kai Spriestersbach, "The llms.txt is Dead" (2026)</p>
-</div><div class="slide-num">38</div>
-  <div class="speaker-notes">I also prototyped llms.txt generation for RDoc. Before opening the PR, I looked for evidence that it actually works. The data wasn't encouraging. 
-First, there's no paper around this that I can find. So I can only source from company and personal blog posts.
-One of the top blog posts about this, shows that in 300,000 domains — only about 10% adopted it, zero measurable impact on AI citations. Another post found only 0.1% of AI bot traffic even touches llms.txt files. And in almost all forums talking about this gave a negative suggestion.
-So I decided it's not worth it right now.</div>
+  <h2 class="reveal">HTML wastes AI context</h2>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center"><code>docs.ruby-lang.org/en/master/Array.html</code> — how people and agents read Ruby docs today</p>
+  <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:1fr auto auto;gap:clamp(0.5rem,1.2vw,1rem) clamp(1.5rem,4vw,3rem);align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--small-size);max-width:min(85vw,800px);margin-left:auto;margin-right:auto">
+    <div style="color:var(--text-dim);font-weight:700">Format</div>
+    <div style="color:var(--text-dim);font-weight:700;text-align:right">Tokens</div>
+    <div style="color:var(--text-dim);font-weight:700;text-align:right">% of 200k ctx</div>
+    <div>Raw HTML</div><div style="text-align:right;color:var(--accent);font-weight:700">183k</div><div style="text-align:right;color:var(--accent);font-weight:700">~92%</div>
+    <div>HTML → Markdown</div><div style="text-align:right">69k</div><div style="text-align:right">~35%</div>
+    <div>Plain text</div><div style="text-align:right">58k</div><div style="text-align:right">~29%</div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center"><code>Array</code> alone nearly fills a 200k context window.</p>
+</div><div class="slide-num">35</div>
+  <div class="speaker-notes">Back to the content side. docs.ruby-lang.org is how most people read Ruby's documentation — and it's also what agents reach for when they look something up. Today, it's 100% HTML.
+I ran Array.html through a tokenizer — same one used by most of the frontier models. The raw HTML is 183,000 tokens. That's almost the entire 200k context window, for a single class.
+Strip it down to Markdown and it drops to 69,000. Plain text is 58,000.
+So roughly two thirds of the HTML tokens are pure overhead — navigation chrome, CSS classes, anchor scaffolding. For an agent, that's a lot of wasted context.</div>
 </section>
 
-<!-- 37: RDOC'S POSITION -->
+<!-- 34: HOW DO AGENTS FIND MARKDOWN -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
-  <h2 class="reveal">RDoc: JSON output as the middle ground</h2>
+  <h2 class="reveal">OK, ship Markdown. How do agents find it?</h2>
   <ul class="reveal">
-    <li>Ship a stable JSON output format — like Rustdoc's approach</li>
-    <li>Community builds whatever consumption format they need</li>
-    <li>RDoc doesn't chase a moving target</li>
+    <li>Generate <code>Array.md</code> next to <code>Array.html</code>?</li>
+    <li>Let agents scrape HTML and convert on the fly?</li>
+    <li>Point them somewhere explicit — a directory they can crawl?</li>
   </ul>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center"><code>llms.txt</code> was proposed as the answer.</p>
+</div><div class="slide-num">36</div>
+  <div class="speaker-notes">So shipping Markdown seems like the fix. But that's only half of it — the other half is discovery.
+We could generate a .md file next to every .html, but if agents don't know to look for it, they just keep fetching HTML.
+We could let them scrape and convert every page themselves, but then every agent pays the conversion cost, and the result depends on whatever converter they happen to use.
+Or we can point them somewhere explicit. That's what llms.txt was proposed for.</div>
+</section>
+
+<!-- 35: LLMS.TXT EXPLAINER -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">llms.txt: a sitemap for AI</h2>
+  <ul class="reveal">
+    <li>A single <code>/llms.txt</code> at the site root</li>
+    <li>Lists canonical Markdown paths for every doc page</li>
+    <li>Agents read it first, then fetch only the <code>.md</code> files they need</li>
+  </ul>
+  <pre class="reveal" style="margin-top:var(--content-gap);background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:clamp(0.8rem,1.5vw,1.2rem) clamp(1rem,2vw,1.6rem);font-family:var(--font-mono);font-size:var(--small-size);text-align:left;max-width:min(85vw,750px);margin-left:auto;margin-right:auto;white-space:pre;overflow-x:auto"><span style="color:var(--text-dim)"># Ruby docs</span>
+
+- [Array](Array.md): core class
+- [Hash](Hash.md): core class
+- [String](String.md): core class</pre>
+</div><div class="slide-num">37</div>
+  <div class="speaker-notes">Quick explainer of llms.txt. It's a single plain text file at the root of your docs site, similar to robots.txt. Inside, you list the most important Markdown URLs with a short description of each.
+The idea is that agents fetch llms.txt first to get the lay of the land, then pull just the .md files they need — skipping the HTML chrome entirely.
+It's a simple idea. The question is whether anyone actually respects it.</div>
+</section>
+
+<!-- 36: WHO SHIPS LLMS.TXT -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">Who actually ships it?</h2>
+  <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:auto auto auto;gap:clamp(0.4rem,1vw,0.8rem) clamp(1.5rem,4vw,3rem);align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--small-size);max-width:min(90vw,900px);margin-left:auto;margin-right:auto">
+    <div style="color:var(--text-dim);font-weight:700">Site</div><div style="color:var(--text-dim);font-weight:700;text-align:center">llms.txt</div><div style="color:var(--text-dim);font-weight:700">Notes</div>
+    <div>doc.rust-lang.org</div><div style="text-align:center;color:var(--accent);font-weight:700">✗</div><div style="color:var(--text-dim)">RFC #3751 closed without merging</div>
+    <div>docs.python.org</div><div style="text-align:center;color:var(--accent);font-weight:700">✗</div><div style="color:var(--text-dim)">—</div>
+    <div>nodejs.org</div><div style="text-align:center;color:var(--accent);font-weight:700">✗</div><div style="color:var(--text-dim)">—</div>
+    <div>developer.mozilla.org</div><div style="text-align:center;color:var(--accent);font-weight:700">✗</div><div style="color:var(--text-dim)">—</div>
+    <div>docs.ruby-lang.org</div><div style="text-align:center;color:var(--accent);font-weight:700">✗</div><div style="color:var(--text-dim)">—</div>
+    <div>hexdocs.pm (ExDoc)</div><div style="text-align:center;color:var(--text);font-weight:700">✓</div><div style="color:var(--text-dim)">per-package, default since v0.40</div>
+  </div>
+  <p class="reveal" style="position:absolute;bottom:clamp(0.8rem, 2vw, 1.5rem);left:clamp(1rem, 3vw, 2rem);font-size:clamp(0.65rem, 1vw, 0.8rem);color:var(--text-dim)">Verified April 2026 — curl to /llms.txt at each root</p>
+</div><div class="slide-num">38</div>
+  <div class="speaker-notes">So I checked. Who actually ships llms.txt today?
+Rust — no. An RFC to add LLM-friendly output to rustdoc was closed without merging. The pushback was that LLM tooling is still moving too fast to commit to a stable format.
+Python, Node, MDN, Ruby — all no. None of their robots.txt files even mention llms.txt or AI crawlers.
+The only mainstream doc generator that ships llms.txt by default is ExDoc, in the Elixir ecosystem. Every Hex package automatically gets one.
+So we have a proposed standard, one adopter, and everyone else waiting.</div>
+</section>
+
+<!-- 37: WHERE RDOC LANDS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">Where RDoc lands</h2>
+  <ul class="reveal">
+    <li>Ship Markdown output — the token savings aren't speculative</li>
+    <li>Emit <code>llms.txt</code> — cheap to generate, ready if adoption follows</li>
+    <li>Keep the formatter pluggable — no standard has won yet</li>
+  </ul>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">We're evaluating the full path for Ruby's documentation.</p>
 </div><div class="slide-num">39</div>
-  <div class="speaker-notes">So as we just saw some communities are more adventurous, but most haven't prioritized documentation consumption for AI yet.
-Looking at all of this, I think the middle ground for RDoc is JSON output. It'd be a stable, structured format and let the community build whatever consumption tools they need on top.
-That way RDoc doesn't have to chase a moving target. If someone needs Markdown output, llms.txt, or whatever comes next — they can build it from the JSON.</div>
+  <div class="speaker-notes">So where does RDoc land?
+The token numbers are concrete, so Markdown output is worth shipping regardless of what happens with llms.txt. That saves real context for any agent fetching Ruby docs.
+llms.txt itself is cheap to generate once we have the Markdown. So we emit it and see what happens. If adoption grows, we're ready. If it doesn't, we haven't bet much on it.
+And we keep RDoc's formatter pluggable — no single standard has won yet, and whatever comes next, I'd rather ship it without rearchitecting.
+This is what we're evaluating — a full path for Ruby's documentation, not a bet on any single format.</div>
 </section>
 
 <!-- 38: SUMMARY -->
