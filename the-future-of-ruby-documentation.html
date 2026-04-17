@@ -776,7 +776,44 @@ Then in the generated docs, RDoc can list all of the implementations at the Form
 Combining annotations with type signatures will allow us create more expressive documentation that benefits all consumers.</div>
 </section>
 
-<!-- 32: AI SKILLS — WHY -->
+<!-- 32: WHAT IS AN AI SKILL -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1200px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">AI skills</p>
+  <h2 class="reveal">What's an AI skill?</h2>
+  <div class="reveal" style="display:flex;align-items:center;justify-content:center;gap:clamp(0.8rem,2vw,1.5rem);margin-top:var(--content-gap)">
+    <!-- SKILL.md box -->
+    <div style="flex:0 0 auto;border:2px solid var(--accent);border-radius:8px;padding:clamp(0.6rem,1.2vw,1rem);background:#2d2d2d;color:#e0e0e0;font-family:var(--font-mono);font-size:clamp(0.7rem,1.2vw,0.9rem);text-align:left;max-width:clamp(14rem,28vw,22rem)">
+      <div style="color:#999;margin-bottom:0.4em">SKILL.md</div>
+      <div style="color:#e06c75">---</div>
+      <div><span style="color:#c678dd">name:</span> rdoc</div>
+      <div><span style="color:#c678dd">description:</span> Use when</div>
+      <div>&nbsp;&nbsp;writing Ruby documentation</div>
+      <div style="color:#e06c75">---</div>
+      <div style="margin-top:0.3em">Use <span style="color:#7ee787">rdoc --server</span> to...</div>
+      <div>Write RBS signatures as...</div>
+    </div>
+    <!-- Arrow -->
+    <div style="flex:0 0 auto;font-size:clamp(1.2rem,2vw,1.8rem);color:var(--text-dim)">→</div>
+    <!-- Agent -->
+    <div style="flex:0 0 auto;border:1px solid var(--border);border-radius:8px;padding:clamp(0.8rem,1.5vw,1.2rem);background:var(--card-bg);text-align:center;min-width:clamp(6rem,10vw,9rem)">
+      <div style="font-size:clamp(1.8rem,3vw,2.5rem)">🤖</div>
+      <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em">AI agent<br>reads it</div>
+    </div>
+    <!-- Arrow -->
+    <div style="flex:0 0 auto;font-size:clamp(1.2rem,2vw,1.8rem);color:var(--text-dim)">→</div>
+    <!-- Outcome -->
+    <div style="flex:0 0 auto;border:1px solid var(--accent);border-radius:8px;padding:clamp(0.8rem,1.5vw,1.2rem);background:var(--card-bg);text-align:center;min-width:clamp(7rem,12vw,10rem)">
+      <div style="font-size:var(--small-size);color:var(--text)">Uses RDoc<br>correctly</div>
+    </div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">A Markdown file that teaches an agent how to use a tool.</p>
+</div><div class="slide-num"></div>
+  <div class="speaker-notes">Before I go further, let me briefly explain what an AI skill is, in case you haven't used one.
+A skill is just a Markdown file. It has a name, a description of when to use it, and instructions for the agent.
+When the agent encounters a relevant task — like writing Ruby documentation — it reads the skill and follows the instructions. No more guessing about which tool to use or how to configure it.</div>
+</section>
+
+<!-- 33: AI SKILLS — WHY -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">AI skills</p>
   <h2 class="reveal">An RDoc skill for AI agents</h2>
@@ -797,27 +834,30 @@ A lot of developers are already writing code like this. We should be able to wri
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">AI skills</p>
   <h2 class="reveal">What I'd like to see for Ruby</h2>
-  <div class="reveal" style="margin-top:var(--content-gap);display:flex;align-items:center;gap:clamp(1rem,3vw,2.5rem)">
-    <!-- Registry box -->
-    <div style="flex:0 0 auto;text-align:center">
-      <div style="border:2px solid var(--accent);border-radius:8px;padding:clamp(0.6rem,1.5vw,1rem) clamp(1rem,2vw,1.5rem);background:var(--card-bg)">
-        <code style="font-size:var(--body-size);color:var(--accent)">ruby/ruby-skills</code>
-        <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.3em">Registry</div>
-      </div>
+  <div class="reveal" style="margin-top:var(--content-gap);display:flex;align-items:center;gap:clamp(0.5rem,1.2vw,1rem)">
+    <!-- Registry box (JSON) -->
+    <div style="flex:0 0 auto">
+      <div style="font-size:var(--small-size);color:var(--accent);font-weight:700;margin-bottom:0.4em"><code>ruby/ruby-skills</code> <span style="color:var(--text-secondary);font-weight:400">(registry)</span></div>
+      <div class="code-block" style="background:#2d2d2d;font-family:var(--font-mono);font-size:clamp(0.7rem,1.2vw,0.9rem);padding:clamp(0.6rem,1.2vw,1rem);text-align:left;color:#e0e0e0"><span style="color:#abb2bf">[</span>
+  <span style="color:#abb2bf">{</span> <span style="color:#c678dd">name:</span> <span style="color:#7ee787">"RDoc skill"</span>,&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd">source:</span> <span style="color:#7ee787">"github.com/ruby/rdoc"</span> <span style="color:#abb2bf">}</span>,
+  <span style="color:#abb2bf">{</span> <span style="color:#c678dd">name:</span> <span style="color:#7ee787">"IRB skill"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd">source:</span> <span style="color:#7ee787">"github.com/ruby/irb"</span> <span style="color:#abb2bf">}</span>,
+  <span style="color:#abb2bf">{</span> <span style="color:#c678dd">name:</span> <span style="color:#7ee787">"Debugger skill"</span>, <span style="color:#c678dd">source:</span> <span style="color:#7ee787">"github.com/ruby/debug"</span> <span style="color:#abb2bf">}</span>
+<span style="color:#abb2bf">]</span></div>
     </div>
-    <!-- Arrows -->
+    <!-- Arrow -->
     <div style="flex:0 0 auto;font-size:clamp(1.2rem,2vw,1.8rem);color:var(--text-dim)">→</div>
-    <!-- Project skills -->
+    <!-- Source repos -->
     <div style="flex:1;display:flex;flex-direction:column;gap:clamp(0.4rem,1vw,0.6rem)">
       <div style="border:1px solid var(--border);border-radius:6px;padding:clamp(0.4rem,1vw,0.6rem) clamp(0.8rem,1.5vw,1rem);background:var(--card-bg);font-size:var(--small-size)"><code>ruby/rdoc</code> → RDoc skill</div>
       <div style="border:1px solid var(--border);border-radius:6px;padding:clamp(0.4rem,1vw,0.6rem) clamp(0.8rem,1.5vw,1rem);background:var(--card-bg);font-size:var(--small-size)"><code>ruby/irb</code> → IRB skill</div>
-      <div style="border:1px solid var(--border);border-radius:6px;padding:clamp(0.4rem,1vw,0.6rem) clamp(0.8rem,1.5vw,1rem);background:var(--card-bg);font-size:var(--small-size)"><code>ruby/debug</code> → Debug skill</div>
+      <div style="border:1px solid var(--border);border-radius:6px;padding:clamp(0.4rem,1vw,0.6rem) clamp(0.8rem,1.5vw,1rem);background:var(--card-bg);font-size:var(--small-size)"><code>ruby/debug</code> → Debugger skill</div>
     </div>
   </div>
-  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-secondary)">Each project maintains its own skill. The registry curates and points to them.</p>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--small-size);color:var(--text-secondary)">The registry is just an index that points to source repos. Each project maintains its own skill.</p>
 </div><div class="slide-num">33</div>
-  <div class="speaker-notes">Let me take a quick detour and talk about what AI skills for Ruby could look like. I'd like to see a central skill registry — ruby/ruby-skills — that curates skills for the Ruby ecosystem. Each project maintains its own skill in its own repo. For example, RDoc can maintain documentation related skills in its repo. Debugger can maintain its own too.
-The registry just points to them. This way, skills can be maintained and evolved along with the tools.</div>
+  <div class="speaker-notes">Let me take a quick detour and talk about what AI skills for Ruby could look like. I'd like to see a central registry — here I'm calling it ruby/ruby-skills. It's really just an index, a list of entries pointing to where each skill lives.
+Each project maintains its own skill in its own repo. For example, RDoc maintains documentation-related skills in ruby/rdoc. The debugger maintains its own in ruby/debug.
+This way, skills are maintained and evolved alongside the tools they describe.</div>
 </section>
 
 <!-- 32: AI SKILLS — LIMITATIONS -->
