@@ -112,6 +112,18 @@ body.edit-active [contenteditable] { outline: 1px dashed var(--accent); outline-
 .speaker-notes { display: none; }
 .blackout-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; }
 .blackout-overlay.active { display: block; }
+/* Coupling slide: click-to-reveal animation. Clicking the diagram strikes out "Markdown parser" and reveals the translator label + rewrite annotation + caption. */
+.coupling-diagram { cursor: pointer; }
+.coupling-md { transition: border-color 0.3s var(--ease); }
+.coupling-md .coupling-orig { position: relative; display: inline-block; transition: opacity 0.3s var(--ease); }
+.coupling-md .coupling-orig::after { content: ''; position: absolute; left: -2px; right: -2px; top: 50%; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left center; transition: transform 0.35s var(--ease); }
+.coupling-md .coupling-truth { display: block; margin-top: clamp(0.25rem, 0.6vw, 0.4rem); color: var(--accent); font-weight: 700; opacity: 0; transform: translateY(-4px); transition: opacity 0.35s var(--ease) 0.25s, transform 0.35s var(--ease) 0.25s; }
+.coupling-diagram.coupling-open .coupling-md { border-color: var(--accent); background: var(--accent-light); }
+.coupling-diagram.coupling-open .coupling-md .coupling-orig { opacity: 0.45; }
+.coupling-diagram.coupling-open .coupling-md .coupling-orig::after { transform: scaleX(1); }
+.coupling-diagram.coupling-open .coupling-md .coupling-truth { opacity: 1; transform: none; }
+.coupling-hint { opacity: 0; transform: translateY(-4px); transition: opacity 0.35s var(--ease) 0.4s, transform 0.35s var(--ease) 0.4s; }
+.coupling-diagram.coupling-open .coupling-hint { opacity: 1; transform: none; }
 </style>
 </head>
 <body class="">
@@ -488,28 +500,49 @@ And because RDoc has to support both formats, fixing Markdown bugs is harder tha
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">The coupling problem</h2>
-  <div class="reveal" style="display:flex;flex-direction:column;align-items:center;gap:clamp(0.8rem,1.5vw,1.2rem);margin-top:var(--content-gap)">
-    <div style="display:grid;grid-template-columns:auto auto;gap:0 clamp(2rem,6vw,6rem);justify-content:center;justify-items:center">
+  <div class="reveal coupling-diagram" onclick="this.classList.toggle('coupling-open')" style="margin-top:var(--content-gap);display:flex;flex-direction:column;align-items:center;width:min(90vw,1050px);margin-left:auto;margin-right:auto">
+    <!-- Two parser boxes. Left box has hidden "translator" truth revealed on click. -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;column-gap:0;width:100%;justify-items:center;align-items:start">
+      <div class="diagram-box coupling-md" style="text-align:center">
+        <span class="coupling-orig">Markdown parser</span>
+        <span class="coupling-truth">Markdown → RDoc translator</span>
+      </div>
       <div class="diagram-box">RDoc markup parser</div>
-      <div class="diagram-box">Markdown parser</div>
-      <div></div>
-      <div style="font-size:var(--small-size);color:var(--text-dim);padding:clamp(0.3rem,0.6vw,0.5rem) 0">translates to RDoc format</div>
-      <div style="font-size:var(--h3-size);color:var(--text-dim)">↓</div>
-      <div style="font-size:var(--h3-size);color:var(--text-dim)">↓</div>
     </div>
-    <div class="diagram-box highlight" style="min-width:min(50vw,500px);text-align:center">Shared InlineParser</div>
-    <div style="font-size:var(--h3-size);color:var(--text-dim)">↓</div>
-    <div class="diagram-box" style="text-align:center">HTML output</div>
+    <!-- Inverted-Y SVG connector + rewrite annotation (hidden until click) -->
+    <div style="position:relative;width:100%">
+      <svg viewBox="0 0 1000 95" style="width:100%;height:auto;color:var(--text-dim);display:block" aria-hidden="true">
+        <defs>
+          <marker id="cp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto">
+            <path d="M0,0 L9,5 L0,10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="250" y1="0" x2="250" y2="45" />
+          <line x1="250" y1="45" x2="500" y2="58" />
+          <line x1="750" y1="0" x2="750" y2="45" />
+          <line x1="750" y1="45" x2="500" y2="58" />
+          <line x1="500" y1="58" x2="500" y2="85" marker-end="url(#cp-arrow)" />
+        </g>
+      </svg>
+    </div>
+    <div class="diagram-box highlight" style="min-width:min(55vw,550px);text-align:center">Shared inline layer</div>
+    <div class="coupling-hint" style="font-size:var(--small-size);color:var(--text-dim);font-style:italic;margin-top:clamp(0.2rem,0.4vw,0.3rem)">understands RDoc syntax only</div>
+    <div style="font-size:var(--h3-size);color:var(--text-dim);line-height:1;margin-top:clamp(0.4rem,0.8vw,0.6rem)">↓</div>
+    <div class="diagram-box" style="text-align:center;margin-top:clamp(0.2rem,0.4vw,0.3rem)">HTML output</div>
   </div>
 </div><div class="slide-num">20</div>
-  <div class="speaker-notes">The RDoc and Markdown parsers actually share a inline parser that's built for RDoc markup initially. 
-So Markdown parser even has to translate some of the markdown into RDoc format before passing it into the shared inline parser. This means fixing a Markdown bug often means changing two places, while trying to maintain the behavior for RDoc markup.
+  <div class="speaker-notes">At first glance the pipeline looks symmetric. Two parsers, both flowing into a shared inline layer, both ending in HTML. Clean.
 
-This is the main reason why many seemingly small issues take a long time to address. Because the solution needs to navigate through a complex pipeline.</div>
+[Press right arrow or click the diagram.]
+
+But the Markdown parser isn't really a parser — it's a translator. It rewrites Markdown's inline syntax into RDoc's inline syntax during parsing. Why? Because the shared inline layer was originally built for RDoc, and every formatter still runs through it. So anything flowing through has to speak RDoc.
+
+That's the coupling. I'll show you what it actually breaks on the next slide.</div>
 </section>
 
-<!-- HIDDEN: STRIKETHROUGH EXAMPLE -->
-<section class="slide visible" style="display:none"><div class="slide-content" style="max-width:min(90vw,1300px)">
+<!-- STRIKETHROUGH EXAMPLE (alternate to coupling diagram — under comparison) -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
   <h2 class="reveal">Example: <code>~~strikethrough~~</code></h2>
   <div class="reveal" style="display:flex;align-items:center;gap:clamp(0.3rem,1vw,0.8rem);margin-top:var(--content-gap);justify-content:center">
@@ -517,13 +550,13 @@ This is the main reason why many seemingly small issues take a long time to addr
     <div style="font-size:var(--body-size);color:var(--text-dim)">→</div>
     <div class="diagram-box" style="font-family:var(--font-mono);font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1vw,1rem)">&lt;del&gt;text&lt;/del&gt;</div>
     <div style="font-size:var(--body-size);color:var(--text-dim)">→</div>
-    <div class="diagram-box highlight" style="font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1vw,1rem)">InlineParser<br><span style="color:var(--accent)">doesn't know &lt;del&gt;</span></div>
+    <div class="diagram-box highlight" style="font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1vw,1rem)">Shared inline layer<br><span style="color:var(--accent)">doesn't know &lt;del&gt;</span></div>
     <div style="font-size:var(--body-size);color:var(--text-dim)">→</div>
     <div class="diagram-box" style="font-size:var(--small-size);border-color:var(--accent);color:var(--accent);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1vw,1rem)">Broken</div>
   </div>
   <p class="reveal" style="font-size:var(--body-size);margin-top:var(--content-gap)">Fix touches shared code → must verify RDoc markup still works too.</p>
 </div><div class="slide-num">21</div>
-  <div class="speaker-notes">Here's a concrete example. Markdown strikethrough — tilde-tilde-text — the parser outputs it as a del HTML string. That string goes to the shared InlineParser, which didn't recognize del. So strikethrough was silently broken for years. Fixing it means modifying the shared InlineParser, then verifying RDoc markup still works too.</div>
+  <div class="speaker-notes">Here's what that coupling looked like in practice. The Markdown parser turns tilde-tilde-text into a del HTML tag — that's its translation step. The tag goes to the shared inline layer, which didn't recognize del. So strikethrough was silently broken for years. Fixing it meant changing the shared layer, then verifying RDoc markup still worked. That's why even small Markdown bugs took disproportionate effort.</div>
 </section>
 
 <!-- HIDDEN: BASH SYNTAX HIGHLIGHTING -->
@@ -681,7 +714,7 @@ We're not at full GFM compatibility yet, but we're tracking it systematically.</
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Server mode</p>
   <h2 class="reveal"><code>rdoc --server</code></h2>
   <div class="reveal" style="margin-top:var(--content-gap)">
-    <video src="images/rdoc-server-demo.mp4" style="max-width:100%;max-height:min(60vh,550px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer" onclick="this.paused?this.play():this.pause()" loop="" muted=""></video>
+    <video src="images/rdoc-server-demo.mp4" style="max-width:100%;max-height:min(60vh,550px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer" onclick="this.paused?this.play():this.pause()" onloadedmetadata="this.playbackRate=0.75" loop="" muted=""></video>
   </div>
 </div><div class="slide-num">25</div>
   <div class="speaker-notes">That covers the content improvements. Now let's talk about tooling. 
@@ -697,10 +730,14 @@ The server mode will dramatically increase developers' productivity when it come
     <li>Changes reflected in browser automatically</li>
     <li>Zero external dependencies — uses Ruby's <code>TCPServer</code></li>
     <li>Incremental re-parsing — shorter response, not instant (yet)</li>
-    <li><code>make html-server</code>&nbsp;in ruby/ruby — contributing to Ruby docs has become easier</li>
+    <li>Run <code>rdoc --server</code> in any gem using RDoc to preview its docs</li>
+    <li><code>make html-server</code>&nbsp;in ruby/ruby — the same flow for Ruby core docs</li>
   </ul>
 </div><div class="slide-num">26</div>
-  <div class="speaker-notes">The server mode has zero external dependencies — it uses Ruby's built-in TCPServer. It has a background watcher monitoring files and only re-parses the ones that needs to be changed. The latency is between 100 to 200 milliseconds right now. With future improvements on parsing and rendering performance, I hope we can make it feel instant someday. 
+  <div class="speaker-notes">The server mode has zero external dependencies — it uses Ruby's built-in TCPServer. It has a background watcher monitoring files and only re-parses the ones that need to change. The latency is between 100 to 200 milliseconds right now. With future improvements on parsing and rendering performance, I hope we can make it feel instant someday.
+
+Any gem that uses RDoc gets this out of the box — just run <code>rdoc --server</code> in your project and you can preview your documentation changes the same way.
+
 And I integrated this into Ruby itself — so now you can preview core documentation the same way. This lowers the barrier to contribute to Ruby's documentation.</div>
 </section>
 
@@ -874,10 +911,10 @@ Third, they can write the docs themselves. A lot of developers already let AI wr
       <div style="font-size:var(--small-size);color:var(--text)">Uses RDoc<br>correctly</div>
     </div>
   </div>
-  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">A Markdown file that teaches an agent how to use a tool.</p>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">Following the <code>SKILL.md</code> standard — a Markdown file that teaches an agent how to use a tool.</p>
 </div><div class="slide-num">34</div>
   <div class="speaker-notes">To make that kind of experience work, we'd need a way to give agents the right instructions. That's what an AI skill is for, in case you haven't used one before.
-A skill is just a Markdown file. It has a name, a description of when to use it, and instructions for the agent.
+A skill is just a Markdown file following the SKILL.md standard. It has a name, a description of when to use it, and instructions for the agent.
 When the agent encounters a relevant task — like writing Ruby documentation — it reads the relevant skills and follows the instructions.</div>
 </section>
 
@@ -889,13 +926,13 @@ When the agent encounters a relevant task — like writing Ruby documentation �
     <li>Preview workflow — <code>rdoc --server</code> and incremental updates</li>
     <li>Writing RBS signatures — inline <code>#:</code> or a <code>sig/</code> directory</li>
     <li>Using annotations — <code>@abstract</code>, <code>@override</code>, <code>@interface</code></li>
-    <li>Checking coverage — <code>rdoc -C</code> to find undocumented methods and broken references</li>
+    <li>Checking coverage — <code>rdoc -C</code> to find undocumented classes, methods, constants, and attributes</li>
   </ul>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">Everything coming in RDoc 8.0, discoverable for agents.</p>
 </div><div class="slide-num">35</div>
   <div class="speaker-notes">So what would an RDoc skill actually teach the agent?
 It would cover the core workflows. Things like using the server for live preview, writing type signatures either inline or in a sig directory, and using the new design annotations we just talked about.
-It would also cover how to check documentation coverage — running rdoc dash C to find undocumented methods and broken references before a PR gets merged.
+It would also cover how to check documentation coverage — running rdoc dash C to find undocumented classes, methods, constants, and attributes before a PR gets merged.
 With RDoc skills, everything coming in RDoc 8.0 will become discoverable for agents, without users having to explain them manually.</div>
 </section>
 
@@ -1131,13 +1168,29 @@ class SlidePresentation {
       if (isTyping(e)) return;
       switch(e.key) {
         case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
-          e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+          e.preventDefault();
+          if (this.tryAdvanceReveal()) break;
+          this.goToSlide(this.currentSlide + 1);
+          break;
         case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
           e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
         case 'Home': e.preventDefault(); this.goToSlide(0); break;
         case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
       }
     });
+  }
+  // Per-slide click-reveals can opt into arrow-key advancement by adding
+  // class="coupling-diagram" (plus the `.coupling-open` state class).
+  // Right/space first toggles the reveal on; pressing again advances normally.
+  tryAdvanceReveal() {
+    const slide = this.slides[this.currentSlide];
+    if (!slide) return false;
+    const coupling = slide.querySelector('.coupling-diagram');
+    if (coupling && !coupling.classList.contains('coupling-open')) {
+      coupling.classList.add('coupling-open');
+      return true;
+    }
+    return false;
   }
   setupTouchNav() {
     let startY = 0;
