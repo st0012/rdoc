@@ -115,16 +115,16 @@ body.edit-active [contenteditable] { outline: 1px dashed var(--accent); outline-
 </style>
 </head>
 <body class="">
-<div class="progress-bar" id="progressBar" style="width: 100%;"></div>
-<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot" aria-label="Go to slide 20"></button><button class="dot" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button><button class="dot" aria-label="Go to slide 40"></button><button class="dot" aria-label="Go to slide 41"></button><button class="dot active" aria-label="Go to slide 42"></button></nav>
+<div class="progress-bar" id="progressBar" style="width: 83.3333%;"></div>
+<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot" aria-label="Go to slide 20"></button><button class="dot" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot active" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button><button class="dot" aria-label="Go to slide 40"></button><button class="dot" aria-label="Go to slide 41"></button><button class="dot" aria-label="Go to slide 42"></button></nav>
 <div class="edit-hotzone" id="editHotzone"></div>
 <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✎</button>
 <div class="edit-banner" id="editBanner">Saved!</div>
 <div class="blackout-overlay" id="blackoutOverlay"></div>
 <div class="notes-panel" id="notesPanel">
   <div class="notes-panel-header">
-    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">42</span>/<span id="noteTotalSlides">42</span>)</span>
-    <span class="notes-status" id="noteStatus">nSaved</span>
+    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">35</span>/<span id="noteTotalSlides">42</span>)</span>
+    <span class="notes-status" id="noteStatus"></span>
   </div>
   <textarea id="notesTextarea" placeholder="Type your speaker notes here..."></textarea>
 </div>
@@ -347,12 +347,12 @@ New theme, a new parser built on Prism, Markdown improvements, RBS signatures su
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
   <h2 class="reveal">The new parser</h2>
   <ul class="reveal">
-    <li>RDoc used Ripper only as a tokenizer — and hand-rolled its own parser on top</li>
+    <li>RDoc's Ruby parser used Ripper — couldn't handle modern syntax and hard to maintain</li>
     <li>Tomoya Ishida (@tompng) rewrote it on Prism, fixing many issues along the way</li>
     <li>Fixed 7 long-standing bugs — some open since 2016</li>
   </ul>
 </div><div class="slide-num">15</div>
-  <div class="speaker-notes">That's the new look. Now let's talk about what's under the hood. RDoc's old parser used Ripper for tokenization, then did the actual Ruby parsing itself. That hand-rolled part couldn't keep up with modern Ruby syntax, and it was hard to maintain. Tomoya Ishida — Ruby committer and RDoc maintainer, created a new parser based on Prism and fixed many issues along the way, some were reported even 10 years ago.</div>
+  <div class="speaker-notes">That's the new look. Now let's talk about what's under the hood. RDoc's Ruby parser was built on Ripper. It couldn't handle modern Ruby syntax and was hard to maintain. Tomoya Ishida — Ruby committer and RDoc maintainer, created a new parser based on Prism and fixed many issues along the way, some were reported even 10 years ago.</div>
 </section>
 
 <!-- HIDDEN: __FILE__ BUG EXAMPLE -->
@@ -402,11 +402,11 @@ But most importantly, when Ruby adds new syntax, Prism already knows how to pars
   <span class="kw">def</span> <span class="fn">bar</span> = 42  <span class="cm"># open bar — where's end?</span>
 <span class="kw">end</span>             <span class="cm"># this closes bar, not Foo</span>
 
-<span class="kw">class</span> <span class="fn">Baz</span>; <span class="kw">end</span> <span class="cm"># RDoc thinks we're still inside Foo</span></div>
+<span class="kw">class</span> <span class="fn">Baz</span>; <span class="kw">end</span> <span class="cm"># Ripper thinks we're still inside Foo</span></div>
   </div>
   <div class="reveal" style="display:flex;gap:clamp(2rem,4vw,4rem);margin-top:var(--content-gap)">
     <div style="flex:1">
-      <h3 style="color:var(--text-dim);margin-bottom:var(--element-gap)">Old parser</h3>
+      <h3 style="color:var(--text-dim);margin-bottom:var(--element-gap)">Ripper</h3>
       <div style="padding:clamp(1rem,2vw,1.5rem);border-radius:8px;border:2px solid var(--border);font-family:var(--font-mono);font-size:var(--body-size);line-height:1.8">
         <div><strong>class Foo</strong></div>
         <div style="padding-left:1.5em">— method bar</div>
@@ -414,7 +414,7 @@ But most importantly, when Ruby adds new syntax, Prism already knows how to pars
       </div>
     </div>
     <div style="flex:1">
-      <h3 style="color:var(--accent);margin-bottom:var(--element-gap)">Prism-based parser</h3>
+      <h3 style="color:var(--accent);margin-bottom:var(--element-gap)">Prism</h3>
       <div style="padding:clamp(1rem,2vw,1.5rem);border-radius:8px;border:2px solid var(--accent);font-family:var(--font-mono);font-size:var(--body-size);line-height:1.8">
         <div><strong>class Foo</strong></div>
         <div style="padding-left:1.5em">— method bar</div>
@@ -423,8 +423,8 @@ But most importantly, when Ruby adds new syntax, Prism already knows how to pars
     </div>
   </div>
 </div><div class="slide-num">17</div>
-  <div class="speaker-notes">Here's one example: The old parser worked on tokens — it tracked where methods end by looking for the end keyword.
-But after endless methods were introduced, they broke that assumption. So in this example, the old parser would incorrectly consume the end keyword of the Foo class, thinking it's the end for the method, and cause the Baz class to be considered nested inside Foo.
+  <div class="speaker-notes">Here's one example: The old Ripper parser works on tokens — it tracks where methods end by looking for the end keyword. 
+But after endless methods were introduced, they broke that assumption. So in this example, the Ripper-based parser would incorrectly consume the end keyword of the Foo class, thinking it's the end for the method, and cause the Baz class to be considered nested inside Foo.
 
 With Prism, the parser already knows how to handle method and class boundaries. So RDoc can easily know there's just one method inside the Foo class. And Baz is outside of its scope.</div>
 </section>
@@ -745,7 +745,7 @@ And I integrated this into Ruby itself — so now you can preview core documenta
   <div class="speaker-notes">There are three areas I want to work on next.
 First is migrating to Markdown — so developers can write documentation in the language they already know.
 Second is annotations — I want to explore a way for documentation to express design relationships
-Third is LLM-ready docs — finding a way to optimize documentation consumption for AI.
+Third is LLM-ready documentation — finding a way to optimize documentation consumption for AI.
 I'll walk through each one.</div>
 </section>
 
@@ -791,7 +791,7 @@ I have wanted to make this change for a while. But now with AI agents, it finall
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">Design intent in the docs — useful for both humans and AI.</p>
 </div><div class="slide-num">31</div>
   <div class="speaker-notes">I also want to explore using annotations to encode more code design information into documentation.
-Concepts like abstract methods, overrides, and interfaces are commonly seen in typing languages. But they're useful for documentation too even if you don't use a typechecker.
+Concepts like abstract methods, overrides, and interfaces are commonly seen in typing languages. But they're useful for documentation too even if you don't type check your code.
 The relationships these annotations describe will be helpful for both humans and AI to understand the design</div>
 </section>
 
@@ -937,7 +937,7 @@ on AI-ready documentation. For details, see the
       <div style="margin-top:0.6em;font-family:var(--font-mono);font-size:var(--body-size)"><span style="color:var(--accent);font-weight:700">152</span> tokens <span style="color:var(--text-dim)">(1.52×)</span></div>
     </div>
   </div>
-  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">Same content — and this is before any navigation, styles, or scripts.</p>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center"><br></p>
 </div><div class="slide-num">34</div>
   <div class="speaker-notes">Well it's all about tokens. Here's the same small doc in two formats: Markdown and HTML.
 If you run it against a tokenizer AI uses, the Markdown version takes about 100 tokens. The HTML version takes about 152. The results may vary based on specific tokenizers, but the gap should be similar.</div>
@@ -951,17 +951,17 @@ If you run it against a tokenizer AI uses, the Markdown version takes about 100 
   <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:1fr auto;gap:clamp(0.5rem,1.2vw,1rem) clamp(1.5rem,4vw,3rem);align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--small-size);max-width:min(85vw,700px);margin-left:auto;margin-right:auto">
     <div style="color:var(--text-dim);font-weight:700">Format</div>
     <div style="color:var(--text-dim);font-weight:700;text-align:right">Tokens</div>
-    <div>Plain text</div><div style="text-align:right">58k</div>
+    <div>Plain text</div><div style="text-align:right">51k</div>
     <div>HTML → Markdown</div><div style="text-align:right">69k</div>
     <div>Raw HTML</div><div style="text-align:right;color:var(--accent);font-weight:700">183k</div>
   </div>
-  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">Markdown costs barely more than plain text — HTML triples it with nav, styles, and scripts.</p>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">Markdown costs barely more than plain text</p>
 </div><div class="slide-num">35</div>
   <div class="speaker-notes">Now let's see what that looks like in practice. docs.ruby-lang.org is how most people read Ruby's documentation nowadays.
 And let's say you want the agent to read Array's documentation.
-The pure content — plain text — is 58,000 tokens. Converting the same page to Markdown, it's about 69,000.
-But fetching the raw HTML, which includes the sidebar, footer, layout and a bunch of noise, costs more than 180,000 tokens.
-So compared to plain text as a baseline, Markdown is far more economical than HTML.</div>
+The pure content — plain text — is about 51,000 tokens. Converting the same page to Markdown, it's about 69,000.
+But fetching the raw HTML costs more than 180,000 tokens.
+So compared to plain text as a baseline, content-focused Markdown is far more economical than HTML.</div>
 </section>
 
 <!-- 36: SHIP MARKDOWN ALONGSIDE HTML -->
@@ -1019,7 +1019,7 @@ It's a simple idea, and rather easy to implement. The real question is whether t
 </div><div class="slide-num">38</div>
   <div class="speaker-notes">So who actually ships llms.txt today?
 The short answer: most communities haven't acted on it. Rust has rejected a similar proposal. And Python, Node, MDN also haven't shipped anything for this.
-The one exception is the Elixir community. ExDoc, its documentation tool, made .md and llms.txt support a default in version 0.40 earlier this year, so every project that rebuilds its docs gets one automatically, including its official documentation.</div>
+The one exception is the Elixir community. ExDoc, its documentation tool, made .md and llms.txt support a default in version 0.40 earlier this year, so every project that rebuilds its docs gets this support automatically, including its official documentation.</div>
 </section>
 
 <!-- 39: AGENT-SIDE CONVERSION -->
@@ -1039,10 +1039,11 @@ The one exception is the Elixir community. ExDoc, its documentation tool, made .
 </div><div class="slide-num">39</div>
   <div class="speaker-notes">But interestingly, agents are trying to solve the same problem the other way.
 If we use Claude Code as an example, when you ask it to read an html page, it'd use a tool called WebFetch, which automatically converts html results into markdown.
-So for Claude Code, this doesn't help much.
+And the main session only reads the summary of that markdown.
+So for Claude Code, this approach doesn't help much.
 
-Other agents have different approaches. Some of them remove html tags only, and some still read the entire page.
-So it's also possible that the problem will be solved purely on the client side.</div>
+Other agents have different approaches, however. Some of them remove html tags only, and some still read the entire page.
+So it's also possible that the problem will be solved purely on the client side in the future.</div>
 </section>
 
 <!-- 40: WHERE RDOC LANDS -->
@@ -1056,10 +1057,10 @@ So it's also possible that the problem will be solved purely on the client side.
   </ul>
 </div><div class="slide-num">40</div>
   <div class="speaker-notes">So what does all of this mean for RDoc?
-The honest answer is that we'll watch the industry closely for now.
-Most communities still haven't adopted .md pages or llms.txt, so the effectiveness of that approach is still not clear. And as we just saw, we may not need to solve the problem from RDoc but on the client side.
+The honest answer is that we'll watch the industry closely for now, as the effectiveness of any optimization approach in this field is still not clear. 
+And as we just saw, we may not need to solve the problem from RDoc but on the client side.
 
-So our plan is to monitor the field and prototype a Markdown output plus llms.txt solution for RDoc as future work after 8.0 is shipped. Worst case, we prototype and throw it away. Best case, we're ready the day it matters.</div>
+So our plan is to monitor the field and prototype a Markdown output plus llms.txt solution for RDoc after 8.0 is shipped. In the worst case, we prototype and throw it away. Best case, we'll be ready if it proves helpful</div>
 </section>
 
 <!-- 38: SUMMARY -->
@@ -1072,9 +1073,9 @@ So our plan is to monitor the field and prototype a Markdown output plus llms.tx
   </ul>
 </div><div class="slide-num">41</div>
   <div class="speaker-notes">OK, that's all I have for Ruby's documentation. Let me wrap up with three things.
-First, what makes documentation useful to AI is exactly what makes it useful to developers. That means accurate docs, simpler content formats, type signatures and annotations for clear intent, and good tooling for fast feedback.
+First, what makes documentation useful to AI overlaps with what makes it useful to developers. That means accurate docs, markdown support, type signatures and annotations, and good tooling for fast feedback.
 Second, RDoc 8.0 gets us a lot closer to that goal. It ships with the new Prism parser, Markdown improvements, RBS type signatures, and server mode.
-Third, there's still a lot ahead. We're working on full Markdown migration, design annotations, and prototyping a Markdown plus llms.txt solution for LLM-ready docs.</div>
+Third, there's still a lot ahead. We'll work on full Markdown migration, design annotations, and prototyping a Markdown plus llms.txt solution for LLM-ready documentation.</div>
 </section>
 
 <!-- 39: THANK YOU -->
