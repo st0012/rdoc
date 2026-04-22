@@ -26,6 +26,7 @@
   --font-body: 'Nunito', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --title-size: clamp(3.2rem, 7vw, 7rem);
+  --hero-size: clamp(2.5rem, 5.5vw, 5rem);
   --h2-size: clamp(2.2rem, 5vw, 3.8rem);
   --h3-size: clamp(1.6rem, 3.5vw, 2.6rem);
   --body-size: clamp(1.1rem, 2.2vw, 1.8rem);
@@ -172,9 +173,9 @@ My colleague Alexandre Terrasa is giving a talk about it tomorrow — please che
 
 <!-- 04: BOLD CLAIM -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
-  <h2 class="reveal" style="font-size:var(--title-size)">The future of Ruby's documentation is about <span class="accent">AI</span></h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">The future of Ruby documentation has to work for <span class="accent">AI</span> too</h2>
 </div><div class="slide-num">04</div>
-  <div class="speaker-notes">OK, let me get back to my talk. I think the future of Ruby's documentation is about AI. And most of you will likely agree as well.</div>
+  <div class="speaker-notes">OK, let me get back to my talk. I think the future of Ruby documentation has to work for AI too. And most of you will likely agree as well.</div>
 </section>
 
 <!-- 05: RDOC IS THE BACKBONE -->
@@ -222,7 +223,7 @@ So if we want to make Ruby's documentation work better for AI, RDoc is where the
 
 <!-- 06: BUT WE'RE NOT THERE YET -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
-  <h2 class="reveal" style="font-size:var(--title-size)">But RDoc isn't ready for that yet.</h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">But RDoc isn't ready for that yet.</h2>
 </div><div class="slide-num">06</div>
   <div class="speaker-notes">But honestly, RDoc isn't ready for that future yet</div>
 </section>
@@ -257,7 +258,7 @@ It can also use incrementally generated docs to verify changes quickly, instead 
 
 <!-- 07: THE TWIST -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
-  <h2 class="reveal" style="font-size:var(--title-size)">Most of these help <span class="accent">human</span> developers too.</h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">Most of these help <span class="accent">human</span> developers too.</h2>
   <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)"><br></p>
 </div><div class="slide-num">09</div>
   <div class="speaker-notes">Here's the thing. Most of what I just described — accurate docs, type signatures, fast feedback — these aren't just AI requirements.
@@ -284,7 +285,7 @@ And finally, the Darkfish theme was dated, without even mobile support — givin
 
 <!-- 10: TRANSITION -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
-  <h2 class="reveal" style="font-size:clamp(2.5rem,5.5vw,5rem)">So here's what we did.</h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">So here's what we did.</h2>
   <ul class="reveal" style="margin-top:var(--content-gap);text-align:left;display:inline-flex;flex-direction:column;gap:clamp(0.6rem,1.5vw,1.2rem);font-size:clamp(1.4rem,3vw,2.2rem)">
     <li style="font-size:clamp(1.4rem,3vw,2.2rem)">New theme</li>
     <li style="font-size:clamp(1.4rem,3vw,2.2rem)">New Prism-based parser</li>
@@ -725,14 +726,14 @@ And I integrated this into Ruby itself — so now you can preview core documenta
 
 <!-- 27: SECTION 3 TRANSITION -->
 <section class="slide visible" data-section="What's Still Ahead" data-budget="8-9 min"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
-  <h2 class="reveal" style="font-size:var(--title-size)">So how does RDoc fit into the <span class="accent">AI</span> future?</h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">So what's still ahead for <span class="accent">RDoc</span>?</h2>
 </div><div class="slide-num">28</div>
-  <div class="speaker-notes">That's the foundation we've rebuilt. Now let's come back to the question from the beginning — how does RDoc fit into the AI future?</div>
+  <div class="speaker-notes">That's the foundation we've rebuilt. Now let's talk about what's still ahead — there are three areas.</div>
 </section>
 
 <!-- 27b: SECTION 3 OUTLINE -->
 <section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
-  <h2 class="reveal">What's still ahead</h2>
+  <h2 class="reveal">Three areas ahead</h2>
   <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:auto 1fr;gap:clamp(0.9rem,2vw,1.5rem) clamp(1.5rem,4vw,3rem);align-items:baseline;max-width:min(85vw,900px);margin-left:auto;margin-right:auto;text-align:left">
     <div style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap">Migrate to Markdown</div>
     <div style="font-size:var(--body-size);color:var(--text)">Let contributors write in the language they already know</div>
@@ -837,7 +838,7 @@ Combining annotations with type signatures will allow us to create more expressi
 
 <!-- HIDDEN: INSTALL QUESTION -->
 <section class="slide visible" style="display:none"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
-  <h2 class="reveal" style="font-size:var(--title-size)">But how do users install it?</h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">But how do users install it?</h2>
 </div><div class="slide-num">35</div>
   <div class="speaker-notes">So that's what the skill could teach. Writing the skill is actually the easier part.
 The harder question is how users get it onto their system. An agent doesn't pull skills out of thin air. Someone has to install them, keep them up to date, and maybe pin them to specific versions.
@@ -891,7 +892,7 @@ This way, skills are maintained and evolved alongside the tools they describe. A
 <!-- 33: LLM-READY DOCS SECTION OPENER -->
 <section class="slide visible"><div class="slide-content" style="text-align:center;align-items:center">
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
-  <h2 class="reveal" style="font-size:var(--title-size)">Why does <span class="accent">AI</span> need something special?</h2>
+  <h2 class="reveal" style="font-size:var(--hero-size)">Why does <span class="accent">AI</span> need something special?</h2>
 </div><div class="slide-num">33</div>
   <div class="speaker-notes">And finally, let's talk about making the documentation ready for AI consumption.
 But why does AI need something special?</div>
@@ -1071,13 +1072,13 @@ If it pans out, we scale it. If it doesn't, we learned something.</div>
   <ul class="reveal">
     <li>What makes docs useful to AI is what makes them useful to developers</li>
     <li>RDoc 8.0 ships the fixes — new parser, Markdown improvements, RBS, server mode</li>
-    <li>Still ahead — Markdown migration, design annotations, and a <code>.md</code> + <code>llms.txt</code> prototype</li>
+    <li>Still ahead — Markdown migration, design annotations, and <code>.md</code> + <code>llms.txt</code> support</li>
   </ul>
 </div><div class="slide-num">41</div>
   <div class="speaker-notes">OK, that's all I have for Ruby's documentation. Let me wrap up with three things.
 First, what makes documentation useful to AI overlaps with what makes it useful to developers. That means accurate docs, markdown support, type signatures and annotations, and good tooling for fast feedback.
 Second, RDoc 8.0 gets us a lot closer to that goal. It ships with the new Prism parser, Markdown improvements, RBS type signatures, and server mode.
-Third, there's still a lot ahead. We'll work on full Markdown migration, design annotations, and prototyping a Markdown plus llms.txt solution for LLM-ready documentation.</div>
+Third, there's still a lot ahead. We'll work on full Markdown migration, design annotations, and shipping `.md` output plus `llms.txt` support — a step toward Ruby tools that are actively AI-friendly.</div>
 </section>
 
 <!-- 39: THANK YOU -->
