@@ -1138,18 +1138,21 @@ class SlidePresentation {
     if (index < 0 || index >= this.slides.length) return;
     this.slides[index].scrollIntoView({ behavior: 'smooth' });
   }
+  advance() {
+    const video = this.slides[this.currentSlide]?.querySelector('video');
+    if (video && video.paused && video.currentTime === 0) {
+      video.play();
+    } else {
+      this.goToSlide(this.currentSlide + 1);
+    }
+  }
   setupKeyboardNav() {
     document.addEventListener('keydown', (e) => {
       if (isTyping(e)) return;
       switch(e.key) {
         case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': {
           e.preventDefault();
-          const video = this.slides[this.currentSlide]?.querySelector('video');
-          if (video && video.paused && video.currentTime === 0) {
-            video.play();
-          } else {
-            this.goToSlide(this.currentSlide + 1);
-          }
+          this.advance();
           break;
         }
         case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
@@ -1448,6 +1451,10 @@ class PresenterMode {
         this.navigatingFromRemote = true;
         this.sp.goToSlide(e.data.index);
         setTimeout(() => { this.navigatingFromRemote = false; }, 600);
+      } else if (e.data.type === 'advance') {
+        this.navigatingFromRemote = true;
+        this.sp.advance();
+        setTimeout(() => { this.navigatingFromRemote = false; }, 600);
       }
     };
   }
@@ -1579,13 +1586,12 @@ document.getElementById('prevBtn').addEventListener('click', () => {
   channel.postMessage({ type: 'navigate', index: Math.max(0, cur - 1) });
 });
 document.getElementById('nextBtn').addEventListener('click', () => {
-  const cur = parseInt(document.getElementById('currentNum').textContent) - 1;
-  channel.postMessage({ type: 'navigate', index: cur + 1 });
+  channel.postMessage({ type: 'advance' });
 });
 document.addEventListener('keydown', (e) => {
   const cur = parseInt(document.getElementById('currentNum').textContent) - 1;
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') channel.postMessage({ type: 'navigate', index: Math.max(0, cur - 1) });
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') channel.postMessage({ type: 'navigate', index: cur + 1 });
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') channel.postMessage({ type: 'advance' });
 });
 <\/script></body></html>`;
   }
