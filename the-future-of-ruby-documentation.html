@@ -1441,6 +1441,7 @@ class PresenterMode {
       if (isTyping(e)) return;
       if (e.key === 's' || e.key === 'S') { if (!e.ctrlKey && !e.metaKey) this.openPresenterWindow(); }
       if (e.key === 'b' || e.key === 'B') this.toggleBlackout();
+      if (e.key === 'f' || e.key === 'F') { if (!e.ctrlKey && !e.metaKey) this.toggleFullscreen(); }
     });
   }
 
@@ -1482,22 +1483,37 @@ class PresenterMode {
     this.broadcastState();
   }
 
+  toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  }
+
   openPresenterWindow() {
     if (this.presenterWindow && !this.presenterWindow.closed) {
       this.presenterWindow.focus();
       return;
     }
-    const html = this.buildPresenterHTML();
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    this.presenterWindow = window.open(url, 'presenter', 'width=900,height=1100');
-    // Start timer on first open
-    if (!this.startTime) {
-      this.startTime = Date.now();
-      this.timerInterval = setInterval(() => this.broadcastState(), 1000);
+    const doOpen = () => {
+      const html = this.buildPresenterHTML();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      this.presenterWindow = window.open(url, 'presenter', 'popup,width=900,height=1100,left=100,top=100,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes,noopener=no');
+      if (!this.startTime) {
+        this.startTime = Date.now();
+        this.timerInterval = setInterval(() => this.broadcastState(), 1000);
+      }
+      setTimeout(() => this.broadcastState(), 500);
+    };
+    // Chrome forces window.open into a new tab when the opener is fullscreen.
+    // Exit fullscreen first so the popup features take effect.
+    if (document.fullscreenElement) {
+      document.exitFullscreen().then(doOpen).catch(doOpen);
+    } else {
+      doOpen();
     }
-    // Initial state push after window loads
-    setTimeout(() => this.broadcastState(), 500);
   }
 
   buildPresenterHTML() {
