@@ -1490,7 +1490,7 @@ class PresenterMode {
     const html = this.buildPresenterHTML();
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
-    this.presenterWindow = window.open(url, 'presenter', 'width=900,height=700');
+    this.presenterWindow = window.open(url, 'presenter', 'width=900,height=1100');
     // Start timer on first open
     if (!this.startTime) {
       this.startTime = Date.now();
@@ -1508,7 +1508,7 @@ class PresenterMode {
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: #1a1a1a; color: #e0e0e0; font-family: 'Nunito', sans-serif; height: 100vh; display: grid;
   grid-template-rows: 40% 1fr auto; grid-template-columns: 1fr; gap: 0; overflow: hidden; }
-#notes { padding: 24px 32px; overflow-y: auto; font-size: 19px; line-height: 1.6; border-bottom: 1px solid #333; }
+#notes { padding: 24px 32px; overflow-y: auto; font-size: 19px; line-height: 1.6; border-bottom: 1px solid #333; white-space: pre-line; }
 #notes:empty::after { content: '(no notes for this slide)'; color: #666; font-style: italic; }
 #previews { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 32px; align-items: center; }
 #previews .preview-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 4px; }
