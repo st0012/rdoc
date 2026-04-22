@@ -1051,16 +1051,18 @@ So it's also possible that the problem will be solved purely on the client side 
   <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
   <h2 class="reveal">Going back to RDoc</h2>
   <ul class="reveal">
-    <li>Most communities haven't adopted <code>llms.txt</code> or <code>.md</code> pages yet</li>
-    <li>Agents are trying to solve it from their end too</li>
-    <li>We'll monitor the field and prototype a <code>.md</code> + <code>llms.txt</code> solution to see the trade-offs</li>
+    <li>Ship <code>.md</code> output + <code>llms.txt</code> in RDoc — disabled by default</li>
+    <li>Enable it on <code>docs.ruby-lang.org</code> — test it at scale</li>
+    <li>Make Ruby tools more AI-friendly</li>
   </ul>
 </div><div class="slide-num">40</div>
-  <div class="speaker-notes">So what does all of this mean for RDoc?
-The honest answer is that we'll watch the industry closely for now, as the effectiveness of any optimization approach in this field is still not clear. 
-And as we just saw, we may not need to solve the problem from RDoc but on the client side.
+  <div class="speaker-notes">It's still not clear which approach will come out on top. But I don't think simply waiting is a good strategy either.
 
-So our plan is to monitor the field and prototype a Markdown output plus llms.txt solution for RDoc after 8.0 is shipped. In the worst case, we prototype and throw it away. Best case, we'll be ready if it proves helpful</div>
+So let me propose something in the middle: RDoc will ship `.md` output and `llms.txt` support, which will be disabled by default. But I'll enable it on docs.ruby-lang.org so if it has the intended effect, users can benefit from them immediately.
+
+And more broadly, I think Ruby tools should lean into being AI-friendly wherever it makes sense — with careful assessment and good fallbacks. This is one step in that direction.
+
+If it pans out, we scale it. If it doesn't, we learned something.</div>
 </section>
 
 <!-- 38: SUMMARY -->
