@@ -9,9 +9,12 @@ if (!htmlPath) { console.error('Usage: node export-slides.mjs <path-to-html> [ou
 const outputPath = process.argv[3] || htmlPath.replace(/\.html$/, '.pdf');
 const absPath = resolve(htmlPath);
 
+const SLIDE_WIDTH = 1920;
+const SLIDE_HEIGHT = 1080;
+
 const browser = await chromium.launch();
 const context = await browser.newContext({
-  viewport: { width: 960, height: 540 },
+  viewport: { width: SLIDE_WIDTH, height: SLIDE_HEIGHT },
   deviceScaleFactor: 2,
 });
 const page = await context.newPage();
@@ -26,14 +29,16 @@ await page.evaluate(() => {
   });
 });
 
-const slideCount = await page.evaluate(() => document.querySelectorAll('.slide').length);
+const slideCount = await page.evaluate(() =>
+  Array.from(document.querySelectorAll('.slide')).filter(s => getComputedStyle(s).display !== 'none').length
+);
 console.log(`Found ${slideCount} slides`);
 
 // Screenshot each slide
 const screenshots = [];
 for (let i = 0; i < slideCount; i++) {
   await page.evaluate((idx) => {
-    const slides = document.querySelectorAll('.slide');
+    const slides = Array.from(document.querySelectorAll('.slide')).filter(s => getComputedStyle(s).display !== 'none');
     slides[idx].scrollIntoView({ behavior: 'instant' });
     slides[idx].classList.add('visible');
   }, i);
@@ -49,10 +54,8 @@ await browser.close();
 const pdfDoc = await PDFDocument.create();
 for (const png of screenshots) {
   const img = await pdfDoc.embedPng(png);
-  const pageWidth = 960;
-  const pageHeight = 540;
-  const pdfPage = pdfDoc.addPage([pageWidth, pageHeight]);
-  pdfPage.drawImage(img, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+  const pdfPage = pdfDoc.addPage([SLIDE_WIDTH, SLIDE_HEIGHT]);
+  pdfPage.drawImage(img, { x: 0, y: 0, width: SLIDE_WIDTH, height: SLIDE_HEIGHT });
 }
 
 const pdfBytes = await pdfDoc.save();
