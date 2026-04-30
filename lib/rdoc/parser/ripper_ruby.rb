@@ -170,6 +170,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
   # for "::") with the name from +constant+.
 
   def create_module_alias(container, constant, rhs_name) # :nodoc:
+    constant.is_alias_for_path = rhs_name
     mod = if rhs_name =~ /^::/ then
             @store.find_class_or_module rhs_name
           else

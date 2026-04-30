@@ -767,7 +767,7 @@ class RDoc::Parser::PrismRuby < RDoc::Parser
 
   # Adds a constant
 
-  def add_constant(constant_name, rhs_name, start_line, end_line)
+  def add_constant(constant_name, rhs_name, start_line, end_line, alias_path: nil)
     comment, directives = consecutive_comment(start_line)
     handle_code_object_directives(@container, directives) if directives
     owner, name = find_or_create_constant_owner_name(constant_name)
@@ -776,19 +776,21 @@ class RDoc::Parser::PrismRuby < RDoc::Parser
     constant = RDoc::Constant.new(name, rhs_name, comment)
     constant.store = @store
     constant.line = start_line
+    constant.is_alias_for_path = alias_path
     record_location(constant)
     handle_modifier_directive(constant, start_line)
     handle_modifier_directive(constant, end_line)
     owner.add_constant(constant)
+    return unless alias_path
     mod =
-      if rhs_name =~ /^::/
-        @store.find_class_or_module(rhs_name)
+      if alias_path.start_with?('::')
+        @store.find_class_or_module(alias_path)
       else
-        full_name = resolve_constant_path(rhs_name)
+        full_name = resolve_constant_path(alias_path)
         @store.find_class_or_module(full_name)
       end
     if mod && constant.document_self
-      a = @container.add_module_alias(mod, rhs_name, constant, @top_level)
+      a = @container.add_module_alias(mod, alias_path, constant, @top_level)
       a.store = @store
       a.line = start_line
       record_location(a)
@@ -1056,11 +1058,13 @@ class RDoc::Parser::PrismRuby < RDoc::Parser
       path = constant_path_string(node.target)
       return unless path
 
+      alias_path = constant_path_string(node.value)
       @scanner.add_constant(
         path,
-        constant_path_string(node.value) || node.value.slice,
+        alias_path || node.value.slice,
         node.location.start_line,
-        node.location.end_line
+        node.location.end_line,
+        alias_path: alias_path
       )
       @scanner.skip_comments_until(node.location.end_line)
       # Do not traverse rhs not to document `A::B = Struct.new{def undocumentable_method; end}`
@@ -1068,11 +1072,13 @@ class RDoc::Parser::PrismRuby < RDoc::Parser
 
     def visit_constant_write_node(node)
       @scanner.process_comments_until(node.location.start_line - 1)
+      alias_path = constant_path_string(node.value)
       @scanner.add_constant(
         node.name.to_s,
-        constant_path_string(node.value) || node.value.slice,
+        alias_path || node.value.slice,
         node.location.start_line,
-        node.location.end_line
+        node.location.end_line,
+        alias_path: alias_path
       )
       @scanner.skip_comments_until(node.location.end_line)
       # Do not traverse rhs not to document `A = Struct.new{def undocumentable_method; end}`

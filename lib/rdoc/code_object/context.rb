@@ -544,6 +544,7 @@ class RDoc::Context < RDoc::CodeObject
     new_to = from.dup
     new_to.name = to.name
     new_to.full_name = nil
+    new_to.is_alias_for = from
 
     if new_to.module? then
       @store.modules_hash[to_full_name] = new_to

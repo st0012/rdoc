@@ -27,6 +27,14 @@ class RDoc::Constant < RDoc::CodeObject
   attr_accessor :visibility
 
   ##
+  # The constant path on the RHS when the RHS is a bare constant reference
+  # (+Foo = Bar+ or +Foo = Bar::Baz+). Captured at parse time so
+  # #resolved_alias_target doesn't have to re-derive it from the textual
+  # #value. nil for other RHS shapes.
+
+  attr_accessor :is_alias_for_path
+
+  ##
   # Creates a new constant with +name+, +value+ and +comment+
 
   def initialize(name, value, comment)
@@ -35,8 +43,9 @@ class RDoc::Constant < RDoc::CodeObject
     @name  = name
     @value = value
 
-    @is_alias_for = nil
-    @visibility   = :public
+    @is_alias_for      = nil
+    @is_alias_for_path = nil
+    @visibility        = :public
 
     self.comment = comment
   end
@@ -83,7 +92,10 @@ class RDoc::Constant < RDoc::CodeObject
   end
 
   ##
-  # The module or class this constant is an alias for
+  # The module or class this constant is an alias for, when one was recorded
+  # explicitly (by RDoc::Context#add_module_alias, RDoc::ClassModule#update_aliases,
+  # or ri marshal load). Pure accessor; see #resolved_alias_target for the
+  # opportunistic lookup path.
 
   def is_alias_for
     case @is_alias_for
@@ -92,16 +104,22 @@ class RDoc::Constant < RDoc::CodeObject
       @is_alias_for = found if found
       @is_alias_for
     else
-      @is_alias_for ||= find_alias_for
+      @is_alias_for
     end
   end
 
-  # Find alias constant for a value.
-  # This is used when the constant is parsed before the class or module defined in another file.
-  # Note that module nesting information is lost, so constant lookup is inaccurate.
+  ##
+  # Returns the class/module this constant *would* alias if #is_alias_for_path
+  # was set by the parser and that path resolves to a known class/module, or
+  # nil. Used to support `Const = RHS` parsed before `class RHS;end` is defined
+  # in another file. Pure lookup; does not mutate state. Honors :nodoc:
+  # (returns nil if document_self is false). Note that module nesting
+  # information is lost, so constant lookup is inaccurate.
 
-  def find_alias_for
-    parent.find_module_named(value) if value&.match?(/\A(::)?([A-Z][A-Za-z0-9_]*)(::[A-Z][A-Za-z0-9_]*)*\z/)
+  def resolved_alias_target
+    return nil unless document_self
+    return nil unless @is_alias_for_path
+    parent.find_module_named(@is_alias_for_path)
   end
 
   def inspect # :nodoc:

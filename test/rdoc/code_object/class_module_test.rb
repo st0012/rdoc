@@ -1459,6 +1459,56 @@ class RDocClassModuleTest < XrefTestCase
     assert_equal 'Klass', store.classes_hash['Klass'].full_name
   end
 
+  def test_update_aliases_does_not_overwrite_existing_class_with_same_name
+    store = RDoc::Store.new(RDoc::Options.new)
+    top_level = store.add_file 'file.rb'
+
+    object = top_level.add_class RDoc::NormalClass, 'Object'
+    real_foo = top_level.add_class RDoc::NormalClass, 'Foo'
+    real_foo.add_method RDoc::AnyMethod.new(nil, 'real_method')
+
+    other = top_level.add_class RDoc::NormalClass, 'Other'
+    other.add_method RDoc::AnyMethod.new(nil, 'other_method')
+
+    const = RDoc::Constant.new 'Foo', 'Other', ''
+    const.is_alias_for_path = 'Other'
+    const.record_location top_level
+    object.add_constant const
+
+    object.update_aliases
+
+    assert_same real_foo, store.classes_hash['Foo']
+    assert_nil store.classes_hash['Foo'].is_alias_for
+    assert_equal ['real_method'], store.classes_hash['Foo'].method_list.map(&:name)
+    assert_same other, store.classes_hash['Other']
+    assert_nil other.is_alias_for
+    assert_equal ['other_method'], other.method_list.map(&:name)
+    assert_empty other.aliases
+  end
+
+  def test_update_aliases_skips_nodoc_constant
+    store = RDoc::Store.new(RDoc::Options.new)
+    top_level = store.add_file 'file.rb'
+
+    object = top_level.add_class RDoc::NormalClass, 'Object'
+    target = top_level.add_class RDoc::NormalClass, 'Target'
+    target.add_method RDoc::AnyMethod.new(nil, 'target_method')
+
+    const = RDoc::Constant.new 'NodocAlias', 'Target', ''
+    const.is_alias_for_path = 'Target'
+    const.record_location top_level
+    const.document_self = nil
+    object.add_constant const
+
+    object.update_aliases
+
+    assert_nil store.classes_hash['NodocAlias']
+    assert_nil store.modules_hash['NodocAlias']
+    assert_same target, store.classes_hash['Target']
+    assert_equal ['target_method'], target.method_list.map(&:name)
+    assert_empty target.aliases
+  end
+
   def test_update_includes
     a = RDoc::Include.new 'M1', nil
     b = RDoc::Include.new 'M2', nil

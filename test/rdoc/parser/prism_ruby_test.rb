@@ -1689,9 +1689,30 @@ module RDocParserPrismTestCases
       class Baz; end
     RUBY
     klass = @top_level.classes.first
-    assert_equal 'Foo::Bar', klass.find_constant_named('A').is_alias_for.full_name
-    assert_equal 'Foo::Bar', klass.find_constant_named('B').is_alias_for.full_name
-    assert_equal 'Baz', klass.find_constant_named('C').is_alias_for.full_name
+    assert_equal 'Foo::Bar', klass.find_constant_named('A').resolved_alias_target.full_name
+    assert_equal 'Foo::Bar', klass.find_constant_named('B').resolved_alias_target.full_name
+    assert_equal 'Baz', klass.find_constant_named('C').resolved_alias_target.full_name
+  end
+
+  def test_forward_reference_constant_alias_persists_is_alias_for_after_complete
+    util_parser <<~RUBY
+      # Parsed first
+      class Foo
+        A = Bar
+      end
+
+      # Parsed later
+      class Foo
+        class Bar; end
+      end
+    RUBY
+    klass = @top_level.classes.first
+    a_const = klass.find_constant_named('A')
+    @store.complete(:public)
+    refute_nil a_const.is_alias_for,
+      'Store#complete should persist the forward-ref alias on the source constant ' \
+      '(otherwise Stats#report_constants/Constant#marshal_dump miss it)'
+    assert_equal 'Foo::Bar', a_const.is_alias_for.full_name
   end
 
   def test_repeated_constant_alias
@@ -1713,8 +1734,130 @@ module RDocParserPrismTestCases
     RUBY
     klass = @top_level.classes.first
     assert_equal 'Bar', klass.find_constant_named('A').value
-    assert_nil klass.find_constant_named('A').is_alias_for
-    assert_equal 'Baz', klass.find_constant_named('B').is_alias_for.full_name
+    assert_nil klass.find_constant_named('A').resolved_alias_target
+    assert_equal 'Baz', klass.find_constant_named('B').resolved_alias_target.full_name
+  end
+
+  def test_nodoc_constant_assignment_does_not_become_alias
+    util_parser <<~RUBY
+      class Outer
+        class Bar
+          def bar_method; end
+        end
+        Foo = Bar # :nodoc:
+      end
+    RUBY
+    @store.complete(:public)
+    outer = @store.classes_hash['Outer']
+    refute_nil outer
+    bar = outer.classes_hash['Bar']
+    refute_nil bar
+    assert_includes bar.method_list.map(&:name), 'bar_method'
+    assert_empty bar.aliases
+    assert_nil outer.classes_hash['Foo']
+    assert_nil outer.modules_hash['Foo']
+    foo_const = outer.constants.find { |c| c.name == 'Foo' }
+    refute_nil foo_const
+    assert_nil foo_const.is_alias_for
+    assert_nil foo_const.resolved_alias_target
+  end
+
+  def test_constant_alias_does_not_overwrite_real_class_with_same_name
+    util_parser <<~RUBY
+      class Foo
+        def real_method; end
+      end
+      class Bar
+        def other_method; end
+      end
+      Foo = Bar
+    RUBY
+    @store.complete(:public)
+    foo = @store.classes_hash['Foo']
+    refute_nil foo
+    assert_nil foo.is_alias_for
+    assert_includes foo.method_list.map(&:name), 'real_method'
+    refute_includes foo.method_list.map(&:name), 'other_method'
+    bar = @store.classes_hash['Bar']
+    refute_nil bar
+    assert_nil bar.is_alias_for
+    assert_includes bar.method_list.map(&:name), 'other_method'
+    assert_empty bar.aliases
+  end
+
+  def test_nodoc_constant_assignment_preserves_real_class_with_same_name
+    util_parser <<~RUBY
+      class Foo
+        def real_method; end
+      end
+      module Bar
+        class Foo
+          def shim_method; end
+        end
+      end
+      Foo = Bar::Foo # :nodoc:
+    RUBY
+    @store.complete(:public)
+    foo = @store.classes_hash['Foo']
+    refute_nil foo
+    assert_nil foo.is_alias_for
+    assert_includes foo.method_list.map(&:name), 'real_method'
+    refute_includes foo.method_list.map(&:name), 'shim_method'
+    bar_foo = @store.classes_hash['Bar::Foo']
+    refute_nil bar_foo
+    assert_nil bar_foo.is_alias_for
+    assert_includes bar_foo.method_list.map(&:name), 'shim_method'
+    assert_empty bar_foo.aliases
+  end
+
+  def test_constant_alias_then_class_reopen_keeps_added_methods
+    util_parser <<~RUBY
+      class Bar
+        def bar_method; end
+      end
+      Foo = Bar
+      class Foo
+        def real_method; end
+      end
+    RUBY
+    @store.complete(:public)
+    foo = @store.classes_hash['Foo']
+    refute_nil foo
+    refute_nil foo.is_alias_for
+    assert_equal 'Bar', foo.is_alias_for.full_name
+    assert_includes foo.method_list.map(&:name), 'bar_method'
+    assert_includes foo.method_list.map(&:name), 'real_method'
+    bar = @store.classes_hash['Bar']
+    refute_nil bar
+    assert_nil bar.is_alias_for
+    assert_includes bar.method_list.map(&:name), 'bar_method'
+  end
+
+  def test_stopdoc_constant_assignment_preserves_real_class_with_same_name
+    util_parser <<~RUBY
+      class Foo
+        def real_method; end
+      end
+      module Bar
+        class Foo
+          def shim_method; end
+        end
+      end
+      # :stopdoc:
+      Foo = Bar::Foo
+      # :startdoc:
+    RUBY
+    @store.complete(:public)
+    foo = @store.classes_hash['Foo']
+    refute_nil foo
+    assert_nil foo.is_alias_for
+    assert_includes foo.method_list.map(&:name), 'real_method'
+    refute_includes foo.method_list.map(&:name), 'shim_method'
+    bar_foo = @store.classes_hash['Bar::Foo']
+    refute_nil bar_foo
+    assert_nil bar_foo.is_alias_for
+    assert_includes bar_foo.method_list.map(&:name), 'shim_method'
+    assert_empty bar_foo.aliases
   end
 
   def test_constant_with_singleton_class
