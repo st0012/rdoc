@@ -234,10 +234,24 @@ exe/
 
 ## Architecture Notes
 
-### Pluggable System
+### Parsers and Generators
 
-- **Parsers:** Ruby, C, Markdown, RD, Prism-based Ruby (experimental)
+- **Parsers:** Prism-based Ruby (default, `RDoc::Parser::PrismRuby`), legacy ripper-based Ruby (`RDoc::Parser::RipperRuby`, opt-in via `RDOC_USE_RIPPER_PARSER=1`), C, Markdown, RD
 - **Generators:** HTML/Aliki (default), HTML/Darkfish (deprecated), RI, POT (gettext), JSON, Markup
+
+Both Ruby parsers must produce equivalent code-object trees, so parser tests live in the `RDocParserPrismTestCases` module (`test/rdoc/parser/prism_ruby_test.rb`) and are included by both `RDocParserPrismRubyTest` and `RDocParserRipperRubyWithPrismRubyTestCasesTest`. The ripper variant is gated on `RDOC_USE_RIPPER_PARSER`, so `bundle exec rake` locally only runs prism; CI exercises ripper in a separate job. Add new parser tests to the mixin, and run `RDOC_USE_RIPPER_PARSER=1 bundle exec rake` locally before declaring a parser change done.
+
+### Code Object Model and Constant Aliases
+
+The code-object tree (`lib/rdoc/code_object/`) is built in two phases. Parse-time work happens in the parsers and `RDoc::Context` (`add_constant`, `add_module_alias`). Finalization happens in `Store#complete`, which calls `ClassModule#update_aliases` on each container — this is where forward-reference aliases (`Foo = Bar` parsed before `class Bar` in another file) get resolved via `Constant#resolved_alias_target`.
+
+If you add an invariant to one of these paths — for example the `Context#add_module_alias` collision guard that refuses to clobber an existing class — mirror it on the other. The two paths are not interchangeable: `add_module_alias` runs against partial store state and does extra bookkeeping (`unmatched_constant_alias`); `update_aliases` runs against the finalized store and writes the alias copies into `classes_hash` / `modules_hash`.
+
+**Known limitation: lexical scope.** `Context#find_enclosing_module_named` walks the syntactic parent chain as a stand-in for Ruby's lexical constant lookup. The prism parser doesn't represent module nesting via the parent chain at all (see the docstring on `Context#find_enclosing_module_named`), so alias resolution in deeply nested or re-opened classes can pick the wrong target. Fixing this properly requires capturing lexical scope at parse time — a feature change rather than an incremental fix.
+
+### Marshal / ri Data Compatibility
+
+`RDoc::Constant`, `RDoc::ClassModule`, and other code objects implement `marshal_dump` / `marshal_load` to persist ri data on disk, gated by a per-class `MARSHAL_VERSION` constant. The `ri` CLI (`lib/rdoc/ri/driver.rb`) and the `ri --server` servlet (`lib/rdoc/ri/servlet.rb`) read this format. Any change that alters the dumped array — adding/removing slots, reinterpreting an existing slot's meaning — needs `MARSHAL_VERSION` bumped and the loader taught to handle older payloads, otherwise locally-cached `.ri` data from an earlier rdoc version stops loading after an upgrade.
 
 ### Live Preview Server (`RDoc::Server`)
 
