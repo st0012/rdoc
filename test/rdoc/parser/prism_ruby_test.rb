@@ -1715,6 +1715,24 @@ module RDocParserPrismTestCases
     assert_equal 'Foo::Bar', a_const.is_alias_for.full_name
   end
 
+  def test_constant_alias_with_trailing_comment_resolves_after_complete
+    omit if accept_legacy_bug? # ripper parser is deprecated; gap not worth fixing
+    util_parser <<~RUBY
+      class Foo
+        Trailing = Bar # trailing comment
+      end
+      class Bar; end
+    RUBY
+    @store.complete(:public)
+    foo = @store.classes_hash['Foo']
+    trailing = foo.constants.find { |c| c.name == 'Trailing' }
+    refute_nil trailing
+    refute_nil trailing.is_alias_for,
+      'a constant alias whose RHS is followed by a trailing comment ' \
+      'should still resolve to its target after Store#complete'
+    assert_equal 'Bar', trailing.is_alias_for.full_name
+  end
+
   def test_repeated_constant_alias
     util_parser <<~RUBY
       # Parsed first
