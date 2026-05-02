@@ -303,6 +303,40 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     assert_match %r{\.annotation-tree\b}, css
   end
 
+  def test_end_to_end_aliki_generation_for_annotation_fixtures
+    fixture_dir = File.expand_path('../test_data/annotations', __dir__)
+    Dir.mktmpdir 'rdoc-annot' do |tmp|
+      out_dir = File.join(tmp, 'site')
+      options = RDoc::Options.new
+      options.parse ['--format=aliki', '--output', out_dir, '--quiet', fixture_dir]
+      rdoc = RDoc::RDoc.new
+      orig_stderr = $stderr
+      $stderr = File.open(File::NULL, 'w')
+      begin
+        rdoc.document options
+      ensure
+        $stderr.close
+        $stderr = orig_stderr
+      end
+
+      button_html = File.read File.join(out_dir, 'UI/Button.html')
+      assert_match %r{<div class="annotation-notice override">.*<span class="annotation-title">Override</span>.*UI::Component#render}m,
+                   button_html
+
+      component_html = File.read File.join(out_dir, 'UI/Component.html')
+      assert_match %r{<span class="annotation-title">Abstract class</span>}, component_html
+      assert_match %r{<ol class="annotation-tree"[^>]*>.*Button.*Card}m,
+                   component_html
+      # Common namespace is stripped: the branches show 'Button' / 'Card', not 'UI::Button'.
+      assert_match %r{<li><a[^>]*>Button</a></li>}, component_html
+      assert_no_match %r{<li><a[^>]*>UI::Button</a></li>}, component_html
+
+      orphan_html = File.read File.join(out_dir, 'UI/Orphan.html')
+      assert_match %r{<div class="annotation-notice override unresolved">},
+                   orphan_html
+    end
+  end
+
   def test_class_template_renders_class_level_abstract_panel
     base = @top_level.add_class RDoc::NormalClass, 'Base'
     base.abstract = true
