@@ -11,6 +11,10 @@
 
 class RDoc::Comment
 
+  autoload :Annotation,         "#{__dir__}/comment/annotation"
+  autoload :AnnotationRegistry, "#{__dir__}/comment/annotation_registry"
+  autoload :AnnotationScanner,  "#{__dir__}/comment/annotation_scanner"
+
   include RDoc::Text
 
   ##
@@ -27,6 +31,17 @@ class RDoc::Comment
   # Line where this Comment was written
 
   attr_accessor :line
+
+  ##
+  # The CodeObject this comment is attached to. Set by parsers when they
+  # associate a comment with a method, class, module, include, etc. Used by
+  # AnnotationScanner during #parse to dispatch annotation handlers.
+  #
+  # The owner must be set *before* the comment is first parsed. If parse has
+  # already cached a document (e.g. RDoc::TomDoc#signature parses comments
+  # eagerly), changing the owner does not retroactively re-scan the comment.
+
+  attr_accessor :owner
 
   ##
   # For duck-typing when merging classes at load time
@@ -182,7 +197,9 @@ class RDoc::Comment
   def parse
     return @document if @document
 
-    @document = super @text, @format
+    scanned_text = @owner ? RDoc::Comment::AnnotationScanner.scan(@text, @owner) : @text
+
+    @document = super scanned_text, @format
     @document.file = @location
     @document
   end

@@ -1311,4 +1311,106 @@ class RDocStoreTest < XrefTestCase
     assert_not_include @s.classes_hash, 'GoneClass'
   end
 
+  def setup_annotation_fixture
+    @annot_store = RDoc::Store.new(RDoc::Options.new)
+    tl = @annot_store.add_file 'annotations.rb'
+
+    ui = tl.add_module RDoc::NormalModule, 'UI'
+
+    base = ui.add_class RDoc::NormalClass, 'Component'
+    base.abstract = true
+    base_render = RDoc::AnyMethod.new nil, 'render'
+    base_render.abstract = true
+    base.add_method base_render
+
+    button = ui.add_class RDoc::NormalClass, 'Button', 'UI::Component'
+    btn_render = RDoc::AnyMethod.new nil, 'render'
+    btn_render.override = true
+    button.add_method btn_render
+
+    card = ui.add_class RDoc::NormalClass, 'Card', 'UI::Component'
+    card_render = RDoc::AnyMethod.new nil, 'render'
+    card_render.override = true
+    card.add_method card_render
+
+    orphan = ui.add_class RDoc::NormalClass, 'Orphan'
+    orphan_meth = RDoc::AnyMethod.new nil, 'nonexistent'
+    orphan_meth.override = true
+    orphan.add_method orphan_meth
+
+    [base, button, card, orphan, base_render, btn_render, card_render, orphan_meth]
+  end
+
+  def capture_warnings
+    warnings = []
+    saved = RDoc.method(:warn)
+    RDoc.singleton_class.send(:remove_method, :warn) if RDoc.respond_to?(:warn)
+    RDoc.define_singleton_method(:warn) { |msg| warnings << msg }
+    yield
+    warnings
+  ensure
+    RDoc.singleton_class.send(:remove_method, :warn) if RDoc.respond_to?(:warn)
+    RDoc.define_singleton_method(:warn, saved) if saved
+  end
+
+  def test_resolve_overrides_sets_target_to_ancestor_method
+    _, _, _, _, _, btn_render, _, _ = setup_annotation_fixture
+    capture_warnings { @annot_store.resolve_overrides }
+    assert_equal 'UI::Component#render', btn_render.override_target
+  end
+
+  def test_resolve_overrides_warns_and_leaves_target_nil_when_unresolved
+    *, orphan_meth = setup_annotation_fixture
+
+    warnings = capture_warnings { @annot_store.resolve_overrides }
+
+    assert_nil orphan_meth.override_target
+    assert(warnings.any? { |w| w.include?('@override on UI::Orphan#nonexistent') },
+           "expected warning, got: #{warnings.inspect}")
+  end
+
+  def test_build_abstract_index_lists_implementations
+    _, _, _, _, _, btn_render, card_render, _ = setup_annotation_fixture
+    btn_render.override_target  = 'UI::Component#render'
+    card_render.override_target = 'UI::Component#render'
+
+    @annot_store.build_abstract_index
+
+    impls = @annot_store.implementations_of('UI::Component#render')
+    assert_includes impls, 'UI::Button#render'
+    assert_includes impls, 'UI::Card#render'
+  end
+
+  def test_build_abstract_index_lists_concrete_subclasses
+    setup_annotation_fixture
+    @annot_store.build_abstract_index
+
+    subs = @annot_store.subclasses_of('UI::Component')
+    assert_includes subs, 'UI::Button'
+    assert_includes subs, 'UI::Card'
+  end
+
+  def test_implementations_of_returns_empty_array_when_unknown
+    setup_annotation_fixture
+    @annot_store.build_abstract_index
+    assert_equal [], @annot_store.implementations_of('No::Such#method')
+  end
+
+  def test_subclasses_of_returns_empty_array_when_unknown
+    setup_annotation_fixture
+    @annot_store.build_abstract_index
+    assert_equal [], @annot_store.subclasses_of('No::Such')
+  end
+
+  def test_complete_runs_annotation_resolution
+    setup_annotation_fixture
+    capture_warnings { @annot_store.complete :public }
+
+    btn = @annot_store.find_class_or_module('UI::Button')
+                      .method_list.find { |m| m.name == 'render' }
+    assert_equal 'UI::Component#render', btn.override_target
+
+    assert_includes @annot_store.subclasses_of('UI::Component'), 'UI::Button'
+  end
+
 end
