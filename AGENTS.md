@@ -178,9 +178,8 @@ lib/rdoc/
 ├── version.rb                 # Version constant
 ├── task.rb                    # Rake task integration
 ├── parser/                    # Source code parsers (Ruby, C, Markdown, RD)
-│   ├── ruby.rb                # Ruby code parser
-│   ├── c.rb                   # C extension parser
 │   ├── prism_ruby.rb          # Prism-based Ruby parser
+│   ├── c.rb                   # C extension parser
 │   └── ...
 ├── server.rb                  # Live-reloading preview server (rdoc --server)
 ├── generator/                 # Documentation generators
@@ -236,10 +235,10 @@ exe/
 
 ### Parsers and Generators
 
-- **Parsers:** Prism-based Ruby (default, `RDoc::Parser::PrismRuby`), legacy ripper-based Ruby (`RDoc::Parser::RipperRuby`, opt-in via `RDOC_USE_RIPPER_PARSER=1`), C, Markdown, RD
+- **Parsers:** Prism-based Ruby (`RDoc::Parser::PrismRuby`), C, Markdown, RD
 - **Generators:** HTML/Aliki (default), HTML/Darkfish (deprecated), RI, POT (gettext), JSON, Markup
 
-Both Ruby parsers must produce equivalent code-object trees, so parser tests live in the `RDocParserPrismTestCases` module (`test/rdoc/parser/prism_ruby_test.rb`) and are included by both `RDocParserPrismRubyTest` and `RDocParserRipperRubyWithPrismRubyTestCasesTest`. The ripper variant is gated on `RDOC_USE_RIPPER_PARSER`, so `bundle exec rake` locally only runs prism; CI exercises ripper in a separate job. Add new parser tests to the mixin, and run `RDOC_USE_RIPPER_PARSER=1 bundle exec rake` locally before declaring a parser change done.
+Parser tests live in the `RDocParserPrismTestCases` module (`test/rdoc/parser/prism_ruby_test.rb`) and are included by `RDocParserPrismRubyTest`. Add new parser tests to the mixin.
 
 ### Code Object Model and Constant Aliases
 

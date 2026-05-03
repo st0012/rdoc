@@ -3,11 +3,6 @@
 require 'prism'
 require_relative 'ripper_state_lex'
 
-# Unlike lib/rdoc/parser/ripper_ruby.rb, this file is not based on rtags and does not contain code from
-#   rtags.rb -
-#   ruby-lex.rb - ruby lexcal analyzer
-#   ruby-token.rb - ruby tokens
-
 # Parse and collect document from Ruby source code.
 
 ##
@@ -131,7 +126,7 @@ require_relative 'ripper_state_lex'
 
 class RDoc::Parser::PrismRuby < RDoc::Parser
 
-  parse_files_matching(/\.rbw?$/) unless ENV['RDOC_USE_RIPPER_PARSER']
+  parse_files_matching(/\.rbw?$/)
 
   attr_accessor :visibility
   attr_reader :container, :singleton, :in_proc_block

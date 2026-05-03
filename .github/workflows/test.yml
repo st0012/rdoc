@@ -53,11 +53,6 @@ jobs:
       run: bundle exec rake
       env:
         RUBYOPT: --enable-frozen_string_literal
-    - name: Run test with Ripper parser
-      run: bundle exec rake
-      env:
-        RUBYOPT: --enable-frozen_string_literal
-        RDOC_USE_RIPPER_PARSER: true
     - if: ${{ matrix.ruby == 'head' && startsWith(matrix.os, 'ubuntu') }}
       run: bundle exec rake rdoc
     - if: ${{ matrix.ruby == 'head' && startsWith(matrix.os, 'ubuntu') }}

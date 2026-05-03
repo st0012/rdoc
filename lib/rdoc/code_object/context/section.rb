@@ -106,9 +106,6 @@ class RDoc::Context::Section
   #
   #   # :section: The title
   #   # The body
-  #
-  #--
-  # TODO Remove when the ripper parser has been removed
 
   def extract_comment(comment)
     case comment

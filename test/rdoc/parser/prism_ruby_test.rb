@@ -322,7 +322,7 @@ module RDocParserPrismTestCases
       module MBaz::M; end; # :nodoc:
     RUBY
     documentables = @store.all_classes_and_modules.select(&:document_self)
-    assert_equal ['Baz', 'MBaz'], documentables.map(&:full_name) unless accept_legacy_bug?
+    assert_equal ['Baz', 'MBaz'], documentables.map(&:full_name)
   end
 
   def test_class_module_stopdoc
@@ -600,7 +600,7 @@ module RDocParserPrismTestCases
     assert_equal 'Foo#three', three.full_name
     assert_equal 'one()', one.arglists
     assert_equal 'two(x)', two.arglists
-    assert_equal 'three(x)', three.arglists unless accept_legacy_bug?
+    assert_equal 'three(x)', three.arglists
     assert_equal 'my method one', one.comment.text.strip
     assert_equal 'my method two', two.comment.text.strip
     assert_equal 'my method three', three.comment.text.strip
@@ -717,7 +717,6 @@ module RDocParserPrismTestCases
     RUBY
 
     klass = @store.find_class_named 'Foo'
-    klass.method_list.last.singleton = true if accept_legacy_bug?
     assert_equal 3, klass.method_list.size
     assert_equal ['Foo#foo', 'Foo#bar', 'Foo::baz'], klass.method_list.map(&:full_name)
     assert_equal [false, false, true], klass.method_list.map(&:singleton)
@@ -754,9 +753,7 @@ module RDocParserPrismTestCases
     RUBY
     mod = @store.find_module_named 'A'
     methods = mod.method_list
-    unless accept_legacy_bug?
-      assert_equal ['A::foo', 'A#bar', 'A::baz2', 'A#baz3'], methods.map(&:full_name)
-    end
+    assert_equal ['A::foo', 'A#bar', 'A::baz2', 'A#baz3'], methods.map(&:full_name)
     assert_equal ['comment foo', 'comment bar'], methods.take(2).map { |m| m.comment.text.strip }
   end
 
@@ -879,7 +876,6 @@ module RDocParserPrismTestCases
     RUBY
 
     modules = @store.all_modules
-    modules = modules.take(3) if accept_legacy_bug?
     assert_equal ['A', 'A::Foo', 'Bar'], modules.map(&:full_name)
   end
 
@@ -917,7 +913,6 @@ module RDocParserPrismTestCases
 
     klass = @store.find_class_named 'Foo'
     methods = klass.method_list
-    methods = methods.reject {|m| m.name =~ /dummy2|dummy4/ } if accept_legacy_bug?
     assert_equal ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'], methods.map(&:name)
     assert_equal [true] * 6, methods.map(&:singleton)
   end
@@ -950,7 +945,6 @@ module RDocParserPrismTestCases
 
     klass = @store.find_class_named 'Foo'
     assert_equal ['m1', 'm2', 'm3', 'm4', 'm5'], klass.method_list.map(&:name)
-    klass.method_list[3].singleton = true if accept_legacy_bug?
     assert_equal [true] * 5, klass.method_list.map(&:singleton)
   end
 
@@ -1069,11 +1063,6 @@ module RDocParserPrismTestCases
     mod = @store.find_module_named 'A'
     instance_methods = mod.method_list.reject(&:singleton)
     singleton_methods = mod.method_list.select(&:singleton)
-    if accept_legacy_bug?
-      instance_methods.last.visibility = :private
-      singleton_methods << singleton_methods.last.dup
-      singleton_methods.last.name = 'm4'
-    end
     assert_equal ['m1', 'm2', 'm3', 'm4'], instance_methods.map(&:name)
     assert_equal [:private, :public, :private, :private], instance_methods.map(&:visibility)
     assert_equal ['m1', 'm3', 'm4'], singleton_methods.map(&:name)
@@ -1094,7 +1083,7 @@ module RDocParserPrismTestCases
     RUBY
     klass = @store.find_class_named 'A'
     public_methods = klass.method_list.select { |m| m.visibility == :public }
-    assert_equal ['m1', 'm3', 'm5'], public_methods.map(&:name) unless accept_legacy_bug?
+    assert_equal ['m1', 'm3', 'm5'], public_methods.map(&:name)
   end
 
   def test_method_change_visibility
@@ -1126,7 +1115,6 @@ module RDocParserPrismTestCases
   end
 
   def test_undocumentable_change_visibility
-    omit if accept_legacy_bug?
     util_parser <<~RUBY
       class A
         def m1; end
@@ -1161,7 +1149,6 @@ module RDocParserPrismTestCases
   end
 
   def test_method_visibility_change_in_subclass
-    omit 'not implemented' if accept_legacy_bug?
     util_parser <<~RUBY
       class A
         def m1; end
@@ -1263,16 +1250,13 @@ module RDocParserPrismTestCases
     assert_equal 'bar2', bar2.name
     assert_equal 'foo', foo2.is_alias_for.name
     assert_equal 'bar', bar2.is_alias_for.name
-    unless accept_legacy_bug?
-      assert_equal :private, foo.visibility
-      assert_equal :public, foo2.visibility
-      assert_equal :public, bar.visibility
-      assert_equal :private, bar2.visibility
-    end
+    assert_equal :private, foo.visibility
+    assert_equal :public, foo2.visibility
+    assert_equal :public, bar.visibility
+    assert_equal :private, bar2.visibility
   end
 
   def test_invalid_alias_method
-    omit if accept_legacy_bug?
     util_parser <<~RUBY
       class Foo
         def foo; end
@@ -1318,16 +1302,8 @@ module RDocParserPrismTestCases
       end
     RUBY
     klass = @store.find_class_named 'Foo'
-    if accept_legacy_bug?
-      a, r1, r2, w1, w2, rw1, rw2 = klass.attributes
-      a1 = a.dup
-      a2 = a.dup
-      a1.rw = a2.rw = 'R'
-      a2.name = 'attr2'
-    else
-      assert_equal 8, klass.attributes.size
-      a1, a2, r1, r2, w1, w2, rw1, rw2 = klass.attributes
-    end
+    assert_equal 8, klass.attributes.size
+    a1, a2, r1, r2, w1, w2, rw1, rw2 = klass.attributes
     assert_equal ['attr1', 'attr2'], [a1.name, a2.name]
     assert_equal ['reader1', 'reader2'], [r1.name, r2.name]
     assert_equal ['writer1', 'writer2'], [w1.name, w2.name]
@@ -1390,9 +1366,7 @@ module RDocParserPrismTestCases
       end
     RUBY
     klass = @store.find_class_named 'Foo'
-    unless accept_legacy_bug?
-      assert_equal 4, klass.attributes.size
-    end
+    assert_equal 4, klass.attributes.size
   end
 
   def test_attributes_nodoc_track
@@ -1410,9 +1384,7 @@ module RDocParserPrismTestCases
       end
     RUBY
     klass = @store.find_class_named 'Foo'
-    unless accept_legacy_bug?
-      assert_equal 12, klass.attributes.size
-    end
+    assert_equal 12, klass.attributes.size
   end
 
   def test_method_nodoc_stopdoc
@@ -1501,7 +1473,6 @@ module RDocParserPrismTestCases
     assert_equal ['reader1', 'reader2'], [r1.name, r2.name]
     assert_equal ['writer1', 'writer2'], [w1.name, w2.name]
     assert_equal ['accessor1', 'accessor2'], [rw1.name, rw2.name]
-    a1.rw = a2.rw = 'R' if accept_legacy_bug?
     assert_equal ['R', 'R'], [a1.rw, a2.rw]
     assert_equal ['R', 'R'], [r1.rw, r2.rw]
     assert_equal ['W', 'W'], [w1.rw, w2.rw]
@@ -1556,7 +1527,6 @@ module RDocParserPrismTestCases
     assert_equal 'reader1', r.name
     assert_equal 'writer1', w.name
     assert_equal 'accessor1', rw.name
-    a.rw = 'R' if accept_legacy_bug?
     assert_equal 'R', a.rw
     assert_equal 'R', r.rw
     assert_equal 'W', w.rw
@@ -1592,13 +1562,13 @@ module RDocParserPrismTestCases
     foo = @top_level.classes.first
     bar = foo.classes.first
     object = @top_level.find_class_or_module('Object')
-    assert_equal ['A', 'D', 'E', 'F'], foo.constants.map(&:name) unless accept_legacy_bug?
+    assert_equal ['A', 'D', 'E', 'F'], foo.constants.map(&:name)
     assert_equal '(any expression 1)', foo.constants.first.value
     assert_equal ['B'], bar.constants.map(&:name)
-    assert_equal ['C', 'G'], object.constants.map(&:name) unless accept_legacy_bug?
+    assert_equal ['C', 'G'], object.constants.map(&:name)
     all_constants = foo.constants + bar.constants + object.constants
-    assert_equal [@top_level] * 7, all_constants.map(&:file) unless accept_legacy_bug?
-    assert_equal [2, 12, 13, 14, 7, 8, 18], all_constants.map(&:line) unless accept_legacy_bug?
+    assert_equal [@top_level] * 7, all_constants.map(&:file)
+    assert_equal [2, 12, 13, 14, 7, 8, 18], all_constants.map(&:line)
   end
 
   def test_nodoc_constant_assigned_without_nodoc_comment
@@ -1716,7 +1686,6 @@ module RDocParserPrismTestCases
   end
 
   def test_constant_alias_with_trailing_comment_resolves_after_complete
-    omit if accept_legacy_bug? # ripper parser is deprecated; gap not worth fixing
     util_parser <<~RUBY
       class Foo
         Trailing = Bar # trailing comment
@@ -1912,7 +1881,6 @@ module RDocParserPrismTestCases
   end
 
   def test_constant_with_singleton_class
-    omit if accept_legacy_bug?
     util_parser <<~RUBY
       class Foo
         class Bar; end
@@ -1969,10 +1937,9 @@ module RDocParserPrismTestCases
       def true.bar; end
       def false.baz; end
     RUBY
-    sep = accept_legacy_bug? ? '::' : '#'
-    assert_equal "NilClass#{sep}foo", @store.find_class_named('NilClass').method_list.first.full_name
-    assert_equal "TrueClass#{sep}bar", @store.find_class_named('TrueClass').method_list.first.full_name
-    assert_equal "FalseClass#{sep}baz", @store.find_class_named('FalseClass').method_list.first.full_name
+    assert_equal 'NilClass#foo', @store.find_class_named('NilClass').method_list.first.full_name
+    assert_equal 'TrueClass#bar', @store.find_class_named('TrueClass').method_list.first.full_name
+    assert_equal 'FalseClass#baz', @store.find_class_named('FalseClass').method_list.first.full_name
   end
 
   def test_include_extend
@@ -2001,7 +1968,6 @@ module RDocParserPrismTestCases
   end
 
   def test_include_extend_to_singleton_class
-    omit 'not implemented' if accept_legacy_bug?
     util_parser <<~RUBY
       class Foo
         class << self
@@ -2019,7 +1985,6 @@ module RDocParserPrismTestCases
   end
 
   def test_include_with_module_nesting
-    omit 'not implemented' if accept_legacy_bug?
     util_parser <<~RUBY
       module A
         module M; end
@@ -2052,7 +2017,6 @@ module RDocParserPrismTestCases
   end
 
   def test_various_argument_include
-    omit 'not implemented' if accept_legacy_bug?
     util_parser <<~RUBY
       module A; end
       module B; end
@@ -2311,10 +2275,8 @@ module RDocParserPrismTestCases
       end
     RUBY
     a, b = @store.all_classes
-    unless accept_legacy_bug?
-      assert_equal ['O'], a.includes.map(&:name)
-      assert_equal ['O'], a.extends.map(&:name)
-    end
+    assert_equal ['O'], a.includes.map(&:name)
+    assert_equal ['O'], a.extends.map(&:name)
     assert_equal ['M'], b.includes.map(&:name)
     assert_equal ['N'], b.extends.map(&:name)
   end
@@ -2353,12 +2315,10 @@ module RDocParserPrismTestCases
     assert_equal :private, klass.find_method_named('pri').visibility
     assert_equal :public, klass.find_method_named('pub2').visibility
     assert_equal :public, klass.find_class_method_named('s_pub').visibility
-    assert_equal :private, klass.find_class_method_named('s_pri').visibility unless accept_legacy_bug?
+    assert_equal :private, klass.find_class_method_named('s_pri').visibility
   end
 
   def test_alias_method_suppressed_within_block
-    omit if accept_legacy_bug?
-
     util_parser <<~RUBY
       class A
         def foo; end
@@ -2573,26 +2533,8 @@ end
 class RDocParserPrismRubyTest < RDoc::TestCase
   include RDocParserPrismTestCases
 
-  def accept_legacy_bug?
-    false
-  end
-
   def util_parser(content)
     @parser = RDoc::Parser::PrismRuby.new @top_level, content, @options, @stats
     @parser.scan
   end
 end
-
-# Run the same test with the original RDoc::Parser::RipperRuby
-class RDocParserRipperRubyWithPrismRubyTestCasesTest < RDoc::TestCase
-  include RDocParserPrismTestCases
-
-  def accept_legacy_bug?
-    true
-  end
-
-  def util_parser(content)
-    @parser = RDoc::Parser::RipperRuby.new @top_level, content, @options, @stats
-    @parser.scan
-  end
-end if ENV['RDOC_USE_RIPPER_PARSER']
