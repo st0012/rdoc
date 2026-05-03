@@ -1,0 +1,140 @@
+/* @override and @abstract notices.
+ *
+ * The "inheritance ladder" treatment: a small diamond sigil + small-caps
+ * accent title, italic lede paragraph, and a vertical rail with each
+ * concrete implementation hanging off as a labelled rung. The rail is
+ * drawn once on the <ul> with `lh` units so the line stays continuous
+ * regardless of line-height and stops cleanly at the last item's stub.
+ */
+
+main .annotation-notice {
+  --notice-accent: var(--color-accent-primary);
+
+  margin-block: 0.85em;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+}
+
+main .annotation-notice.unresolved {
+  --notice-accent: var(--color-text-tertiary);
+  color: var(--color-text-tertiary);
+}
+
+main .annotation-notice.class-level {
+  margin-block: 0 1.4em;
+}
+
+/* Header row: diamond sigil + small-caps title in the accent colour. */
+main .annotation-notice .annotation-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block-end: 0.45em;
+}
+
+main .annotation-notice .annotation-sigil {
+  flex: 0 0 auto;
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 1.5px solid var(--notice-accent);
+  transform: rotate(45deg);
+}
+
+main .annotation-notice .annotation-title {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--notice-accent);
+}
+
+/* Italic lede paragraph beneath the header. */
+main .annotation-notice .annotation-lede {
+  margin: 0 0 0.7em;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  font-size: 0.9em;
+  line-height: var(--line-height-relaxed);
+}
+
+main .annotation-notice .annotation-lede a {
+  font-style: normal;
+  font-family: var(--font-code);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--color-border-default);
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+main .annotation-notice .annotation-lede a:hover,
+main .annotation-notice .annotation-lede a:focus-visible {
+  color: var(--color-accent-primary);
+  border-bottom-color: var(--color-accent-primary);
+  outline: none;
+}
+
+/* Vertical rail: a single CSS-drawn line on the <ol>. The bottom edge
+ * lands at the centre of the last item's text line so the L corner
+ * closes cleanly. Each item contributes only a horizontal stub. */
+main .annotation-tree {
+  position: relative;
+  list-style: none;
+  margin: 0.4em 0 0;
+  padding: 0 0 0 1.4em;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+}
+
+main .annotation-tree::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: calc(0.5lh + 0.16em);
+  left: 0.42em;
+  width: 1px;
+  background: var(--color-border-emphasis);
+  opacity: 0.65;
+}
+
+main .annotation-tree > li {
+  position: relative;
+  padding: 0.08em 0;
+}
+
+main .annotation-tree > li::before {
+  content: "";
+  position: absolute;
+  left: -1em;
+  top: 0.5lh;
+  width: 0.7em;
+  height: 1px;
+  background: var(--color-border-emphasis);
+  opacity: 0.65;
+}
+
+main .annotation-tree a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px dotted transparent;
+  transition: color 160ms ease, border-color 160ms ease;
+  overflow-wrap: anywhere;
+}
+
+main .annotation-tree a:hover,
+main .annotation-tree a:focus-visible {
+  color: var(--color-accent-primary);
+  border-bottom-color: var(--color-accent-primary);
+  outline: none;
+}
+
+main .annotation-tree .annotation-tree-host {
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+}
+
+main .annotation-tree .annotation-tree-sep {
+  color: var(--color-text-tertiary);
+  margin: 0 0.05em;
+}
