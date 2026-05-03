@@ -606,4 +606,55 @@ method(a, b) { |c, d| ... }
                  'superclass method missing for supers'
   end
 
+  def test_annotation_fields_default_to_falsey
+    m = RDoc::AnyMethod.new nil, 'render'
+    assert_equal false, m.override
+    assert_nil m.override_target
+    assert_equal false, m.abstract
+  end
+
+  def test_annotation_fields_are_writable
+    m = RDoc::AnyMethod.new nil, 'render'
+    m.override = true
+    m.override_target = 'UI::Component#render'
+    m.abstract = true
+    assert_equal true, m.override
+    assert_equal 'UI::Component#render', m.override_target
+    assert_equal true, m.abstract
+  end
+
+  def test_marshal_dump_version_4_round_trip
+    @store.path = Dir.tmpdir
+    top_level = @store.add_file 'file.rb'
+
+    m = RDoc::AnyMethod.new nil, 'render'
+    m.record_location top_level
+    cm = top_level.add_class RDoc::ClassModule, 'Klass'
+    cm.add_method m
+
+    m.override        = true
+    m.override_target = 'UI::Component#render'
+    m.abstract        = false
+
+    loaded = Marshal.load Marshal.dump m
+    loaded.store = @store
+
+    assert_equal true,                      loaded.override
+    assert_equal 'UI::Component#render',    loaded.override_target
+    assert_equal false,                     loaded.abstract
+  end
+
+  def test_marshal_load_v3_array_defaults_new_fields
+    v3_array = [
+      3, 'render', 'UI::Component#render', false, :public,
+      RDoc::Markup::Document.new, nil, nil, [], nil, 'fake.rb', false,
+      'Component', RDoc::NormalClass, 'top', nil
+    ]
+    m = RDoc::AnyMethod.allocate
+    m.marshal_load v3_array
+    assert_equal false, m.override
+    assert_nil          m.override_target
+    assert_equal false, m.abstract
+  end
+
 end

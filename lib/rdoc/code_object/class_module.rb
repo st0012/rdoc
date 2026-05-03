@@ -21,8 +21,11 @@ class RDoc::ClassModule < RDoc::Context
   #   * Added in_files
   #   * Added parent name
   #   * Complete Constant dump
+  # 4::
+  #   RDoc 8.0
+  #   * Added abstract
 
-  MARSHAL_VERSION = 3 # :nodoc:
+  MARSHAL_VERSION = 4 # :nodoc:
 
   ##
   # Constants that are aliases for this class or module
@@ -51,6 +54,11 @@ class RDoc::ClassModule < RDoc::Context
   # Class or module this constant is an alias for
 
   attr_accessor :is_alias_for
+
+  ##
+  # True if this class or module has an +@abstract+ annotation
+
+  attr_accessor :abstract
 
   ##
   # Return a RDoc::ClassModule of class +class_type+ that is a copy
@@ -124,6 +132,7 @@ class RDoc::ClassModule < RDoc::Context
     @name             = name
     @superclass       = superclass
     @comment_location = {} # Hash of { location => [comments] }
+    @abstract         = false
 
     super()
   end
@@ -382,6 +391,7 @@ class RDoc::ClassModule < RDoc::Context
       end,
       parent.full_name,
       parent.class,
+      @abstract,
     ]
   end
 
@@ -468,6 +478,7 @@ class RDoc::ClassModule < RDoc::Context
 
     @parent_name  = array[12]
     @parent_class = array[13]
+    @abstract     = array[14] || false
   end
 
   ##

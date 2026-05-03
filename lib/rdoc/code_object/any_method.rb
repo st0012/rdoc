@@ -13,8 +13,11 @@ class RDoc::AnyMethod < RDoc::MethodAttr
   # 3::
   #   RDoc 4.1
   #   Added is_alias_for
+  # 4::
+  #   RDoc 8.0
+  #   Added override, override_target, abstract
 
-  MARSHAL_VERSION = 3 # :nodoc:
+  MARSHAL_VERSION = 4 # :nodoc:
 
   ##
   # Don't rename \#initialize to \::new
@@ -34,6 +37,23 @@ class RDoc::AnyMethod < RDoc::MethodAttr
 
   attr_accessor :calls_super
 
+  ##
+  # True if this method has an +@override+ annotation in its comment
+
+  attr_accessor :override
+
+  ##
+  # Resolved full name of the ancestor method this method overrides, e.g.
+  # +"UI::Component#render"+. Set by RDoc::Store#resolve_annotations.
+  # +nil+ when @override is absent or no ancestor match was found.
+
+  attr_accessor :override_target
+
+  ##
+  # True if this method has an +@abstract+ annotation in its comment
+
+  attr_accessor :abstract
+
   include RDoc::TokenStream
 
   ##
@@ -46,6 +66,9 @@ class RDoc::AnyMethod < RDoc::MethodAttr
     @dont_rename_initialize = false
     @token_stream = nil
     @calls_super = false
+    @override        = false
+    @override_target = nil
+    @abstract        = false
     @superclass_method = nil
   end
 
@@ -166,6 +189,9 @@ class RDoc::AnyMethod < RDoc::MethodAttr
       @parent.class,
       @section.title,
       is_alias_for,
+      @override,
+      @override_target,
+      @abstract,
     ]
   end
 
@@ -204,6 +230,9 @@ class RDoc::AnyMethod < RDoc::MethodAttr
     @parent_title  = array[13]
     @section_title = array[14]
     @is_alias_for  = array[15]
+    @override        = array[16] || false
+    @override_target = array[17]
+    @abstract        = array[18] || false
 
     array[8].each do |new_name, document|
       add_alias RDoc::Alias.new(nil, @name, new_name, RDoc::Comment.from_document(document), singleton: @singleton)

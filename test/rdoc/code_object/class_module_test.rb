@@ -1756,4 +1756,22 @@ class RDocClassModuleTest < XrefTestCase
       assert_nil(class_attr.section.title)
     end
   end
+
+  def test_abstract_field_default_false_and_writable
+    cm = RDoc::ClassModule.new 'C'
+    assert_equal false, cm.abstract
+    cm.abstract = true
+    assert_equal true, cm.abstract
+  end
+
+  def test_marshal_dump_version_4_round_trip_for_abstract
+    @store.path = Dir.tmpdir
+    tl = @store.add_file 'file.rb'
+
+    cm = tl.add_class RDoc::NormalClass, 'Component'
+    cm.abstract = true
+
+    loaded = Marshal.load Marshal.dump cm
+    assert_equal true, loaded.abstract
+  end
 end
