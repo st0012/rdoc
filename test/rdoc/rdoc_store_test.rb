@@ -1402,6 +1402,30 @@ class RDocStoreTest < XrefTestCase
     assert_equal [], @annot_store.subclasses_of('No::Such')
   end
 
+  def test_find_method_named_returns_instance_method
+    setup_annotation_fixture
+    m = @annot_store.find_method_named('UI::Component#render')
+    assert_equal 'render', m.name
+    assert_equal false, m.singleton
+  end
+
+  def test_find_method_named_returns_singleton_method
+    setup_annotation_fixture
+    base = @annot_store.find_class_or_module('UI::Component')
+    cm = RDoc::AnyMethod.new nil, 'create', singleton: true
+    base.add_method cm
+    found = @annot_store.find_method_named('UI::Component.create')
+    assert_equal 'create',         found.name
+    assert_equal true,             found.singleton
+  end
+
+  def test_find_method_named_returns_nil_for_unknown
+    setup_annotation_fixture
+    assert_nil @annot_store.find_method_named('No::Such#method')
+    assert_nil @annot_store.find_method_named('UI::Component#missing')
+    assert_nil @annot_store.find_method_named('not_a_full_name')
+  end
+
   def test_complete_runs_annotation_resolution
     setup_annotation_fixture
     capture_warnings { @annot_store.complete :public }

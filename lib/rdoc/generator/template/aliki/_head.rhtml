@@ -155,6 +155,11 @@
   rel="stylesheet"
 >
 
+<link
+  href="<%= h asset_rel_prefix %>/css/annotations.css?v=<%= h RDoc::VERSION %>"
+  rel="stylesheet"
+>
+
 <%- @options.template_stylesheets.each do |stylesheet| %>
   <link
     href="<%= h asset_rel_prefix %>/<%= h File.basename stylesheet %>?v=<%= h RDoc::VERSION %>"

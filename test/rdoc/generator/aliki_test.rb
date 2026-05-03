@@ -265,4 +265,87 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     content = File.binread('index.html')
     assert_include content, '<html lang="ja">'
   end
+
+  def test_class_template_renders_method_override_notice
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    base_render = RDoc::AnyMethod.new nil, 'render'
+    base_render.record_location @top_level
+    base.add_method base_render
+
+    button = @top_level.add_class RDoc::NormalClass, 'Button', 'Base'
+    btn_render = RDoc::AnyMethod.new nil, 'render'
+    btn_render.record_location @top_level
+    button.add_method btn_render
+    btn_render.override = true
+    btn_render.override_target = 'Base#render'
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Button.html')
+
+    assert_match %r{<div class="annotation-notice override">.*<span class="annotation-title">Override</span>.*<p class="annotation-lede">.*Base#render}m, out
+  end
+
+  def test_aliki_head_includes_annotations_css
+    head = File.read File.join(@options.template_dir, '_head.rhtml')
+    assert_match %r{annotations\.css}, head
+  end
+
+  def test_annotations_css_defines_notice_and_tree
+    css = File.read File.join(@options.template_dir, 'css/annotations.css')
+    assert_match %r{\.annotation-notice\b}, css
+    assert_match %r{\.annotation-notice\.unresolved\b}, css
+    assert_match %r{\.annotation-notice\.class-level\b}, css
+    assert_match %r{\.annotation-sigil\b}, css
+    assert_match %r{\.annotation-title\b}, css
+    assert_match %r{\.annotation-lede\b}, css
+    assert_match %r{\.annotation-tree\b}, css
+  end
+
+  def test_class_template_renders_class_level_abstract_panel
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    base.abstract = true
+    base.record_location @top_level
+
+    button = @top_level.add_class RDoc::NormalClass, 'Button', 'Base'
+    button.record_location @top_level
+    card   = @top_level.add_class RDoc::NormalClass, 'Card', 'Base'
+    card.record_location @top_level
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Base.html')
+
+    # The H1 stays clean — no badge nested inside (avoids polluting the on-this-page TOC).
+    assert_match %r{<h1[^>]*>\s*class\s+Base\s*</h1>}m, out
+    assert_match %r{<div class="annotation-notice abstract class-level">.*<span class="annotation-title">Abstract class</span>.*Subclasses inherit}m, out
+    assert_match %r{<ol class="annotation-tree"[^>]*>}, out
+    assert_match %r{<li><a[^>]*>Button</a></li>}, out
+    assert_match %r{<li><a[^>]*>Card</a></li>}, out
+  end
+
+  def test_class_template_renders_method_abstract_notice
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    base_render = RDoc::AnyMethod.new nil, 'render'
+    base_render.record_location @top_level
+    base_render.abstract = true
+    base.add_method base_render
+
+    button = @top_level.add_class RDoc::NormalClass, 'Button', 'Base'
+    btn_render = RDoc::AnyMethod.new nil, 'render'
+    btn_render.record_location @top_level
+    btn_render.override = true
+    btn_render.override_target = 'Base#render'
+    button.add_method btn_render
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Base.html')
+
+    assert_match %r{<div class="annotation-notice abstract">.*<span class="annotation-title">Abstract method</span>.*Subclasses are expected to implement this method}m, out
+    assert_match %r{<ol class="annotation-tree"[^>]*>.*<li><a[^>]*>Button#render</a></li>}m, out
+  end
 end

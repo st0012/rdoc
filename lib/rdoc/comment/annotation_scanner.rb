@@ -13,6 +13,7 @@ class RDoc::Comment::AnnotationScanner
 
   def self.scan(text, code_object)
     return text if text.nil? || text.empty?
+    return text unless text.include?('@')
 
     text.each_line.reject do |line|
       next false unless (m = line.chomp.match(ANNOTATION_LINE))

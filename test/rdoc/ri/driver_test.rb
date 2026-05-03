@@ -1606,4 +1606,103 @@ Foo::Bar#bother
     @driver.stores = [@store1]
   end
 
+  def util_store_with_override
+    store = RDoc::Store.new(RDoc::Options.new)
+    tl = store.add_file 'annotations.rb'
+    ui = tl.add_module RDoc::NormalModule, 'UI'
+
+    base = ui.add_class RDoc::NormalClass, 'Component'
+    base_render = RDoc::AnyMethod.new nil, 'render'
+    base.add_method base_render
+
+    button = ui.add_class RDoc::NormalClass, 'Button', 'UI::Component'
+    btn_render = RDoc::AnyMethod.new nil, 'render'
+    btn_render.override = true
+    btn_render.override_target = 'UI::Component#render'
+    button.add_method btn_render
+
+    store
+  end
+
+  def util_store_with_abstract
+    store = RDoc::Store.new(RDoc::Options.new)
+    tl = store.add_file 'annotations.rb'
+    ui = tl.add_module RDoc::NormalModule, 'UI'
+
+    base = ui.add_class RDoc::NormalClass, 'Component'
+    base.abstract = true
+    base_render = RDoc::AnyMethod.new nil, 'render'
+    base_render.abstract = true
+    base.add_method base_render
+
+    button = ui.add_class RDoc::NormalClass, 'Button', 'UI::Component'
+    btn_render = RDoc::AnyMethod.new nil, 'render'
+    btn_render.override = true
+    btn_render.override_target = 'UI::Component#render'
+    button.add_method btn_render
+
+    card = ui.add_class RDoc::NormalClass, 'Card', 'UI::Component'
+    card_render = RDoc::AnyMethod.new nil, 'render'
+    card_render.override = true
+    card_render.override_target = 'UI::Component#render'
+    card.add_method card_render
+
+    store.build_abstract_index
+    store
+  end
+
+  def test_render_method_emits_override_heading_with_target
+    driver = RDoc::RI::Driver.new
+    out = RDoc::Markup::Document.new
+    store = util_store_with_override
+    method = store.find_class_or_module('UI::Button').method_list.first
+
+    driver.send :render_method_annotations, out, store, method
+
+    rendered = out.parts.map(&:inspect).join("\n")
+    assert_match %r{\(Overrides UI::Component#render\)}, rendered
+  end
+
+  def test_render_method_emits_unresolved_override_heading
+    driver = RDoc::RI::Driver.new
+    out = RDoc::Markup::Document.new
+    method = RDoc::AnyMethod.new nil, 'render'
+    method.override = true
+
+    driver.send :render_method_annotations, out, RDoc::Store.new(RDoc::Options.new), method
+
+    rendered = out.parts.map(&:inspect).join("\n")
+    assert_match %r{\(Overrides - no matching ancestor\)}, rendered
+  end
+
+  def test_render_class_annotations_emits_abstract_class_heading
+    driver = RDoc::RI::Driver.new
+    out = RDoc::Markup::Document.new
+    store = util_store_with_abstract
+    klass = store.find_class_or_module('UI::Component')
+
+    driver.send :render_class_annotations, out, store, klass
+
+    rendered = out.parts.map(&:inspect).join("\n")
+    assert_match %r{\(Abstract class - subclasses are expected to implement abstract methods\)},
+                 rendered
+    assert_match %r{Concrete subclasses:}, rendered
+    assert_match %r{UI::Button}, rendered
+    assert_match %r{UI::Card},   rendered
+  end
+
+  def test_render_method_emits_abstract_heading_and_implementations
+    driver = RDoc::RI::Driver.new
+    out = RDoc::Markup::Document.new
+    store = util_store_with_abstract
+    method = store.find_class_or_module('UI::Component').method_list.first
+
+    driver.send :render_method_annotations, out, store, method
+
+    rendered = out.parts.map(&:inspect).join("\n")
+    assert_match %r{\(Abstract - subclasses are expected to implement\)}, rendered
+    assert_match %r{Implemented by:}, rendered
+    assert_match %r{UI::Button#render}, rendered
+  end
+
 end

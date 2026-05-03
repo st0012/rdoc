@@ -470,6 +470,25 @@ or the PAGER environment variable.
 
     out << RDoc::Markup::Heading.new(1, heading)
     out << RDoc::Markup::BlankLine.new
+
+    classes.each do |klass|
+      next unless klass.respond_to?(:store) && klass.store.respond_to?(:subclasses_of)
+      render_class_annotations out, klass.store, klass
+    end
+  end
+
+  def render_class_annotations(out, store, klass) # :nodoc:
+    return unless klass.respond_to?(:abstract) && klass.abstract
+
+    out << RDoc::Markup::BlankLine.new
+    out << RDoc::Markup::Heading.new(4,
+      "(Abstract class - subclasses are expected to implement abstract methods)")
+    subs = store.subclasses_of(klass.full_name)
+    if subs.any?
+      out << RDoc::Markup::IndentedParagraph.new(2,
+        "Concrete subclasses:\n  #{subs.join(', ')}")
+    end
+    out << RDoc::Markup::Rule.new(1)
   end
 
   ##
@@ -1416,6 +1435,7 @@ or the PAGER environment variable.
 
     render_method_arguments out, method.arglists
     render_method_superclass out, method
+    render_method_annotations out, store, method
     if method.is_alias_for
       al = method.is_alias_for
       alias_for = store.load_method al.parent_name, "#{al.name_prefix}#{al.name}"
@@ -1459,6 +1479,32 @@ or the PAGER environment variable.
     out << RDoc::Markup::BlankLine.new
     out << RDoc::Markup::Heading.new(4, "(Uses superclass method #{method.superclass_method})")
     out << RDoc::Markup::Rule.new(1)
+  end
+
+  def render_method_annotations(out, store, method) # :nodoc:
+    return unless method.respond_to?(:override) && method.respond_to?(:abstract)
+
+    if method.override_target
+      out << RDoc::Markup::BlankLine.new
+      out << RDoc::Markup::Heading.new(4, "(Overrides #{method.override_target})")
+      out << RDoc::Markup::Rule.new(1)
+    elsif method.override
+      out << RDoc::Markup::BlankLine.new
+      out << RDoc::Markup::Heading.new(4, "(Overrides - no matching ancestor)")
+      out << RDoc::Markup::Rule.new(1)
+    end
+
+    if method.abstract
+      out << RDoc::Markup::BlankLine.new
+      out << RDoc::Markup::Heading.new(4,
+        "(Abstract - subclasses are expected to implement)")
+      impls = store.implementations_of(method.full_name)
+      if impls.any?
+        out << RDoc::Markup::IndentedParagraph.new(2,
+          "Implemented by:\n  #{impls.join(', ')}")
+      end
+      out << RDoc::Markup::Rule.new(1)
+    end
   end
 
   ##

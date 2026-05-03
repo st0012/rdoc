@@ -472,36 +472,49 @@ class RDoc::Store
   # Returns the matching method's +full_name+ or +nil+.
 
   def find_override_target(klass, method) # :nodoc:
+    each_recursive_ancestor(klass) do |ancestor|
+      hit = ancestor.method_list.find do |m|
+        m.name == method.name && m.singleton == method.singleton
+      end
+      return hit.full_name if hit
+    end
+    nil
+  end
+
+  # Yields every transitive ancestor (superclass + included modules) of +klass+
+  # exactly once, breadth-first. Skips +klass+ itself.
+
+  def each_recursive_ancestor(klass) # :nodoc:
+    return enum_for(__method__, klass) unless block_given?
+
     visited = { klass.full_name => true }
     queue = ancestor_class_modules(klass)
     until queue.empty?
       ancestor = queue.shift
       next if visited[ancestor.full_name]
       visited[ancestor.full_name] = true
-
-      hit = ancestor.method_list.find do |m|
-        m.name == method.name && m.singleton == method.singleton
-      end
-      return hit.full_name if hit
-
+      yield ancestor
       queue.concat ancestor_class_modules(ancestor)
     end
-    nil
   end
 
   def ancestor_class_modules(klass) # :nodoc:
     result = []
-    if klass.is_a?(RDoc::ClassModule) && klass.type == 'class'
+    if klass.type == 'class'
       sc = klass.superclass
-      sc = find_class_or_module(sc) if sc.is_a?(String)
+      sc = resolve_class_module_name(klass, sc) if sc.is_a?(String)
       result << sc if sc
     end
     klass.includes.each do |incl|
       mod = incl.module
-      mod = find_class_or_module(mod) if mod.is_a?(String)
+      mod = resolve_class_module_name(klass, mod) if mod.is_a?(String)
       result << mod if mod
-    end if klass.respond_to?(:includes)
+    end
     result
+  end
+
+  def resolve_class_module_name(klass, name) # :nodoc:
+    find_class_or_module(name) || klass.find_module_named(name)
   end
 
   ##
@@ -545,7 +558,7 @@ class RDoc::Store
         @abstract_implementations[method.override_target] << method.full_name
       end
 
-      walk_all_ancestors(klass).each do |ancestor|
+      each_recursive_ancestor(klass) do |ancestor|
         next unless ancestor.abstract
         @abstract_subclasses[ancestor.full_name] << klass.full_name
       end
@@ -553,6 +566,21 @@ class RDoc::Store
 
     @abstract_implementations.each_value(&:uniq!)
     @abstract_subclasses.each_value(&:uniq!)
+  end
+
+  ##
+  # Resolves a fully-qualified method name like +"UI::Component#render"+ or
+  # +"Foo.bar"+ back to the RDoc::AnyMethod (or compatible) instance.
+  # Returns +nil+ when the parent class/module isn't documented or when no
+  # matching method exists.
+
+  def find_method_named(full_name)
+    parent_name, sep, method_name = full_name.rpartition(/[#.]/)
+    return nil if sep.empty?
+    klass = find_class_or_module(parent_name) or return nil
+    klass.method_list.find do |m|
+      m.name == method_name && m.singleton == (sep == '.')
+    end
   end
 
   ##
@@ -570,20 +598,6 @@ class RDoc::Store
 
   def subclasses_of(class_full_name)
     (@abstract_subclasses || {}).fetch(class_full_name, [])
-  end
-
-  def walk_all_ancestors(klass) # :nodoc:
-    visited = { klass.full_name => true }
-    queue   = ancestor_class_modules(klass)
-    result  = []
-    until queue.empty?
-      ancestor = queue.shift
-      next if visited[ancestor.full_name]
-      visited[ancestor.full_name] = true
-      result << ancestor
-      queue.concat ancestor_class_modules(ancestor)
-    end
-    result
   end
 
   def complete(min_visibility)
