@@ -442,6 +442,164 @@ class RDoc::Store
   #
   # See also RDoc::Context#remove_from_documentation?
 
+  ##
+  # Resolves <tt>@override</tt> targets on every annotated method by walking
+  # the ancestor chain. Sets RDoc::AnyMethod#override_target to the resolved
+  # full name, or leaves it +nil+ and emits a warning when no match is found.
+  #
+  # Comments are eagerly parsed first so the AnnotationScanner has populated
+  # +override+/+abstract+ flags before we read them.
+
+  def resolve_overrides
+    force_parse_annotation_comments
+
+    all_classes_and_modules.each do |klass|
+      klass.method_list.each do |method|
+        next unless method.override
+        method.override_target = find_override_target(klass, method)
+        unless method.override_target
+          RDoc.warn(
+            "@override on #{method.full_name} - no matching method in ancestors"
+          )
+        end
+      end
+    end
+  end
+
+  ##
+  # Walks +klass+'s ancestor chain (superclass + included modules, recursively)
+  # looking for a method with the same name and singleton-ness as +method+.
+  # Returns the matching method's +full_name+ or +nil+.
+
+  def find_override_target(klass, method) # :nodoc:
+    each_recursive_ancestor(klass) do |ancestor|
+      hit = ancestor.method_list.find do |m|
+        m.name == method.name && m.singleton == method.singleton
+      end
+      return hit.full_name if hit
+    end
+    nil
+  end
+
+  # Yields every transitive ancestor (superclass + included modules) of +klass+
+  # exactly once, breadth-first. Skips +klass+ itself.
+
+  def each_recursive_ancestor(klass) # :nodoc:
+    return enum_for(__method__, klass) unless block_given?
+
+    visited = { klass.full_name => true }
+    queue = ancestor_class_modules(klass)
+    until queue.empty?
+      ancestor = queue.shift
+      next if visited[ancestor.full_name]
+      visited[ancestor.full_name] = true
+      yield ancestor
+      queue.concat ancestor_class_modules(ancestor)
+    end
+  end
+
+  def ancestor_class_modules(klass) # :nodoc:
+    result = []
+    if klass.type == 'class'
+      sc = klass.superclass
+      sc = resolve_class_module_name(klass, sc) if sc.is_a?(String)
+      result << sc if sc
+    end
+    klass.includes.each do |incl|
+      mod = incl.module
+      mod = resolve_class_module_name(klass, mod) if mod.is_a?(String)
+      result << mod if mod
+    end
+    result
+  end
+
+  def resolve_class_module_name(klass, name) # :nodoc:
+    find_class_or_module(name) || klass.find_module_named(name)
+  end
+
+  ##
+  # Runs all annotation resolution passes. Call after parsing is complete
+  # and before generation. Order matters: resolve_overrides must populate
+  # override_target before build_abstract_index reads it for the
+  # implementations index.
+
+  def resolve_annotations
+    resolve_overrides
+    build_abstract_index
+  end
+
+  def force_parse_annotation_comments # :nodoc:
+    all_classes_and_modules.each do |klass|
+      klass.comment.parse if klass.comment.is_a?(RDoc::Comment) && klass.comment.text
+      klass.method_list.each do |method|
+        method.comment.parse if method.comment.is_a?(RDoc::Comment) && method.comment.text
+      end
+    end
+  end
+
+  ##
+  # Builds reverse indexes for <tt>@abstract</tt> methods and classes. Run
+  # this after #resolve_overrides so override_target values are populated.
+  #
+  # Populates an internal hash of method full name to Array of method
+  # full names that override it (queried via #implementations_of).
+  #
+  # Populates an internal hash of class/module full name to Array of full
+  # names of concrete subclasses (where the ancestor is +abstract+; queried
+  # via #subclasses_of).
+
+  def build_abstract_index
+    @abstract_implementations = Hash.new { |h, k| h[k] = [] }
+    @abstract_subclasses      = Hash.new { |h, k| h[k] = [] }
+
+    all_classes_and_modules.each do |klass|
+      klass.method_list.each do |method|
+        next unless method.override_target
+        @abstract_implementations[method.override_target] << method.full_name
+      end
+
+      each_recursive_ancestor(klass) do |ancestor|
+        next unless ancestor.abstract
+        @abstract_subclasses[ancestor.full_name] << klass.full_name
+      end
+    end
+
+    @abstract_implementations.each_value(&:uniq!)
+    @abstract_subclasses.each_value(&:uniq!)
+  end
+
+  ##
+  # Resolves a fully-qualified method name like +"UI::Component#render"+ or
+  # +"Foo.bar"+ back to the RDoc::AnyMethod (or compatible) instance.
+  # Returns +nil+ when the parent class/module isn't documented or when no
+  # matching method exists.
+
+  def find_method_named(full_name)
+    parent_name, sep, method_name = full_name.rpartition(/[#.]/)
+    return nil if sep.empty?
+    klass = find_class_or_module(parent_name) or return nil
+    klass.method_list.find do |m|
+      m.name == method_name && m.singleton == (sep == '.')
+    end
+  end
+
+  ##
+  # Returns the full names of methods that override +method_full_name+.
+  # Empty array if the method is unknown or has no implementations.
+
+  def implementations_of(method_full_name)
+    (@abstract_implementations || {}).fetch(method_full_name, [])
+  end
+
+  ##
+  # Returns the full names of concrete subclasses of +class_full_name+
+  # (where +class_full_name+ is an +@abstract+ class). Empty array if
+  # the class is unknown or has no subclasses.
+
+  def subclasses_of(class_full_name)
+    (@abstract_subclasses || {}).fetch(class_full_name, [])
+  end
+
   def complete(min_visibility)
     fix_basic_object_inheritance
 
@@ -459,6 +617,8 @@ class RDoc::Store
     unique_classes_and_modules.each do |cm|
       cm.complete min_visibility
     end
+
+    resolve_annotations
 
     @files_hash.each_key do |file_name|
       tl = @files_hash[file_name]

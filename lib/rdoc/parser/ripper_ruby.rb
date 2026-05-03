@@ -773,6 +773,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
     read_documentation_modifiers cls, RDoc::CLASS_MODIFIERS
     record_location cls
 
+    comment.owner = cls if comment.is_a?(RDoc::Comment)
     cls.add_comment comment, @top_level
 
     @top_level.add_to_classes_or_modules cls
@@ -804,6 +805,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
       # class << $gvar
       other.ignore if name.empty?
 
+      comment.owner = other if comment.is_a?(RDoc::Comment)
       other.add_comment comment, @top_level
     end
 
@@ -1022,6 +1024,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
 
     container.add_method meth
 
+    comment.owner = meth
     meth.comment = comment
 
     @stats.add_method meth
@@ -1059,6 +1062,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
 
     container.add_method meth
 
+    comment.owner = meth
     meth.comment = comment
 
     @stats.add_method meth
@@ -1237,6 +1241,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
 
     parse_meta_method_params container, single, meth, tk, comment
 
+    comment.owner = meth
     meth.comment = comment
 
     @stats.add_method meth
@@ -1348,6 +1353,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
     comment.normalize
     meth.call_seq = comment.extract_call_seq
 
+    comment.owner = meth
     meth.comment = comment
 
     # after end modifiers
@@ -1583,6 +1589,7 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
     record_location mod
 
     read_documentation_modifiers mod, RDoc::CLASS_MODIFIERS
+    comment.owner = mod if comment.is_a?(RDoc::Comment)
     mod.add_comment comment, @top_level
     parse_statements mod
 
@@ -1939,7 +1946,10 @@ class RDoc::Parser::RipperRuby < RDoc::Parser
     @markup = comment.format
 
     # HACK move if to RDoc::Context#comment=
-    container.comment = comment if container.document_self unless comment.empty?
+    if container.document_self && !comment.empty?
+      comment.owner = container
+      container.comment = comment
+    end
 
     parse_statements container, NORMAL, nil, comment
   end

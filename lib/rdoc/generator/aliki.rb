@@ -51,6 +51,7 @@ class RDoc::Generator::Aliki < RDoc::Generator::Darkfish
     options = { verbose: $DEBUG_RDOC, noop: @dry_run }
 
     install_rdoc_static_file @template_dir + 'css/rdoc.css', "./css/rdoc.css", options
+    install_rdoc_static_file @template_dir + 'css/annotations.css', "./css/annotations.css", options
 
     unless @options.template_stylesheets.empty?
       FileUtils.cp @options.template_stylesheets, '.', **options
