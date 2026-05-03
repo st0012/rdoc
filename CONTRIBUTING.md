@@ -160,9 +160,8 @@ lib/rdoc/
 ├── version.rb                 # Version constant
 ├── task.rb                    # Rake task integration
 ├── parser/                    # Source code parsers
-│   ├── ruby.rb                # Ruby code parser
+│   ├── ruby.rb                # Prism-based Ruby parser
 │   ├── c.rb                   # C extension parser
-│   ├── prism_ruby.rb          # Prism-based Ruby parser
 │   └── ...
 ├── generator/                 # Documentation generators
 │   ├── aliki.rb               # HTML generator (default theme)

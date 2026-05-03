@@ -783,7 +783,7 @@ class RDoc::Context < RDoc::CodeObject
   # Tries to find a module at a higher scope.
   # But parent is not always a higher module nesting scope, so the result is not correct.
   # Parent chain can only represent last-opened nesting, and may be broken in some cases.
-  # PrismRuby parser stopped representing module nesting with parent chain at all.
+  # The Ruby parser stopped representing module nesting with parent chain at all.
 
   def find_enclosing_module_named(name)
     parent && parent.find_module_named(name)

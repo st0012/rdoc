@@ -124,7 +124,7 @@ require_relative 'ripper_state_lex'
 # Note that by default, the :method: directive will be ignored if there is a
 # standard rdocable item following it.
 
-class RDoc::Parser::PrismRuby < RDoc::Parser
+class RDoc::Parser::Ruby < RDoc::Parser
 
   parse_files_matching(/\.rbw?$/)
 

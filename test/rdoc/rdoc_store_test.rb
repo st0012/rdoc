@@ -64,10 +64,6 @@ class RDocStoreTest < XrefTestCase
     @mod.record_location @top_level
   end
 
-  def using_prism_ruby_parser?
-    RDoc::Parser::Ruby.name == 'RDoc::Parser::PrismRuby'
-  end
-
   def teardown
     super
 
@@ -172,7 +168,6 @@ class RDocStoreTest < XrefTestCase
 
     # C8::S1 does not exist. It should not be in the list.
     # class C8; class << something; class S1; end; end; end
-    expected = (expected + ['C8::S1']).sort unless using_prism_ruby_parser?
 
     assert_equal expected,
                  @store.all_classes_and_modules.map { |m| m.full_name }.sort
@@ -227,7 +222,6 @@ class RDocStoreTest < XrefTestCase
 
     # C8::S1 does not exist. It should not be in the list.
     # class C8; class << something; class S1; end; end; end
-    expected = (expected + ['C8::S1']).sort unless using_prism_ruby_parser?
 
     assert_equal expected, @store.all_classes.map { |m| m.full_name }.sort
   end
@@ -575,19 +569,9 @@ class RDocStoreTest < XrefTestCase
   end
 
   def test_load_single_class
-    if using_prism_ruby_parser?
-      # Class defined inside singleton class is not documentable.
-      # @c8_s1 should be nil because C8::S1 does not exist.
-      assert_nil @c8_s1
-      return
-    end
-
-    @s.save_class @c8_s1
-    @s.classes_hash.clear
-
-    assert_equal @c8_s1, @s.load_class('C8::S1')
-
-    assert_includes @s.classes_hash, 'C8::S1'
+    # Class defined inside singleton class is not documentable.
+    # @c8_s1 should be nil because C8::S1 does not exist.
+    assert_nil @c8_s1
   end
 
   def test_load_method

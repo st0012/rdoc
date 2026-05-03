@@ -178,7 +178,7 @@ lib/rdoc/
 ├── version.rb                 # Version constant
 ├── task.rb                    # Rake task integration
 ├── parser/                    # Source code parsers (Ruby, C, Markdown, RD)
-│   ├── prism_ruby.rb          # Prism-based Ruby parser
+│   ├── ruby.rb                # Prism-based Ruby parser
 │   ├── c.rb                   # C extension parser
 │   └── ...
 ├── server.rb                  # Live-reloading preview server (rdoc --server)
@@ -235,10 +235,10 @@ exe/
 
 ### Parsers and Generators
 
-- **Parsers:** Prism-based Ruby (`RDoc::Parser::PrismRuby`), C, Markdown, RD
+- **Parsers:** Prism-based Ruby (`RDoc::Parser::Ruby`), C, Markdown, RD
 - **Generators:** HTML/Aliki (default), HTML/Darkfish (deprecated), RI, POT (gettext), JSON, Markup
 
-Parser tests live in the `RDocParserPrismTestCases` module (`test/rdoc/parser/prism_ruby_test.rb`) and are included by `RDocParserPrismRubyTest`. Add new parser tests to the mixin.
+Parser tests live in the `RDocParserRubyTestCases` module (`test/rdoc/parser/ruby_test.rb`) and are included by `RDocParserRubyTest`. Add new parser tests to the mixin.
 
 ### Code Object Model and Constant Aliases
 

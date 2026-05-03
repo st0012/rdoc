@@ -295,5 +295,4 @@ require_relative 'parser/changelog'
 require_relative 'parser/markdown'
 require_relative 'parser/rd'
 
-require_relative 'parser/prism_ruby'
-RDoc::Parser::Ruby = RDoc::Parser::PrismRuby
+require_relative 'parser/ruby'

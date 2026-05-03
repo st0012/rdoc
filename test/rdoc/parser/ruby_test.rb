@@ -2,9 +2,9 @@
 
 require_relative '../helper'
 require 'rdoc/parser'
-require 'rdoc/parser/prism_ruby'
+require 'rdoc/parser/ruby'
 
-module RDocParserPrismTestCases
+module RDocParserRubyTestCases
   def setup
     super
 
@@ -2530,11 +2530,11 @@ module RDocParserPrismTestCases
   end
 end
 
-class RDocParserPrismRubyTest < RDoc::TestCase
-  include RDocParserPrismTestCases
+class RDocParserRubyTest < RDoc::TestCase
+  include RDocParserRubyTestCases
 
   def util_parser(content)
-    @parser = RDoc::Parser::PrismRuby.new @top_level, content, @options, @stats
+    @parser = RDoc::Parser::Ruby.new @top_level, content, @options, @stats
     @parser.scan
   end
 end
