@@ -682,7 +682,7 @@ class RDoc::Parser::Ruby < RDoc::Parser
     end
 
     # Rename after add_method to register duplicated 'new' and 'initialize'
-    # defined in c and ruby just like the old parser did.
+    # defined in c and ruby.
     if !dont_rename_initialize && method_name == 'initialize' && !singleton
       if meth.dont_rename_initialize
         meth.visibility = :protected

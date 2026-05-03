@@ -266,8 +266,7 @@ class RDoc::Parser
     @preprocess.options = @options
   end
 
-  autoload :RubyTools, "#{__dir__}/parser/ruby_tools"
-  autoload :Text,      "#{__dir__}/parser/text"
+  autoload :Text, "#{__dir__}/parser/text"
 
   ##
   # Normalizes tabs in +body+
