@@ -19,9 +19,9 @@ class RDocContextSectionTest < RDoc::TestCase
 
     klass = file1.add_class RDoc::NormalClass, 'Klass'
 
-    c1 = RDoc::Comment.new "# :section: section\n", file1
-    c2 = RDoc::Comment.new "# hello\n",             file1
-    c3 = RDoc::Comment.new "# world\n",             file1
+    c1 = RDoc::Comment.new "",       file1
+    c2 = RDoc::Comment.new "# hello\n", file1
+    c3 = RDoc::Comment.new "# world\n", file1
 
     s = @S.new klass, 'section', c1
 
@@ -45,9 +45,9 @@ class RDocContextSectionTest < RDoc::TestCase
     klass = file1.add_class RDoc::NormalClass, 'Klass'
 
 
-    c1 = comment "# :section: section\n", file1, :ruby
-    c2 = comment "# hello\n",             file1, :ruby
-    c3 = comment "# <tt>world</tt>\n",    file1, :ruby
+    c1 = comment '',                   file1, :ruby
+    c2 = comment "# hello\n",          file1, :ruby
+    c3 = comment "# <tt>world</tt>\n", file1, :ruby
 
     s = @S.new klass, 'section', c1, @store
     assert_equal '', s.description
@@ -81,14 +81,6 @@ class RDocContextSectionTest < RDoc::TestCase
     assert_equal @s, @s
     assert_equal @s, @s.dup
     refute_equal @s, other
-  end
-
-  def test_extract_comment
-    assert_equal '',    @s.extract_comment(comment('')).text
-    assert_equal '',    @s.extract_comment(comment("# :section: b\n")).text
-    assert_equal '# c', @s.extract_comment(comment("# :section: b\n# c")).text
-    assert_equal '# c',
-                 @s.extract_comment(comment("# a\n# :section: b\n# c")).text
   end
 
   def test_hash

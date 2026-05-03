@@ -63,10 +63,10 @@ class RDoc::Context::Section
   # Adds +comment+ to this section
 
   def add_comment(comment)
-    comments = Array(comment)
-    comments.each do |c|
-      extracted_comment = extract_comment(c)
-      @comments << extracted_comment unless extracted_comment.empty?
+    Array(comment).each do |c|
+      next if c.nil?
+      raise TypeError, "unknown comment #{c.inspect}" unless RDoc::Comment === c
+      @comments << c unless c.empty?
     end
   end
 
@@ -96,37 +96,6 @@ class RDoc::Context::Section
     title = @title || '[untitled]'
 
     CGI.escape(title).gsub('%', '-').sub(/^-/, '')
-  end
-
-  ##
-  # Extracts the comment for this section from the original comment block.
-  # If the first line contains :section:, strip it and use the rest.
-  # Otherwise remove lines up to the line containing :section:, and look
-  # for those lines again at the end and remove them. This lets us write
-  #
-  #   # :section: The title
-  #   # The body
-
-  def extract_comment(comment)
-    case comment
-    when nil
-      RDoc::Comment.new ''
-    when RDoc::Comment then
-      if comment.text =~ /^#[ \t]*:section:.*\n/ then
-        start = $`
-        rest = $'
-
-        comment.text = if start.empty? then
-                         rest
-                       else
-                         rest.sub(/#{start.chomp}\Z/, '')
-                       end
-      end
-
-      comment
-    else
-      raise TypeError, "unknown comment #{comment.inspect}"
-    end
   end
 
   def inspect # :nodoc:

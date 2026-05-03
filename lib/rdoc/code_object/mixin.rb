@@ -71,6 +71,9 @@ class RDoc::Mixin < RDoc::CodeObject
   # lookup behavior.
   #
   # As of the beginning of October, 2011, no gem includes nonexistent modules.
+  #
+  # The Ruby parser passes an already-resolved full-path +name+, so most of this
+  # logic only runs for the C parser, which passes the unresolved local name.
 
   def module
     return @module if @module
