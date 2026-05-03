@@ -60,6 +60,13 @@ module RDoc
 
   class Error < RuntimeError; end
 
+  ##
+  # Emits a warning to $stderr. Override for tests / silencing.
+
+  def self.warn(message)
+    Kernel.warn(message)
+  end
+
   require_relative 'rdoc/version'
 
   ##

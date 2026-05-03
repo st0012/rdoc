@@ -373,6 +373,7 @@ class RDoc::Parser::Ruby < RDoc::Parser
     tokens.each { |token| meth.token_stream << token }
 
     container.add_method meth
+    comment.owner = meth if comment.is_a?(RDoc::Comment)
     meth.comment = comment
     @stats.add_method meth
   end
@@ -680,6 +681,7 @@ class RDoc::Parser::Ruby < RDoc::Parser
       ie = @container.add(rdoc_class, resolved_name || name, '')
       ie.store = @store
       ie.line = line_no
+      comment.owner = ie if comment.is_a?(RDoc::Comment)
       ie.comment = comment
       record_location(ie)
     end
@@ -726,6 +728,7 @@ class RDoc::Parser::Ruby < RDoc::Parser
 
   private def internal_add_method(method_name, container, comment:, dont_rename_initialize: false, directives:, modifier_comment_lines: nil, line_no:, visibility:, singleton:, params:, calls_super:, block_params:, tokens:, type_signature_lines: nil) # :nodoc:
     meth = RDoc::AnyMethod.new(method_name, singleton: singleton)
+    comment.owner = meth if comment.is_a?(RDoc::Comment)
     meth.comment = comment
     handle_code_object_directives(meth, directives) if directives
     modifier_comment_lines&.each do |line|
@@ -939,7 +942,10 @@ class RDoc::Parser::Ruby < RDoc::Parser
         mark_container_documentable(owner) if mod.document_self && owner.is_a?(RDoc::ClassModule)
         record_location(mod)
       end
-      mod.add_comment(comment, @top_level) if comment
+      if comment
+        comment.owner = mod if comment.is_a?(RDoc::Comment)
+        mod.add_comment(comment, @top_level)
+      end
     end
     mod
   end

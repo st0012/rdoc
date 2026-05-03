@@ -3023,6 +3023,52 @@ class RDocParserRubyTest < RDoc::TestCase
     assert_match %r{:\d+: invalid RBS type signature: "\(String ->"}, err
   end
 
+  def test_override_annotation_marks_method_and_strips_from_comment
+    util_parser <<~RUBY
+      class Button < Component
+        # Render the button.
+        #
+        # @override
+        def render(context)
+          "<button>\#{context}</button>"
+        end
+      end
+    RUBY
+
+    button = @top_level.classes.find { |c| c.full_name == 'Button' }
+    render = button.method_list.find { |m| m.name == 'render' }
+
+    rendered = render.comment.parse.parts.flat_map { |p| p.respond_to?(:text) ? [p.text] : [] }.join
+    assert_equal true, render.override
+    assert_not_include rendered, '@override'
+  end
+
+  def test_abstract_annotation_marks_class_and_method
+    util_parser <<~RUBY
+      # Base class for renderable UI components.
+      #
+      # @abstract
+      class Component
+        # Render the component to HTML.
+        #
+        # @abstract
+        def render(context)
+          raise NotImplementedError
+        end
+      end
+    RUBY
+
+    component = @top_level.classes.find { |c| c.full_name == 'Component' }
+    render = component.method_list.find { |m| m.name == 'render' }
+
+    component.comment.parse if component.comment.is_a?(RDoc::Comment)
+    component.comment_location.each_value { |comments| comments.each { |comment| comment.parse if comment.is_a?(RDoc::Comment) } }
+    render.comment.parse
+
+    assert_equal true, component.abstract
+    assert_equal true, render.abstract
+  end
+
   def util_parser(content)
     @parser = RDoc::Parser::Ruby.new @top_level, content, @options, @stats
     @parser.scan
