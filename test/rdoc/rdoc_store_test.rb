@@ -166,9 +166,6 @@ class RDocStoreTest < XrefTestCase
       Parent
     ]
 
-    # C8::S1 does not exist. It should not be in the list.
-    # class C8; class << something; class S1; end; end; end
-
     assert_equal expected,
                  @store.all_classes_and_modules.map { |m| m.full_name }.sort
   end
@@ -219,9 +216,6 @@ class RDocStoreTest < XrefTestCase
       Object
       Parent
     ]
-
-    # C8::S1 does not exist. It should not be in the list.
-    # class C8; class << something; class S1; end; end; end
 
     assert_equal expected, @store.all_classes.map { |m| m.full_name }.sort
   end
