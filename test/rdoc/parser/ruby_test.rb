@@ -4,7 +4,12 @@ require_relative '../helper'
 require 'rdoc/parser'
 require 'rdoc/parser/ruby'
 
-module RDocParserRubyTestCases
+class RDocParserRubyTest < RDoc::TestCase
+  def util_parser(content)
+    @parser = RDoc::Parser::Ruby.new @top_level, content, @options, @stats
+    @parser.scan
+  end
+
   def setup
     super
 
@@ -2527,14 +2532,5 @@ module RDocParserRubyTestCases
     m1, m2 = @top_level.classes.first.method_list
     assert_equal "foo1\nbar1", m1.call_seq.chomp
     assert_equal "ARGF.readlines(a)\nARGF.readlines(b)\nARGF.readlines(c)\nARGF.readlines(d)", m2.call_seq.chomp
-  end
-end
-
-class RDocParserRubyTest < RDoc::TestCase
-  include RDocParserRubyTestCases
-
-  def util_parser(content)
-    @parser = RDoc::Parser::Ruby.new @top_level, content, @options, @stats
-    @parser.scan
   end
 end
