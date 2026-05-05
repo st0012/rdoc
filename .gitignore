@@ -15,3 +15,6 @@ Gemfile.lock
 
 # Playwright MCP uses this folder to store screenshots
 .playwright-mcp/
+
+# Exported talk PDFs are build artifacts
+talks/*/slides.pdf
