@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Future of Ruby Documentation — Stan Lo — RubyKaigi 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./the-future-of-ruby-documentation_files/css2" rel="stylesheet">
+<style>
+/* ===========================================
+   CSS CUSTOM PROPERTIES (SWISS MODERN THEME)
+   =========================================== */
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f7f7f7;
+  --text: #0a0a0a;
+  --text-secondary: #555;
+  --text-dim: #999;
+  --accent: #cc342d;
+  --accent-light: rgba(204,52,45,0.08);
+  --accent-glow: rgba(204,52,45,0.15);
+  --grid-color: rgba(0,0,0,0.05);
+  --border: #e0e0e0;
+  --code-bg: #1a1a2e;
+  --code-text: #e0e0e0;
+  --font-display: 'Archivo', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --title-size: clamp(3.2rem, 7vw, 7rem);
+  --hero-size: clamp(2.5rem, 5.5vw, 5rem);
+  --h2-size: clamp(2.2rem, 5vw, 3.8rem);
+  --h3-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  --body-size: clamp(1.1rem, 2.2vw, 1.8rem);
+  --small-size: clamp(0.95rem, 1.6vw, 1.4rem);
+  --code-size: clamp(0.9rem, 1.7vw, 1.5rem);
+  --slide-padding: clamp(2rem, 5vw, 5rem);
+  --content-gap: clamp(1.2rem, 3vw, 2.5rem);
+  --element-gap: clamp(0.5rem, 1.4vw, 1.2rem);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration: 0.6s;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; position: relative; background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px); background-size: 60px 60px; background-color: var(--bg); }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+body { font-family: var(--font-body); color: var(--text); background: var(--bg); }
+.slide.section-divider { background: var(--accent); background-image: none; justify-content: center; align-items: center; }
+.slide.section-divider .slide-content { text-align: center; justify-content: center; align-items: center; }
+.slide.section-divider h2 { color: #fff; font-family: var(--font-display); font-size: clamp(2.5rem, 7vw, 6rem); font-weight: 900; letter-spacing: -0.02em; }
+.slide.section-divider .section-number { color: rgba(255,255,255,0.3); font-family: var(--font-display); font-size: clamp(5rem, 14vw, 13rem); font-weight: 900; line-height: 1; margin-bottom: clamp(0.5rem, 1vw, 1rem); }
+.slide.title-slide { background-image: none; background: radial-gradient(ellipse at 80% 20%, var(--accent-glow) 0%, transparent 50%), linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px); background-size: 100% 100%, 60px 60px, 60px 60px; background-color: var(--bg); }
+h1 { font-family: var(--font-display); font-size: var(--title-size); font-weight: 900; line-height: 1.05; letter-spacing: -0.02em; color: var(--text); }
+h2 { font-family: var(--font-display); font-size: var(--h2-size); font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; color: var(--text); margin-bottom: var(--content-gap); }
+h3 { font-family: var(--font-display); font-size: var(--h3-size); font-weight: 700; color: var(--text); margin-bottom: var(--element-gap); }
+.accent { color: var(--accent); }
+.dim { color: var(--text-secondary); }
+p, li { font-size: var(--body-size); line-height: 1.5; color: var(--text-secondary); }
+ul { list-style: none; display: flex; flex-direction: column; gap: var(--element-gap); }
+ul li { padding-left: clamp(1rem, 2vw, 1.5rem); position: relative; }
+ul li::before { content: ''; position: absolute; left: 0; top: clamp(0.4rem, 0.7vw, 0.55rem); width: 6px; height: 6px; background: var(--accent); }
+.code-block { background: var(--code-bg); color: var(--code-text); font-family: var(--font-mono); font-size: var(--code-size); line-height: 1.6; padding: clamp(0.75rem, 2vw, 1.5rem); border-radius: 8px; overflow: hidden; border-left: 3px solid var(--accent); white-space: pre; }
+.code-block .kw { color: #ff7b72; }
+.code-block .str { color: #a5d6ff; }
+.code-block .cm { color: #8b949e; }
+.code-block .fn { color: #d2a8ff; }
+.code-block .ty { color: #79c0ff; }
+code { font-family: var(--font-mono); font-size: 0.9em; background: var(--accent-light); color: var(--accent); padding: 0.1em 0.4em; border-radius: 3px; }
+.two-col { display: flex; gap: clamp(1.5rem, 3vw, 3rem); align-items: flex-start; }
+.two-col > * { flex: 1; min-width: 0; }
+.comparison-table { width: 100%; border-collapse: collapse; font-size: var(--body-size); }
+.comparison-table th { font-family: var(--font-display); font-weight: 700; text-align: left; padding: clamp(0.3rem, 0.8vw, 0.6rem) clamp(0.5rem, 1.5vw, 1.2rem); border-bottom: 2px solid var(--text); color: var(--text); font-size: var(--small-size); text-transform: uppercase; letter-spacing: 0.05em; }
+.comparison-table td { padding: clamp(0.3rem, 0.8vw, 0.6rem) clamp(0.5rem, 1.5vw, 1.2rem); border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.comparison-table td:first-child { font-weight: 600; color: var(--text); }
+.diagram { display: flex; align-items: center; justify-content: center; gap: clamp(0.5rem, 1.5vw, 1.2rem); flex-wrap: wrap; padding: clamp(1rem, 2vw, 2rem) 0; }
+.diagram-box { background: var(--bg-alt); border: 2px solid var(--border); border-radius: 8px; padding: clamp(0.5rem, 1.2vw, 1rem) clamp(0.8rem, 2vw, 1.5rem); font-family: var(--font-mono); font-size: var(--small-size); text-align: center; color: var(--text); }
+.diagram-box.highlight { border-color: var(--accent); background: var(--accent-light); }
+.diagram-arrow { font-size: clamp(1rem, 2vw, 1.5rem); color: var(--text-dim); }
+.quote { border-left: 3px solid var(--accent); padding-left: clamp(1rem, 2vw, 1.5rem); font-style: italic; font-size: var(--h3-size); color: var(--text); line-height: 1.4; }
+.badge { display: inline-block; font-family: var(--font-mono); font-size: var(--small-size); background: var(--accent); color: #fff; padding: 0.15em 0.6em; border-radius: 3px; font-weight: 500; letter-spacing: 0.03em; }
+.placeholder { background: var(--bg-alt); border: 2px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: clamp(1.5rem, 3vw, 3rem); color: var(--text-dim); font-size: var(--small-size); font-family: var(--font-mono); text-align: center; max-height: min(50vh, 450px); }
+.corner-label { position: absolute; top: clamp(0.8rem, 2vw, 1.5rem); left: clamp(0.8rem, 2vw, 1.5rem); font-family: var(--font-display); font-weight: 800; font-size: var(--small-size); color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+.slide-num { position: absolute; bottom: clamp(0.8rem, 2vw, 1.5rem); right: clamp(0.8rem, 2vw, 1.5rem); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-dim); }
+.deco-circle { position: absolute; border: 2px solid var(--accent); border-radius: 50%; opacity: 0.15; pointer-events: none; }
+.deco-rect { position: absolute; background: var(--accent); opacity: 0.08; pointer-events: none; }
+.reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease); }
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.reveal:nth-child(2) { transition-delay: 0.1s; }
+.reveal:nth-child(3) { transition-delay: 0.2s; }
+.reveal:nth-child(4) { transition-delay: 0.25s; }
+.reveal:nth-child(5) { transition-delay: 0.3s; }
+.progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 1000; transition: width 0.3s var(--ease); width: 0%; }
+.nav-dots { position: fixed; right: clamp(0.5rem, 1.5vw, 1.2rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 999; }
+.nav-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all 0.3s var(--ease); border: none; padding: 0; }
+.nav-dots .dot.active { background: var(--accent); transform: scale(1.3); }
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle { position: fixed; top: 12px; left: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; border: none; font-size: 16px; cursor: pointer; z-index: 10001; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center; }
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--accent); color: #fff; font-family: var(--font-mono); font-size: 12px; text-align: center; padding: 4px; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.edit-banner.active { opacity: 1; }
+body.edit-active [contenteditable] { outline: 1px dashed var(--accent); outline-offset: 2px; cursor: text; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.5rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .two-col { flex-direction: column !important; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; } }
+.notes-panel { position: fixed; bottom: 0; left: 0; right: 0; height: 180px; background: #1a1a2e; border-top: 2px solid #cc342d; display: none; flex-direction: column; z-index: 9000; font-family: var(--font-body); }
+.notes-panel.active { display: flex; }
+.notes-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 16px; background: #252540; font-size: 12px; color: #888; }
+.notes-panel-header .notes-label { font-weight: 600; color: #ccc; }
+.notes-panel-header .notes-status { font-style: italic; }
+.notes-panel textarea { flex: 1; background: #1a1a2e; color: #e0e0e0; border: none; padding: 12px 16px; font-family: var(--font-body); font-size: 15px; line-height: 1.5; resize: none; outline: none; }
+.notes-panel textarea::placeholder { color: #555; }
+.speaker-notes { display: none; }
+.blackout-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; }
+.blackout-overlay.active { display: block; }
+body.mirror .progress-bar, body.mirror .nav-dots, body.mirror .edit-hotzone, body.mirror .edit-toggle, body.mirror .edit-banner, body.mirror .notes-panel { display: none !important; }
+body.mirror { overflow: hidden; }
+</style>
+</head>
+<body class="">
+<div class="progress-bar" id="progressBar" style="width: 20%;"></div>
+<nav class="nav-dots" id="navDots"><button class="dot" aria-label="Go to slide 1"></button><button class="dot" aria-label="Go to slide 2"></button><button class="dot" aria-label="Go to slide 3"></button><button class="dot" aria-label="Go to slide 4"></button><button class="dot" aria-label="Go to slide 5"></button><button class="dot" aria-label="Go to slide 6"></button><button class="dot" aria-label="Go to slide 7"></button><button class="dot" aria-label="Go to slide 8"></button><button class="dot" aria-label="Go to slide 9"></button><button class="dot active" aria-label="Go to slide 10"></button><button class="dot" aria-label="Go to slide 11"></button><button class="dot" aria-label="Go to slide 12"></button><button class="dot" aria-label="Go to slide 13"></button><button class="dot" aria-label="Go to slide 14"></button><button class="dot" aria-label="Go to slide 15"></button><button class="dot" aria-label="Go to slide 16"></button><button class="dot" aria-label="Go to slide 17"></button><button class="dot" aria-label="Go to slide 18"></button><button class="dot" aria-label="Go to slide 19"></button><button class="dot" aria-label="Go to slide 20"></button><button class="dot" aria-label="Go to slide 21"></button><button class="dot" aria-label="Go to slide 22"></button><button class="dot" aria-label="Go to slide 23"></button><button class="dot" aria-label="Go to slide 24"></button><button class="dot" aria-label="Go to slide 25"></button><button class="dot" aria-label="Go to slide 26"></button><button class="dot" aria-label="Go to slide 27"></button><button class="dot" aria-label="Go to slide 28"></button><button class="dot" aria-label="Go to slide 29"></button><button class="dot" aria-label="Go to slide 30"></button><button class="dot" aria-label="Go to slide 31"></button><button class="dot" aria-label="Go to slide 32"></button><button class="dot" aria-label="Go to slide 33"></button><button class="dot" aria-label="Go to slide 34"></button><button class="dot" aria-label="Go to slide 35"></button><button class="dot" aria-label="Go to slide 36"></button><button class="dot" aria-label="Go to slide 37"></button><button class="dot" aria-label="Go to slide 38"></button><button class="dot" aria-label="Go to slide 39"></button><button class="dot" aria-label="Go to slide 40"></button><button class="dot" aria-label="Go to slide 41"></button><button class="dot" aria-label="Go to slide 42"></button><button class="dot" aria-label="Go to slide 43"></button><button class="dot" aria-label="Go to slide 44"></button><button class="dot" aria-label="Go to slide 45"></button><button class="dot" aria-label="Go to slide 46"></button><button class="dot" aria-label="Go to slide 47"></button><button class="dot" aria-label="Go to slide 48"></button><button class="dot" aria-label="Go to slide 49"></button><button class="dot" aria-label="Go to slide 50"></button></nav>
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)">✓</button>
+<div class="edit-banner" id="editBanner">Saved!</div>
+<div class="blackout-overlay" id="blackoutOverlay"></div>
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-panel-header">
+    <span class="notes-label">Speaker Notes (slide <span id="noteSlideNum">10</span>/<span id="noteTotalSlides">50</span>)</span>
+    <span class="notes-status" id="noteStatus">Saved</span>
+  </div>
+  <textarea id="notesTextarea" placeholder="Type your speaker notes here..."></textarea>
+</div>
+
+<!-- 01: TITLE -->
+<section class="slide title-slide visible" data-section="The Hook" data-budget="3-4 min">
+  <div class="deco-circle" style="width:clamp(120px,18vw,280px);height:clamp(120px,18vw,280px);top:8%;right:10%"></div>
+  <div class="deco-rect" style="width:clamp(40px,6vw,80px);height:clamp(40px,6vw,80px);bottom:15%;right:18%"></div>
+  <div class="corner-label">RubyKaigi 2026</div>
+  <div class="slide-content" style="max-width:min(90vw,1200px)">
+    <h1 class="reveal" style="font-size:clamp(3.5rem,8vw,8rem);margin-bottom:var(--content-gap)">The Future of <span class="accent">Ruby</span> Documentation</h1>
+    <p class="reveal" style="font-size:clamp(1.2rem,2vw,1.8rem);color:var(--text-secondary)"><strong style="color:var(--text)">Stan Lo</strong></p>
+  </div>
+  <div class="slide-num">01</div>
+  <div class="speaker-notes">Hi everyone. Today I want to talk about the future of Ruby documentation — what we have done in the last 2 years, and what will come in the future.</div>
+</section>
+
+<!-- 02a: ABOUT ME — RUBY COMMITTER -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">About me</h2>
+  <ul class="reveal">
+    <li>Ruby committer — Debug.gem, IRB, RDoc, Reline, a bit of ZJIT</li>
+  </ul>
+</div><div class="slide-num">02</div>
+  <div class="speaker-notes">I'm Stan Lo. I'm a Ruby committer and I've worked on several Ruby tools over the years, including the debugger, IRB, RDoc, and Reline.
+Last year I also spent quite some time working on ZJIT as well.</div>
+</section>
+
+<!-- 02b: CLIMBING & CALISTHENICS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal">When I don't write code, I climb and do calisthenics training.</h2>
+  <div class="reveal" style="margin-top:var(--content-gap)">
+    <img src="images/pullup-record.jpeg" alt="Pullup record at the Hacomono booth" style="max-width:min(90vw,1000px);max-height:min(72vh,700px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+  </div>
+</div><div class="slide-num">03</div>
+  <div class="speaker-notes">When I don't write code, I climb and do calisthenics training. Which means a lot of pullups and hangs — and today I took the Hacomono booth's challenge. Here's my record.</div>
+</section>
+
+<!-- 02c: FRONTLEVER DEMO -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(95vw,1400px);text-align:center;align-items:center">
+  <h2 class="reveal">I also train for tricks like front lever.</h2>
+  <div class="reveal" style="margin-top:var(--content-gap)">
+    <video src="images/frontlever-drop.mp4" style="max-width:100%;max-height:min(72vh,700px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer" onclick="this.paused?this.play():this.pause()" muted="" playsinline=""></video>
+  </div>
+</div><div class="slide-num">04</div>
+  <div class="speaker-notes">I also train for tricks like the front lever. Which, as you can see, is not cool at all if you need to pick up the changes afterward
+[Arrow key or click to play.]</div>
+</section>
+
+<!-- 02: ABOUT ME (FULL) -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">About me</h2>
+  <ul class="reveal">
+    <li>Ruby committer — Debug.gem, IRB, RDoc, Reline, a bit of ZJIT</li>
+    <li>Ruby DX team @Shopify&nbsp;—&nbsp;Tapioca, Ruby LSP, Rubydex</li>
+  </ul>
+</div><div class="slide-num">05</div>
+  <div class="speaker-notes">Anyway — that's my main hobby now. I'm also part of the Ruby Developer Experience team at Shopify. We build and maintain projects like Tapioca, Ruby LSP, and a new project called Rubydex.</div>
+</section>
+
+<!-- 03: RUBYDEX -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">Rubydex</h2>
+  <ul class="reveal">
+    <li>A Ruby code indexer — <code>Shopify/rubydex</code></li>
+    <li>Static code intelligence for Ruby</li>
+  </ul>
+  <div class="reveal" style="margin-top:var(--content-gap)">
+    <img src="images/terrasa-talk.png" alt="Alexandre Terrasa — Blazing-fast Code Indexing for Smarter Ruby Tools" style="max-width:min(60vw,550px);border-radius:8px;border:1px solid var(--grid-color)">
+  </div>
+</div><div class="slide-num">06</div>
+  <div class="speaker-notes">Speaking of Rubydex, it's a new Ruby code indexer my team is building. It provides static code intelligence for Ruby — class and module resolution, method lookup, reference finding, and so on. It's fast and it's built to be a foundation for other tools. It even ships with a built-in MCP server, so AI agents can use it right away.
+My colleague Alexandre Terrasa is giving a talk about it tomorrow — please check it out.</div>
+</section>
+
+<!-- 04: BOLD CLAIM -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)">The future of Ruby documentation has to work for <span class="accent">AI</span> too.</h2>
+</div><div class="slide-num">07</div>
+  <div class="speaker-notes">In addition to tooling like Rubydex, Ruby's documentation needs to work for AI too. And most of you will likely agree.</div>
+</section>
+
+<!-- 05: RDOC IS THE BACKBONE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <h2 class="reveal">And most of this falls on one project: <span class="accent">RDoc</span></h2>
+  <p class="reveal" style="font-size:var(--body-size);color:var(--text-secondary)">The backbone of Ruby documentation for 20+ years.</p>
+  <div class="reveal" style="margin-top:var(--content-gap);display:flex;flex-direction:column;align-items:center;width:min(85vw,1000px);margin-left:auto;margin-right:auto">
+    <!-- Source box -->
+    <div class="diagram-box highlight" style="min-width:min(28vw,220px);text-align:center;font-weight:700;font-size:var(--body-size)">RDoc</div>
+    <!-- Tree connector: trunk down → horizontal bar → three drops with arrowheads -->
+    <svg viewBox="0 0 1000 70" style="width:100%;height:auto;color:var(--text-dim);display:block" aria-hidden="true">
+      <defs>
+        <marker id="rdoc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto">
+          <path d="M0,0 L9,5 L0,10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <!-- trunk down from RDoc -->
+        <line x1="500" y1="0" x2="500" y2="26"></line>
+        <!-- horizontal bar across to side branches -->
+        <line x1="167" y1="26" x2="833" y2="26"></line>
+        <!-- three drops with arrowheads -->
+        <line x1="167" y1="26" x2="167" y2="58" marker-end="url(#rdoc-arrow)"></line>
+        <line x1="500" y1="26" x2="500" y2="58" marker-end="url(#rdoc-arrow)"></line>
+        <line x1="833" y1="26" x2="833" y2="58" marker-end="url(#rdoc-arrow)"></line>
+      </g>
+    </svg>
+    <!-- Three child boxes + captions, columns aligned with SVG endpoints (16.67% / 50% / 83.33%) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:0;row-gap:clamp(0.3rem,0.7vw,0.5rem);justify-items:center;align-items:start;width:100%">
+      <div class="diagram-box" style="min-width:min(22vw,200px)">docs.ruby-lang.org</div>
+      <div class="diagram-box" style="min-width:min(22vw,200px)"><code>ri</code> data</div>
+      <div class="diagram-box" style="min-width:min(22vw,200px)">Gem API docs</div>
+      <div style="font-size:var(--small-size);color:var(--text-dim);text-align:center">Official Ruby docs</div>
+      <div style="font-size:var(--small-size);color:var(--text-dim);text-align:center">CLI doc viewer</div>
+      <div style="font-size:var(--small-size);color:var(--text-dim);text-align:center">Prism, Nokogiri, IRB, …</div>
+    </div>
+  </div>
+</div><div class="slide-num">08</div>
+  <div class="speaker-notes">And most of these expectations fall on one project: RDoc.
+
+RDoc has been the backbone of Ruby documentation for more than 20 years. It generates the official documentation at docs.ruby-lang.org. It also generates the data the ri command-line tool reads, so when you look up a method in the terminal, that's RDoc behind the scenes. And it generates the API documentation for projects that adopt it — gems like Prism, Nokogiri, IRB, and many others.
+
+So if we want to make Ruby's documentation work better for humans and AI, RDoc is where the work has to happen.</div>
+</section>
+
+<!-- 06: BUT WE'RE NOT THERE YET -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)">But RDoc isn't ready for that yet.</h2>
+</div><div class="slide-num">09</div>
+  <div class="speaker-notes">But honestly, RDoc isn't ready for that future yet.</div>
+</section>
+
+<!-- 06: WHAT AI NEEDS FROM DOCUMENTATION -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">What AI needs from documentation</h2>
+  <ul class="reveal">
+    <li><strong style="color:var(--text)">Clear, accurate documentation</strong></li>
+    <li><strong style="color:var(--text)">Simpler content formats</strong> — less context overhead (currently Markdown)</li>
+    <li><strong style="color:var(--text)">Clear intent</strong> — structured info like type signatures tell it what code expects</li>
+  </ul>
+</div><div class="slide-num">10</div>
+  <div class="speaker-notes">AI needs a few things from documentation.
+First, accuracy — AI trains on docs and builds assumptions based on them. It also grabs docs when making plans, and references them when generating code. So the API doc needs to match the actual code structure.
+Second, the doc should be presented in simpler content formats — ones that don't waste context on markup noise. Right now that's Markdown, but the specific format could change.
+Third, clear intent — structured information like type signatures tells AI what a piece of code expects and returns effectively, as well as how different methods could interact with each other.</div>
+</section>
+
+<!-- 06: WHAT AI NEEDS FROM TOOLING -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">What AI needs from tooling</h2>
+  <ul class="reveal">
+    <li><strong style="color:var(--text)">Quick, deterministic feedback</strong> — coverage checks, reference validation</li>
+    <li><strong style="color:var(--text)">Incremental preview</strong> — see changes without regenerating everything</li>
+  </ul>
+</div><div class="slide-num">11</div>
+  <div class="speaker-notes">That's the content side. But AI also needs good tooling around documentation so it can help developers contribute to them.
+When an agent writes or updates docs, it needs fast feedback — so it knows if anything is missing documentation, or if the references are incorrect.
+It can also use incrementally generated docs to verify changes quickly, instead of generating the whole project's documentation all over again.</div>
+</section>
+
+<!-- 07: THE TWIST -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)">Most of these help <span class="accent">human</span> developers too.</h2>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)"><br></p>
+</div><div class="slide-num">12</div>
+  <div class="speaker-notes">Here's the thing. Most of what I just described — accurate docs, type signatures, fast feedback — these aren't just AI requirements.
+They're what makes documentation better for everyone. Improving these things now just creates more leverage because AI amplifies the benefit.</div>
+</section>
+
+<!-- 08: RDOC WASN'T DELIVERING -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">RDoc wasn't delivering</h2>
+  <ul class="reveal">
+    <li>Parser couldn't handle some newer Ruby syntax</li>
+    <li>Incomplete Markdown support</li>
+    <li>No RBS type signatures</li>
+    <li>No server mode</li>
+    <li>Dated theme, bad reading experience</li>
+  </ul>
+</div><div class="slide-num">13</div>
+  <div class="speaker-notes">But RDoc has been struggling to meet the expectations.
+Its parser couldn't handle newer Ruby syntax features — so the generated docs for those are sometimes wrong.
+Its Markdown support was incomplete and so writing docs with it is difficult. There was no RBS integration so it's missing key information.
+Without server mode — you had to regenerate and manually open HTML files to see changes.
+And finally, the Darkfish theme was dated, without even mobile support — giving readers an awful first impression of the language and poor reading experience.</div>
+</section>
+
+<!-- 10: TRANSITION -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)">So here's what we did.</h2>
+  <ul class="reveal" style="margin-top:var(--content-gap);text-align:left;display:inline-flex;flex-direction:column;gap:clamp(0.6rem,1.5vw,1.2rem);font-size:clamp(1.4rem,3vw,2.2rem)">
+    <li style="font-size:clamp(1.4rem,3vw,2.2rem)">New theme</li>
+    <li style="font-size:clamp(1.4rem,3vw,2.2rem)">New Prism-based parser</li>
+    <li style="font-size:clamp(1.4rem,3vw,2.2rem)">Markdown improvements</li>
+    <li style="font-size:clamp(1.4rem,3vw,2.2rem)">RBS type signatures</li>
+    <li style="font-size:clamp(1.4rem,3vw,2.2rem)">Server mode</li>
+  </ul>
+</div><div class="slide-num">14</div>
+  <div class="speaker-notes">So there's a long list of things we need to fix. Here's what we've been working on over the past 2 years. Let me walk through each one.</div>
+</section>
+
+<!-- 11: BEFORE — DARKFISH -->
+<section class="slide visible" data-section="Here's What We Did" data-budget="14-16 min"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
+  <h2 class="reveal">Before: Darkfish</h2>
+  <div class="reveal" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center"><img src="images/darkfish-theme.png" alt="Darkfish theme" style="max-width:100%;max-height:min(65vh,600px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)"></div>
+</div><div class="slide-num">15</div>
+  <div class="speaker-notes">First is the visual change. The Darkfish theme was built in 2008. And it's clearly dated for 2020.</div>
+</section>
+
+<!-- 12: AFTER — ALIKI (LIGHT) -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(95vw,1400px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
+  <h2 class="reveal">After: Aliki</h2>
+  <div class="reveal" style="margin-top:var(--element-gap)">
+    <img src="images/aliki-light.png" alt="Aliki theme — light mode" style="width:100%;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+  </div>
+</div><div class="slide-num">16</div>
+  <div class="speaker-notes">So I created Aliki — the new default theme shipped with Ruby 4.0. Here's the light mode. It has clean layout, redesigned left sidebar, better contrast and highlight, and better navigation and search experience. And we're still improving it.</div>
+</section>
+
+<!-- 13: AFTER — ALIKI (DARK) -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(95vw,1400px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">New theme</p>
+  <h2 class="reveal">After: Aliki (dark mode)</h2>
+  <div class="reveal" style="margin-top:var(--element-gap)">
+    <img src="images/aliki-dark.png" alt="Aliki theme — dark mode" style="width:100%;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+  </div>
+</div><div class="slide-num">17</div>
+  <div class="speaker-notes">It also has a dark mode, which is turned on based on your system preferences. With Aliki, we hope to give Ruby developers a good impression that matches Ruby's aesthetics.</div>
+</section>
+
+<!-- 14: PARSER REWRITE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
+  <h2 class="reveal">The new parser</h2>
+  <ul class="reveal">
+    <li>RDoc's Ruby parser couldn't handle modern syntax and was hard to maintain</li>
+    <li>Tomoya Ishida (@tompng) rewrote it on Prism, fixing many issues along the way</li>
+    <li>Fixed 7 long-standing bugs — some open since 2016e</li>
+  </ul>
+</div><div class="slide-num">18</div>
+  <div class="speaker-notes">That's the new look. Now let's talk about what's under the hood. RDoc's Ruby parser was built on Ripper's tokenizer. And the parsing logic was implemented manually. So when Ruby gets updates, It often couldn't handle new syntax and was hard to maintain. 
+So to solve this problem, Tomoya Ishida — Ruby committer and RDoc maintainer — created a new parser based on Prism last year, and fixed many issues along the way, some reported even 10 years ago.</div>
+</section>
+
+<!-- HIDDEN: __FILE__ BUG EXAMPLE -->
+<section class="slide visible" style="display:none"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
+  <h2 class="reveal">Bug fix example: <code>__FILE__</code></h2>
+  <p class="reveal" style="font-size:var(--body-size);margin-top:var(--content-gap)">Source: <code># Returns __FILE__ as a string</code></p>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--text-dim)">Before</h3>
+      <div style="flex:1;display:flex;align-items:center;padding:clamp(1.2rem,2.5vw,2.5rem);border-radius:8px;border:2px solid var(--border);margin-top:var(--element-gap);font-size:var(--body-size)">
+        Returns <em><strong>&nbsp;FILE&nbsp;</strong></em> as a string
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--accent)">After</h3>
+      <div style="flex:1;display:flex;align-items:center;padding:clamp(1.2rem,2.5vw,2.5rem);border-radius:8px;border:2px solid var(--accent);margin-top:var(--element-gap);font-size:var(--body-size)">
+        Returns __FILE__ as a string
+      </div>
+    </div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">Same fix for <code>__send__</code>, <code>__dir__</code>, and similar identifiers.</p>
+</div><div class="slide-num">16</div>
+  <div class="speaker-notes">The old formatter saw underscores and assumed they meant emphasis. So __FILE__ in a doc comment became italic-bold FILE. The new parser understands these are Ruby keywords, not formatting, so it can render them correctly. The same fix handles __send__, __dir__, and any double-underscore identifier.</div>
+</section>
+
+<!-- 15: PARSER RESULTS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
+  <h2 class="reveal">What the rewrite changed</h2>
+  <ul class="reveal">
+    <li>Roughly half the code (1,243 vs 2,241 lines)</li>
+    <li>~30% faster (0.69s vs 0.97s on 112 files)</li>
+    <li>New Ruby syntax is handled by Prism — not by RDoc</li>
+  </ul>
+</div><div class="slide-num">19</div>
+  <div class="speaker-notes">After the rewrite, the new parser is roughly half the code — 1,243 lines versus 2,241. We benchmarked both on RDoc's own codebase — and the new parser came out about 30% faster. 
+But most importantly, when Ruby adds new syntax, Prism already knows how to parse it. We don't have to manually teach RDoc about every new feature anymore.</div>
+</section>
+
+<!-- 16: ENDLESS METHOD BUG EXAMPLE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Parser</p>
+  <h2 class="reveal">Bug fix example: endless methods</h2>
+  <div class="reveal" style="margin-top:var(--content-gap)">
+    <div class="code-block" style="background:#2d2d2d;display:inline-block;font-size:var(--small-size)"><span class="kw">class</span> <span class="fn">Foo</span>       <span class="cm"># open Foo</span>
+  <span class="kw">def</span> <span class="fn">bar</span> = 42  <span class="cm"># open bar — where's end?</span>
+<span class="kw">end</span>             <span class="cm"># this closes bar, not Foo</span>
+
+<span class="kw">class</span> <span class="fn">Baz</span>; <span class="kw">end</span> <span class="cm"># Ripper thinks we're still inside Foo</span></div>
+  </div>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,4vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1">
+      <h3 style="color:var(--text-dim);margin-bottom:var(--element-gap)">Ripper</h3>
+      <div style="padding:clamp(1rem,2vw,1.5rem);border-radius:8px;border:2px solid var(--border);font-family:var(--font-mono);font-size:var(--body-size);line-height:1.8">
+        <div><strong>class Foo</strong></div>
+        <div style="padding-left:1.5em">— method bar</div>
+        <div style="padding-left:1.5em">— <strong>class Baz</strong> <span style="color:var(--accent)">← wrong</span></div>
+      </div>
+    </div>
+    <div style="flex:1">
+      <h3 style="color:var(--accent);margin-bottom:var(--element-gap)">Prism</h3>
+      <div style="padding:clamp(1rem,2vw,1.5rem);border-radius:8px;border:2px solid var(--accent);font-family:var(--font-mono);font-size:var(--body-size);line-height:1.8">
+        <div><strong>class Foo</strong></div>
+        <div style="padding-left:1.5em">— method bar</div>
+        <div><strong>class Baz</strong></div>
+      </div>
+    </div>
+  </div>
+</div><div class="slide-num">20</div>
+  <div class="speaker-notes">Here's one example: The old parser works on tokens — it tracks where methods end by looking for the end keyword. 
+But after endless methods were introduced, they broke that assumption. So in this example, the Ripper-based parser would incorrectly consume the end keyword of the Foo class, thinking it's the end for the method, and cause the Baz class to be considered nested inside Foo.
+
+With Prism, the parser already knows how to handle method and class boundaries. So RDoc can easily know there's just one method inside the Foo class. And Baz is outside of its scope.</div>
+</section>
+
+<!-- 17: MARKDOWN IN RDOC -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">Writing Markdown in RDoc</h2>
+  <ul class="reveal">
+    <li>Markdown is widespread — GitHub, Stack Overflow, every doc tool uses it</li>
+    <li>It should be the default in RDoc</li>
+    <li>RDoc has supported it since 2011, but the parser was buggy and incomplete</li>
+  </ul>
+</div><div class="slide-num">21</div>
+  <div class="speaker-notes">Next, let's talk about Markdown. Markdown is everywhere — GitHub, Stack Overflow, and basically every documentation or developer tool. It should be the default in RDoc.
+RDoc has actually supported Markdown since 2011. But the support was incomplete and buggy — features like strikethrough, tables, and heading anchors were all half working. If you're used to writing Markdown on GitHub, you'd be frustrated by RDoc's Markdown support pretty quickly.</div>
+</section>
+
+<!-- 18: RDOC MARKUP VS MARKDOWN -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">RDoc markup vs Markdown</h2>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,4vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1">
+      <h3 style="color:var(--text-dim);margin-bottom:var(--element-gap)">RDoc markup</h3>
+      <div class="code-block" style="background:#2d2d2d;font-size:var(--small-size)">= Heading
+
+*bold* and _italic_
+
+- item 1
+- item 2
+
+  indented code block
+
+{link text}[http://example.com]</div>
+    </div>
+    <div style="flex:1">
+      <h3 style="color:var(--accent);margin-bottom:var(--element-gap)">Markdown</h3>
+      <div class="code-block" style="font-size:var(--small-size)"># Heading
+
+**bold** and *italic*
+
+- item 1
+- item 2
+
+```ruby
+fenced code block
+```
+
+[link text](http://example.com)</div>
+    </div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">But most people don't know how to write it.</p>
+</div><div class="slide-num">22</div>
+  <div class="speaker-notes">So what do we write with RDoc now? RDoc actually has its own markup language, called rdoc as well, and it's still the default instead of Markdown. 
+I believe many of you didn't even know it exists.
+If you look at the syntax — it uses equals sign for headings, curly braces for links, indentation for code blocks. If you need to switch between the 2 languages, it's easy to mistakenly write markdown inside RDoc and it's very annoying.
+And because of the way RDoc supports both languages, fixing Markdown bugs is harder than it should be.</div>
+</section>
+
+<!-- LINK PIPELINE EXAMPLE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(92vw,1400px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">Example: <code>[text](url)</code></h2>
+  <!-- 3-col grid: input label | box/arrow | step label. Two inputs (Markdown + RDoc) converge at the shared {...}[...] form. -->
+  <div class="reveal" style="display:grid;grid-template-columns:auto auto auto;gap:clamp(0.3rem,0.7vw,0.5rem) clamp(1rem,2.5vw,2rem);align-items:center;justify-content:center;margin-top:var(--content-gap)">
+    <!-- Row 1: Markdown input -->
+    <div style="font-size:var(--small-size);color:var(--text-dim);font-style:italic;text-align:right;white-space:nowrap">Markdown</div>
+    <div class="diagram-box" style="font-family:var(--font-mono);font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1.2vw,1rem);white-space:nowrap">[RDoc](rdoc.sh)</div>
+    <div></div>
+    <!-- Row 2: arrow + "extra step" label -->
+    <div></div>
+    <div style="color:var(--text-dim);font-size:var(--body-size);justify-self:center">↓</div>
+    <div style="font-size:var(--small-size);color:var(--accent);font-style:italic;text-align:left;white-space:nowrap">Markdown parser rewrites to RDoc&nbsp;&nbsp;<span style="color:var(--text-dim)">(extra step)</span></div>
+    <!-- Row 3: shared RDoc form, also RDoc input -->
+    <div style="font-size:var(--small-size);color:var(--accent);font-weight:700;font-style:italic;text-align:right;white-space:nowrap;line-height:1.3">RDoc<br>(no rewrite)</div>
+    <div class="diagram-box highlight" style="font-family:var(--font-mono);font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1.2vw,1rem);white-space:nowrap">{RDoc}[rdoc.sh]</div>
+    <div></div>
+    <!-- Row 4: arrow + label -->
+    <div></div>
+    <div style="color:var(--text-dim);font-size:var(--body-size);justify-self:center">↓</div>
+    <div style="font-size:var(--small-size);color:var(--text-dim);font-style:italic;text-align:left;white-space:nowrap">Shared inline layer tokenizes</div>
+    <!-- Row 5: TIDYLINK node -->
+    <div></div>
+    <div class="diagram-box highlight" style="font-family:var(--font-mono);font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1.2vw,1rem);white-space:nowrap">TIDYLINK node</div>
+    <div></div>
+    <!-- Row 6: arrow + label -->
+    <div></div>
+    <div style="color:var(--text-dim);font-size:var(--body-size);justify-self:center">↓</div>
+    <div style="font-size:var(--small-size);color:var(--text-dim);font-style:italic;text-align:left;white-space:nowrap">ToHtml emits HTML</div>
+    <!-- Row 7: HTML output (multi-line) -->
+    <div></div>
+    <div class="diagram-box" style="font-family:var(--font-mono);font-size:var(--small-size);padding:clamp(0.4rem,0.8vw,0.8rem) clamp(0.6rem,1.2vw,1rem);white-space:pre;text-align:left;line-height:1.5">&lt;a href="rdoc.sh"&gt;RDoc
+&lt;/a&gt;</div>
+    <div></div>
+  </div>
+</div><div class="slide-num">23</div>
+  <div class="speaker-notes">Let me explain this using an example. This diagram shows how a Markdown link is parsed in RDoc.
+The Markdown parser rewrites it into RDoc's link syntax, then hands it off to the RDoc pipeline. So the Markdown parser isn't really a parser — it's a transpiler bolted on top.
+And that means fixing a Markdown bug or adding a new feature requires changing the entire pipeline.</div>
+</section>
+
+<!-- 20: GFM COMPATIBILITY TABLE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">GitHub Flavored Markdown compatibility</h2>
+  <div class="reveal" style="overflow:hidden;border-radius:8px;border:1px solid var(--border);margin-top:var(--content-gap)">
+    <table style="width:100%;border-collapse:collapse;font-size:var(--small-size)">
+      <thead><tr style="background:var(--bg-alt)">
+        <th style="padding:0.5em 0.8em;text-align:left">Feature</th>
+        <th style="padding:0.5em 0.8em;text-align:center">GFM</th>
+        <th style="padding:0.5em 0.8em;text-align:center">RDoc now</th>
+        <th style="padding:0.5em 0.8em;text-align:center">v6.11.0 (Jan 2025)</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">Headings, paragraphs, lists</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td></tr>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">Fenced code + language highlight</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center;color:var(--accent);font-weight:700">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">⚠️</td></tr>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">Strikethrough</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center;color:var(--accent);font-weight:700">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">❌</td></tr>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">Table inline styling</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center;color:var(--accent);font-weight:700">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">❌</td></tr>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">GitHub-style heading anchors</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center;color:var(--accent);font-weight:700">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">❌</td></tr>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">Ordered lists, nested lists</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">⚠️</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">⚠️</td></tr>
+        <tr><td style="padding:0.4em 0.8em;border-top:1px solid var(--border)">Tilde fences, backslash breaks</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">✅</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">❌</td><td style="padding:0.4em 0.8em;border-top:1px solid var(--border);text-align:center">❌</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--body-size);color:var(--text-secondary)"><br></p>
+</div><div class="slide-num">24</div>
+  <div class="speaker-notes">But despite the coupling problem, we've been making progress to make RDoc's markdown closer to GitHub's version. This table shows what we've improved since 2025.</div>
+</section>
+
+<!-- TABLE INLINE STYLING -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">Inline styling in tables</h2>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--text-dim)">Before</h3>
+      <div style="border:2px solid var(--border);border-radius:8px;margin-top:var(--element-gap);overflow:hidden">
+        <table style="width:100%;border-collapse:collapse;font-size:var(--body-size)">
+          <thead><tr style="background:var(--bg-alt)"><th style="padding:0.6em 1em;text-align:left">Name</th><th style="padding:0.6em 1em;text-align:left">Type</th></tr></thead>
+          <tbody><tr><td style="padding:0.6em 1em;border-top:1px solid var(--border)">age</td><td style="padding:0.6em 1em;border-top:1px solid var(--border)">'Integer`</td></tr></tbody>
+        </table>
+      </div>
+      <p style="font-size:var(--small-size);color:var(--accent);margin-top:var(--element-gap)">Backtick code broken in table cells</p>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--accent)">After</h3>
+      <div style="border:2px solid var(--accent);border-radius:8px;margin-top:var(--element-gap);overflow:hidden">
+        <table style="width:100%;border-collapse:collapse;font-size:var(--body-size)">
+          <thead><tr style="background:var(--bg-alt)"><th style="padding:0.6em 1em;text-align:left">Name</th><th style="padding:0.6em 1em;text-align:left">Type</th></tr></thead>
+          <tbody><tr><td style="padding:0.6em 1em;border-top:1px solid var(--border)">age</td><td style="padding:0.6em 1em;border-top:1px solid var(--border)"><code>Integer</code></td></tr></tbody>
+        </table>
+      </div>
+      <p style="font-size:var(--small-size);color:var(--text-dim);margin-top:var(--element-gap)">Backticks, links, bold, italic now work in cells</p>
+    </div>
+  </div>
+</div><div class="slide-num">25</div>
+<div class="speaker-notes">Here's an example of what we fixed: RDoc's markdown table didn't support inline style inside the cells, but now it does.</div></section>
+
+<!-- BASH SYNTAX HIGHLIGHTING -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">Bash syntax highlighting</h2>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--text-dim)">Before</h3>
+      <div class="code-block" style="margin-top:var(--element-gap);background:#2d2d2d"><span style="color:#e06c75">gem</span> <span style="color:#e0e0e0">install rdoc</span>
+<span style="color:#e06c75">rdoc</span> <span style="color:#56b6c2">--</span><span style="color:#e0e0e0">server</span>
+<span style="color:#e06c75">curl</span> <span style="color:#e0e0e0">localhost</span><span style="color:#56b6c2">:</span><span style="color:#d19a66">4000</span></div>
+      <p style="font-size:var(--small-size);color:var(--accent);margin-top:var(--element-gap)">Language tag ignored — highlighted as Ruby</p>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--accent)">After</h3>
+      <div class="code-block" style="margin-top:var(--element-gap)"><span style="color:#61afef">gem</span> <span style="color:#e0e0e0">install rdoc</span>
+<span style="color:#61afef">rdoc</span> <span style="color:#56b6c2">--server</span>
+<span style="color:#61afef">curl</span> <span style="color:#e0e0e0">localhost:4000</span></div>
+      <p style="font-size:var(--small-size);color:var(--text-dim);margin-top:var(--element-gap)">Recognized as bash — commands in blue, options in cyan</p>
+    </div>
+  </div>
+</div><div class="slide-num">26</div>
+<div class="speaker-notes">In addition to fixes, we also added syntax highlight to bash/shell code blocks</div></section>
+
+<!-- C SYNTAX HIGHLIGHTING -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">C syntax highlighting</h2>
+  <div class="reveal" style="display:flex;gap:clamp(2rem,5vw,4rem);margin-top:var(--content-gap)">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--text-dim)">Before</h3>
+      <div class="code-block" style="margin-top:var(--element-gap);background:#2d2d2d"><span style="color:#abb2bf">static VALUE</span>
+<span style="color:#abb2bf">rb_str_length(VALUE str)</span>
+<span style="color:#abb2bf">{</span>
+    <span style="color:#abb2bf">return LONG2NUM(</span>
+      <span style="color:#abb2bf">str_strlen(str, NULL));</span>
+<span style="color:#abb2bf">}</span></div>
+      <p style="font-size:var(--small-size);color:var(--accent);margin-top:var(--element-gap)">No highlighting</p>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <h3 style="color:var(--accent)">After</h3>
+      <div class="code-block" style="margin-top:var(--element-gap)"><span style="color:#e06c75">static</span> <span style="color:#56b6c2">VALUE</span>
+<span style="color:#c678dd">rb_str_length</span>(<span style="color:#56b6c2">VALUE</span> <span style="color:#abb2bf">str</span>)
+{
+    <span style="color:#e06c75">return</span> <span style="color:#d19a66">LONG2NUM</span>(
+      <span style="color:#c678dd">str_strlen</span>(<span style="color:#abb2bf">str</span>, <span style="color:#e06c75">NULL</span>));
+}</div>
+      <p style="font-size:var(--small-size);color:var(--text-dim);margin-top:var(--element-gap)">Keywords red, types cyan, functions purple, macros orange</p>
+    </div>
+  </div>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--body-size);color:var(--text-secondary)">Important for Ruby's C source code on docs.ruby-lang.org.</p>
+</div><div class="slide-num">27</div>
+<div class="speaker-notes">It can now highlight C code as well, which is important to reading Core API's implementation</div></section>
+
+<!-- 21: GFM COMPAT DOCS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Markdown</p>
+  <h2 class="reveal">Tracking GFM compatibility</h2>
+  <div class="reveal" style="margin-top:var(--element-gap);display:flex;justify-content:center">
+    <img src="images/gfm-compat-docs.png" alt="GFM compatibility documentation page in RDoc" style="max-width:100%;max-height:min(60vh,550px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+  </div>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-dim);text-align:center"><a href="https://ruby.github.io/rdoc/doc/markup_reference/markdown_md.html" style="color:var(--text-dim)">ruby.github.io/rdoc/doc/markup_reference/markdown_md.html</a></p>
+</div><div class="slide-num">28</div>
+  <div class="speaker-notes">We also added official documentation that tracks exactly where RDoc's Markdown support stands compared to GitHub's version. So if you want to know what you can and can't do, it's all documented. And contributions for Markdown are obviously welcome.</div>
+</section>
+
+<!-- 22: RBS TYPE SIGNATURES -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Type signatures</p>
+  <h2 class="reveal">RBS type signatures</h2>
+  <ul class="reveal">
+    <li>Inline <code>#:</code> annotations — type info lives next to the code</li>
+    <li><code>sig/</code> directory — <code>.rbs</code> files, including stdlib declarations</li>
+    <li>Displayed in HTML and <code>ri</code>, with linked type names</li>
+  </ul>
+</div><div class="slide-num">29</div>
+  <div class="speaker-notes">Now let's talk about type signatures. RDoc will soon extract RBS type information from two sources — inline annotations in your Ruby files, and .rbs files in your sig/ directory. It validates their syntax, and displays them in both the HTML output and ri.</div>
+</section>
+
+<!-- 23: RBS HTML DEMO -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Type signatures</p>
+  <h2 class="reveal">RBS in HTML output</h2>
+  <div class="reveal" style="margin-top:var(--element-gap);position:relative;display:inline-block">
+    <img src="images/rbs-html-output.png" alt="RBS type signatures in Aliki HTML output" style="width:100%;max-height:min(60vh,550px);object-fit:contain;border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1)">
+    <div style="position:absolute;top:21%;right:26%;color:var(--accent);font-size:var(--small-size);font-weight:700;white-space:nowrap">← RBS signatures</div>
+  </div>
+</div><div class="slide-num">30</div>
+  <div class="speaker-notes">Here's what it looks like in Aliki. The type signature shows up under the existing parameters section. You can see the argument types and return type at a glance. When the types match existing classes, they'll become links to the class's page as well.</div>
+</section>
+
+<!-- 24: SERVER MODE DEMO -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1300px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Server mode</p>
+  <h2 class="reveal"><code>rdoc --server</code></h2>
+  <div class="reveal" style="margin-top:var(--content-gap)">
+    <video src="images/rdoc-server-demo.mp4" style="max-width:100%;max-height:min(60vh,550px);border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer" onclick="this.paused?this.play():this.pause()" onloadedmetadata="this.playbackRate=0.75" loop="" muted=""></video>
+  </div>
+</div><div class="slide-num">31</div>
+  <div class="speaker-notes">That covers the content improvements. Now let's talk server mode
+It's a feature I believe will dramatically increase developers' productivity when it comes to document editing. You edit a file, the browser refreshes automatically to show you the latest changes.
+[Click to play the demo.]</div>
+</section>
+
+<!-- 25: SERVER MODE DETAILS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Server mode</p>
+  <h2 class="reveal"><code>rdoc --server</code></h2>
+  <ul class="reveal">
+    <li>Changes reflected in browser automatically</li>
+    <li>Zero external dependencies — uses Ruby's <code>TCPServer</code></li>
+    <li>Incremental re-parsing — shorter response, not instant (yet)</li>
+    <li>Run <code>rdoc --server</code> in any gem using RDoc to preview its docs</li>
+    <li><code>make html-server</code>&nbsp;in ruby/ruby — the same flow for Ruby core docs</li>
+  </ul>
+</div><div class="slide-num">32</div>
+  <div class="speaker-notes">The server mode has zero external dependencies — it uses Ruby's built-in TCPServer. It has a background watcher monitoring files and only re-parses the ones that changed. The latency is between 100 and 200 milliseconds right now. With future improvements on parsing and rendering performance, I hope we can make it feel instant someday.
+
+Any gem that uses RDoc gets this out of the box — just run rdoc --server in your project and you can preview your documentation changes the same way.
+
+And I integrated this into Ruby itself — so now you can preview core documentation the same way. This lowers the barrier to contribute to Ruby's documentation. And the demo you just saw was actually recorded in Ruby core already.</div>
+</section>
+
+<!-- 26: RDOC 8.0 -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">Coming in RDoc <span class="accent">8.0</span></h2>
+  <ul class="reveal">
+    <li>Prism parser (default)</li>
+    <li>More Markdown improvements</li>
+    <li>RBS type signatures in HTML and <code>ri</code></li>
+    <li>Server mode</li>
+  </ul>
+</div><div class="slide-num">33</div>
+  <div class="speaker-notes">So, everything I just showed you — except Aliki, which already shipped — the Prism parser, many Markdown fixes, RBS type signatures, server mode — all of this is coming in RDoc 8.0. That's the next major release.</div>
+</section>
+
+<!-- 27: SECTION 3 TRANSITION -->
+<section class="slide visible" data-section="What's Still Ahead" data-budget="8-9 min"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)">So what's still ahead for <span class="accent">RDoc</span>?</h2>
+</div><div class="slide-num">34</div>
+  <div class="speaker-notes">That's the foundation we've rebuilt. Now let's talk about what's still ahead — there are three areas.</div>
+</section>
+
+<!-- 27b: SECTION 3 OUTLINE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal">Three areas ahead</h2>
+  <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:auto 1fr;gap:clamp(0.9rem,2vw,1.5rem) clamp(1.5rem,4vw,3rem);align-items:baseline;max-width:min(85vw,900px);margin-left:auto;margin-right:auto;text-align:left">
+    <div style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap">Migrate to Markdown</div>
+    <div style="font-size:var(--body-size);color:var(--text)">Let contributors write in the language they already know</div>
+    <div style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap">Annotations</div>
+    <div style="font-size:var(--body-size);color:var(--text)">Make documentation reflect code design</div>
+    <div style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap">LLM-ready docs</div>
+    <div style="font-size:var(--body-size);color:var(--text)">Optimize documentation consumption for AI</div>
+  </div>
+</div><div class="slide-num">35</div>
+  <div class="speaker-notes">First is migrating to Markdown — so developers can write documentation in the language they already know.
+Second is design annotations — I want to explore a way for documentation to express design relationships.
+Third is LLM-ready documentation — finding a way to optimize documentation consumption for AI.
+I'll walk through each one.</div>
+</section>
+
+<!-- HIDDEN: SETTING GOOD STANDARDS -->
+<section class="slide" style="display:none"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Contributing</p>
+  <h2 class="reveal">Setting good standards</h2>
+  <ul class="reveal">
+    <li>RBS signatures — structured, machine-readable contracts</li>
+    <li>Revisiting supported directives for clarity</li>
+    <li>Whether users adopt a type checker is their choice — RDoc supports both</li>
+  </ul>
+</div><div class="slide-num">30</div>
+  <div class="speaker-notes">RBS signatures are a start — structured, machine-readable contracts in the source. We'll revisit supported directives to make them clearer. And I want to be explicit: whether users adopt a type checker is their choice. RDoc will support both typed and untyped codebases.</div>
+</section>
+
+<!-- 29: FULL MARKDOWN MIGRATION -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Migrate to Markdown</p>
+  <h2 class="reveal">Fully migrate to Markdown</h2>
+  <ul class="reveal">
+    <li>Automatic RDoc markup → Markdown translation</li>
+    <li>Migrate Ruby core's documentation to Markdown</li>
+    <li>Change RDoc's default markup to Markdown</li>
+  </ul>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">A large effort — but AI-assisted tooling can help us get there faster.</p>
+</div><div class="slide-num">36</div>
+  <div class="speaker-notes">As I mentioned earlier, the RDoc markup is NOT the ideal language for documentation in this age.
+And that creates a major friction for people using RDoc as a tool, including contributing to Ruby's core documentation. So I think in the long term we should fully migrate to use Markdown as the only documentation language.
+But to achieve that, it means building an automatic translator from RDoc markup to Markdown. Migrating Ruby core's documentation to Markdown. And making Markdown the default markup language.
+
+I have wanted to make this change for a while. But now with AI agents, it finally feels possible.</div>
+</section>
+
+<!-- 30: DOCUMENTATION ANNOTATIONS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Annotations</p>
+  <h2 class="reveal">Make documentation reflect code design</h2>
+  <ul class="reveal">
+    <li>New RDoc annotations (not RBS): <code>@abstract</code>, <code>@override</code>, <code>@interface</code></li>
+    <li>Describe relationships across components</li>
+  </ul>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">Design intent in the docs — useful for both humans and AI.</p>
+</div><div class="slide-num">37</div>
+  <div class="speaker-notes">I also want to explore using annotations to encode more code design information into documentation.
+Concepts like abstract methods, overrides, and interfaces are commonly seen in typing languages. But they're useful for documentation too even if you don't type check your code.
+The relationships these annotations describe will be helpful for both humans and AI to understand the design.</div>
+</section>
+
+<!-- 31: ANNOTATION EXAMPLE -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">Annotations</p>
+  <h2 class="reveal" style="font-size:var(--h3-size)">Example: <code>@abstract</code> + <code>@override</code></h2>
+  <div class="reveal" style="display:flex;gap:clamp(1.5rem,3vw,3rem);margin-top:var(--content-gap);align-items:center">
+    <div style="flex:1">
+      <div class="code-block" style="background:#2d2d2d;font-size:var(--small-size)"><span class="kw">class</span> <span class="fn">Formatter</span>
+  <span class="cm"># @abstract</span>
+  <span class="kw">def</span> <span class="fn">convert</span>(doc)
+    <span class="kw">raise</span> NotImplementedError
+  <span class="kw">end</span>
+<span class="kw">end</span></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:clamp(0.5rem,1vw,0.8rem)">
+      <div class="code-block" style="font-size:var(--small-size)"><span class="kw">class</span> <span class="fn">ToHtml</span> &lt; <span class="fn">Formatter</span>
+  <span class="cm"># @override</span>
+  <span class="kw">def</span> <span class="fn">convert</span>(doc) = <span class="cm">...</span>
+<span class="kw">end</span></div>
+      <div class="code-block" style="font-size:var(--small-size)"><span class="kw">class</span> <span class="fn">ToMarkdown</span> &lt; <span class="fn">Formatter</span>
+  <span class="cm"># @override</span>
+  <span class="kw">def</span> <span class="fn">convert</span>(doc) = <span class="cm">...</span>
+<span class="kw">end</span></div>
+    </div>
+  </div>
+  <div class="reveal" style="margin-top:var(--content-gap);display:flex;align-items:center;justify-content:center;gap:clamp(0.5rem,1.5vw,1rem)">
+    <div style="border:1px solid var(--border);border-radius:6px;padding:0.4em 0.8em;font-size:var(--small-size);background:var(--card-bg)">Formatter#convert <span style="color:var(--accent)">abstract</span></div>
+    <div style="font-size:var(--body-size);color:var(--text-dim)">⟷</div>
+    <div style="display:flex;flex-direction:column;gap:0.3rem">
+      <div style="border:1px solid var(--accent);border-radius:6px;padding:0.3em 0.8em;font-size:var(--small-size);background:var(--card-bg)">ToHtml#convert <span style="color:var(--accent)">override</span></div>
+      <div style="border:1px solid var(--accent);border-radius:6px;padding:0.3em 0.8em;font-size:var(--small-size);background:var(--card-bg)">ToMarkdown#convert <span style="color:var(--accent)">override</span></div>
+    </div>
+  </div>
+</div><div class="slide-num">38</div>
+  <div class="speaker-notes">Here's what it could look like. Let's say you have a parent class `Formatter`, defining an abstract method `convert` that child classes should override. This is a common pattern we can see in many gems. 
+In this case, you can use abstract and override annotations to provide that information.
+Then in the generated docs, RDoc can list all of the implementations on the Formatter class's page. And each override would also have UI links back to the parent method.
+Combining annotations with type signatures will allow us to create more expressive documentation that benefits all consumers.</div>
+</section>
+
+<!-- REMOVED: AI skills section (thesis, what's an AI skill, where it helps, what it could teach, install question, ruby/ruby-skills registry) -->
+
+<!-- 33: LLM-READY DOCS SECTION OPENER -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">Optimize documentation consumption for <span class="accent">AI</span></h2>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">But why does AI need something special?</p>
+</div><div class="slide-num">39</div>
+  <div class="speaker-notes">The third area is making documentation ready for AI consumption.
+But why does AI need something special?</div>
+</section>
+
+<!-- 34: HTML COSTS MORE TOKENS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(95vw,1500px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">HTML costs more tokens</h2>
+  <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(1rem,2.5vw,2rem);margin-top:var(--content-gap)">
+    <div>
+      <div style="font-size:var(--small-size);color:var(--text-dim);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.4em">Markdown</div>
+      <div class="code-block" style="background:#2d2d2d;font-size:clamp(0.65rem,0.9vw,0.8rem);line-height:1.45;white-space:pre-wrap"># RDoc 8.0
+
+RDoc 8.0 is a **major release** focused on AI-ready
+documentation. For details, see the
+[release notes](https://github.com/ruby/rdoc/releases).
+
+## What's new
+
+- New *Prism* parser — faster and more accurate
+- Markdown improvements — full GFM table support
+- RBS type signatures — inline `#:` annotations
+- Server mode — live preview with `rdoc --server`</div>
+      <div style="margin-top:0.6em;font-family:var(--font-mono);font-size:var(--body-size)"><span style="color:var(--accent);font-weight:700">100</span> tokens</div>
+    </div>
+    <div>
+      <div style="font-size:var(--small-size);color:var(--text-dim);font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.4em">HTML</div>
+      <div class="code-block" style="background:#2d2d2d;font-size:clamp(0.65rem,0.9vw,0.8rem);line-height:1.45;white-space:pre-wrap">&lt;h1&gt;RDoc 8.0&lt;/h1&gt;
+
+&lt;p&gt;RDoc 8.0 is a &lt;strong&gt;major release&lt;/strong&gt; focused
+on AI-ready documentation. For details, see the
+&lt;a href="https://github.com/ruby/rdoc/releases"&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;What's new&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;New &lt;em&gt;Prism&lt;/em&gt; parser — faster and more accurate&lt;/li&gt;
+  &lt;li&gt;Markdown improvements — full GFM table support&lt;/li&gt;
+  &lt;li&gt;RBS type signatures — inline &lt;code&gt;#:&lt;/code&gt; annotations&lt;/li&gt;
+  &lt;li&gt;Server mode — live preview with &lt;code&gt;rdoc --server&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;</div>
+      <div style="margin-top:0.6em;font-family:var(--font-mono);font-size:var(--body-size)"><span style="color:var(--accent);font-weight:700">152</span> tokens <span style="color:var(--text-dim)">(1.52×)</span></div>
+    </div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center"><br></p>
+</div><div class="slide-num">40</div>
+  <div class="speaker-notes">Well it's all about tokens. Here's the same small doc in two formats: Markdown and HTML.
+If you run it against a tokenizer AI uses, the Markdown version takes about 100 tokens. The HTML version takes about 152. The results may vary based on specific tokenizers, but the gap should be similar.</div>
+</section>
+
+<!-- 34: HTML WASTES AI CONTEXT -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1150px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">HTML wastes AI context</h2>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center"><code>docs.ruby-lang.org/en/master/Array.html</code></p>
+  <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:1fr auto;gap:clamp(0.5rem,1.2vw,1rem) clamp(1.5rem,4vw,3rem);align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--small-size);max-width:min(85vw,700px);margin-left:auto;margin-right:auto">
+    <div style="color:var(--text-dim);font-weight:700">Format</div>
+    <div style="color:var(--text-dim);font-weight:700;text-align:right">Tokens</div>
+    <div>Plain text</div><div style="text-align:right">51k</div>
+    <div>HTML → Markdown</div><div style="text-align:right">69k</div>
+    <div>Raw HTML</div><div style="text-align:right;color:var(--accent);font-weight:700">183k</div>
+  </div>
+</div><div class="slide-num">41</div>
+  <div class="speaker-notes">Now let's see what that looks like in practice. docs.ruby-lang.org is how most people read Ruby's documentation nowadays.
+And let's say you want the agent to read Array's documentation.
+The pure content — plain text — is about 51,000 tokens. Converting the same page to Markdown, it's about 69,000.
+But fetching the raw HTML costs more than 180,000 tokens.
+So in this context Markdown is far more economical than HTML.</div>
+</section>
+
+<!-- 36: SHIP MARKDOWN ALONGSIDE HTML -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">Ship Markdown alongside HTML</h2>
+  <pre class="reveal" style="margin-top:var(--content-gap);background:#2d2d2d;color:#e0e0e0;border-radius:8px;padding:clamp(1rem,2vw,1.6rem) clamp(1.2rem,2.5vw,2rem);font-family:var(--font-mono);font-size:var(--body-size);text-align:left;max-width:min(85vw,780px);margin-left:auto;margin-right:auto;white-space:pre;overflow-x:auto"><span style="color:#7ee787">docs.ruby-lang.org/</span>
+<span style="color:#999">├──</span> <span style="color:#e06c75">llms.txt</span>      <span style="color:#999"># sitemap</span>
+<span style="color:#999">├──</span> Array.html
+<span style="color:#999">├──</span> <span style="color:#c678dd">Array.md</span>
+<span style="color:#999">├──</span> Hash.html
+<span style="color:#999">├──</span> <span style="color:#c678dd">Hash.md</span>
+<span style="color:#999">└──</span> ...</pre>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">Two changes: generate <code>.md</code> next to every <code>.html</code>, and list them in <code>/llms.txt</code>.</p>
+  <p class="reveal" style="margin-top:var(--element-gap);font-size:var(--small-size);color:var(--text-dim);text-align:center">Tradeoff: doc generation gets slower.</p>
+</div><div class="slide-num">42</div>
+  <div class="speaker-notes">So how can we fix this? The most popular solution is to generate Markdown files with llms.txt.
+First, generate a Markdown file next to every HTML file. So for Array, we'll get an Array.md file as well.
+Second, list all the Markdown paths in a /llms.txt file, so agents know where to look for those .md files.</div>
+</section>
+
+<!-- 35: LLMS.TXT EXPLAINER -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">llms.txt: a sitemap for AI</h2>
+  <ul class="reveal">
+    <li>A single <code>/llms.txt</code> at the site root</li>
+    <li>Lists canonical Markdown paths for every doc page</li>
+    <li>Agents read it first, then fetch only the <code>.md</code> files they need</li>
+  </ul>
+  <pre class="reveal" style="margin-top:var(--content-gap);background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:clamp(0.8rem,1.5vw,1.2rem) clamp(1rem,2vw,1.6rem);font-family:var(--font-mono);font-size:var(--small-size);text-align:left;max-width:min(85vw,750px);margin-left:auto;margin-right:auto;white-space:pre;overflow-x:auto"><span style="color:var(--text-dim)"># Ruby docs</span>
+
+- [Array](Array.md): core class
+- [Hash](Hash.md): core class
+- [String](String.md): core class</pre>
+</div><div class="slide-num">43</div>
+  <div class="speaker-notes">What is llms.txt, you may wonder.
+It's a markdown file at the root of your website, similar to robots.txt. Inside, you list the Markdown URLs with a short description of each.
+The idea is that agents fetch this file first, then pull just the .md files they need — skipping the HTML files entirely.
+It's a simple idea, and rather easy to implement.</div>
+</section>
+
+<!-- 37b: PROTOTYPE RECEIPT -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal">I started prototyping this two months ago.</h2>
+  <div class="reveal" style="margin-top:var(--content-gap)">
+    <img src="images/prototype-commit.png" alt="Commit: Generate llms.txt and llms-full.txt for LLM consumption — 2 months ago" style="max-width:min(80vw,900px);max-height:min(40vh,320px);border-radius:8px;border:1px solid var(--grid-color)">
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)"><br></p>
+</div><div class="slide-num">44</div>
+  <div class="speaker-notes">And I started prototyping this 2 months ago.
+Started with just llms.txt support, and I also tried to add an HTML to Markdown converter.</div>
+</section>
+
+<!-- REMOVED: llms.txt industry adoption table — dropped during tone pivot -->
+
+<!-- 39: AGENT-SIDE CONVERSION -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(92vw,1250px)">
+  <p class="reveal" style="font-size:var(--small-size);color:var(--accent);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:var(--element-gap)">LLM-ready docs</p>
+  <h2 class="reveal">Will this matter long-term?</h2>
+  <div class="reveal" style="margin-top:var(--content-gap);display:grid;grid-template-columns:auto auto auto;gap:clamp(0.4rem,1vw,0.8rem) clamp(1.5rem,4vw,3rem);align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--small-size);max-width:min(92vw,1050px);margin-left:auto;margin-right:auto">
+    <div style="color:var(--text-secondary);font-weight:700">Agent</div>
+    <div style="color:var(--text-secondary);font-weight:700">Fetch strategy</div>
+    <div style="color:var(--text-secondary);font-weight:700;text-align:center">.md helps?</div>
+    <div>Claude Code</div><div style="color:var(--text-secondary)">HTML → Markdown + summarize</div><div style="text-align:center;color:var(--text-secondary)">Marginal</div>
+    <div>opencode</div><div style="color:var(--text-secondary)">HTML → Markdown</div><div style="text-align:center;color:var(--text-secondary)">Marginal</div>
+    <div>Codex CLI</div><div style="color:var(--text-secondary)">Delegated to OpenAI servers</div><div style="text-align:center;color:var(--text-secondary)">Likely not</div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary);text-align:center">Most mainstream agents don't need this</p>
+</div><div class="slide-num">45</div>
+  <div class="speaker-notes">But before I open the pull request, I wanted to check if this approach really helps. And my research shows that the industry is solving the problem from the other side, by giving agents better tools.
+
+Take Claude Code as an example. When you ask it to read an HTML page, it uses a tool called WebFetch — which already converts HTML to Markdown, then uses a cheaper model to summarize the page, and only passes a summary into the main session. So the feature we just talked about will not help Claude Code at all.
+
+Most mainstream agents have similar strategies. They either do a similar conversion on the client side, or they do it on the server side.</div>
+</section>
+
+<!-- 39b: THE ANSWER — NO -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)"><span class="accent">No.</span> LLM-ready docs aren't needed.</h2>
+</div><div class="slide-num">46</div>
+  <div class="speaker-notes">So do we need to build AI specific documentation? No.</div>
+</section>
+
+<!-- 40: WHERE RDOC LANDS -->
+<section class="slide visible"><div class="slide-content" style="max-width:min(90vw,1100px);text-align:center;align-items:center">
+  <h2 class="reveal" style="font-size:var(--hero-size)">The best thing RDoc can do for <span class="accent">AI</span> is be good at its job.</h2>
+</div><div class="slide-num">47</div>
+  <div class="speaker-notes">At the end of the day, there's nothing in documentation that's AI specific. It shares the same content with us. It contributes the same sources like us. The only way to make AI getting better at Ruby, is to contribute to the documentation we already have. Ruby core documentation, gem documentation, your project's documentation.
+
+And as RDoc maintainers, our job is to make sure RDoc makes writing documentation easy and enjoyable, and that the documentation we see provides all the information that's valuable to us.</div>
+</section>
+
+<!-- 38: SUMMARY -->
+<section class="slide visible" data-section="Recap + Close" data-budget="2 min"><div class="slide-content" style="max-width:min(90vw,1100px)">
+  <h2 class="reveal" style="text-align:center;margin-bottom:var(--content-gap)">Summary</h2>
+  <ul class="reveal">
+    <li>What makes docs useful to AI is what makes them useful to developers</li>
+    <li>RDoc 8.0 modernizes the foundation — new parser, Markdown improvements, RBS, server mode</li>
+    <li>Still ahead — Markdown migration, design annotations, Markdown parser refactor, better integration with other tools</li>
+  </ul>
+</div><div class="slide-num">48</div>
+  <div class="speaker-notes">OK, that's all I have for Ruby's documentation. Let me recap:
+First, what makes documentation useful to AI overlaps with what makes it useful to developers.
+Second, RDoc 8.0 will be a big improvement for Ruby's documentation. It will provide a new parser, Markdown improvements, RBS type signatures, and server mode.
+Third, there's still a lot ahead — full Markdown migration, design annotations, a Markdown parser refactor, and better integration with other tools. 
+Plenty of foundation work that will make RDoc a better documentation tool for everyone.</div>
+</section>
+
+<!-- 42b: THANKS TO REVIEWERS -->
+<section class="slide visible"><div class="slide-content" style="text-align:center;align-items:center">
+  <h2 class="reveal">Special thanks to</h2>
+  <div class="reveal" style="margin-top:var(--content-gap);display:flex;gap:clamp(2.5rem,6vw,5rem);justify-content:center;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.9rem">
+      <img src="images/kou-avatar.png" alt="Kou" style="width:clamp(130px,16vw,200px);height:clamp(130px,16vw,200px);border-radius:50%;border:2px solid var(--accent)">
+      <span style="font-family:var(--font-mono);color:var(--accent);font-size:var(--body-size)">@kou</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.9rem">
+      <img src="images/tompng-avatar.png" alt="tompng" style="width:clamp(130px,16vw,200px);height:clamp(130px,16vw,200px);border-radius:50%;border:2px solid var(--accent)">
+      <span style="font-family:var(--font-mono);color:var(--accent);font-size:var(--body-size)">@tompng</span>
+    </div>
+  </div>
+  <p class="reveal" style="margin-top:var(--content-gap);font-size:var(--body-size);color:var(--text-secondary)">For all the reviews on my RDoc PRs.</p>
+</div><div class="slide-num">49</div>
+  <div class="speaker-notes">Before I finish — I want to thank Sutou-san and Pen-san. They reviewed all of my RDoc PRs in the past year and provided a lot of valuable feedback.</div>
+</section>
+
+<!-- 43: THANK YOU -->
+<section class="slide visible" style="background-image:none;background:radial-gradient(ellipse at 50% 50%,var(--accent-glow) 0%,transparent 60%),linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);background-size:100% 100%,60px 60px,60px 60px;background-color:var(--bg)">
+  <div class="slide-content" style="text-align:center;align-items:center">
+    <h1 class="reveal" style="font-size:clamp(2rem,6vw,4.5rem)">Thank you!</h1>
+    <div class="reveal" style="font-family:var(--font-mono);font-size:var(--small-size);color:var(--text-dim);margin-top:var(--content-gap);display:flex;flex-direction:column;gap:0.2em;align-items:center">
+      <span>GitHub: <span style="color:var(--accent)">@st0012</span></span>
+      <span>BlueSky: <span style="color:var(--accent)">@st0012.dev</span></span>
+    </div>
+  </div>
+  <div class="slide-num">50</div>
+  <div class="speaker-notes">Thank you for coming to my talk. I'll be around if you have questions.</div>
+</section>
+
+<script>
+// Shared check: is the user typing in a text field?
+function isTyping(e) {
+  const tag = e.target.tagName;
+  return tag === 'TEXTAREA' || tag === 'INPUT' || !!e.target.getAttribute('contenteditable');
+}
+
+class SlidePresentation {
+  constructor() {
+    this.isMirror = new URLSearchParams(location.search).get('mirror') === '1';
+    // Filter out hidden slides (display:none) and auto-number visible ones
+    this.slides = Array.from(document.querySelectorAll('.slide')).filter(s => getComputedStyle(s).display !== 'none');
+    this.currentSlide = 0;
+    this.isScrolling = false;
+    this.autoNumberSlides();
+    this.setupIntersectionObserver();
+    if (!this.isMirror) {
+      this.setupKeyboardNav();
+      this.setupTouchNav();
+      this.setupWheelNav();
+    }
+    this.setupProgressBar();
+    this.setupNavDots();
+    const hash = parseInt(location.hash.slice(1), 10);
+    if (hash > 0 && hash <= this.slides.length) this.goToSlide(hash - 1);
+  }
+  autoNumberSlides() {
+    this.slides.forEach((slide, i) => {
+      const numEl = slide.querySelector('.slide-num');
+      if (numEl) numEl.textContent = String(i + 1).padStart(2, '0');
+    });
+  }
+  setupIntersectionObserver() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          const idx = Array.from(this.slides).indexOf(entry.target);
+          if (idx !== -1) { this.currentSlide = idx; this.updateProgressBar(); this.updateNavDots(); history.replaceState(null, '', '#' + (idx + 1)); }
+        }
+      });
+    }, { threshold: 0.5 });
+    this.slides.forEach(s => observer.observe(s));
+  }
+  goToSlide(index) {
+    if (index < 0 || index >= this.slides.length) return;
+    this.slides[index].scrollIntoView({ behavior: 'smooth' });
+  }
+  advance() {
+    const video = this.slides[this.currentSlide]?.querySelector('video');
+    if (video && video.paused && video.currentTime === 0) {
+      video.play();
+    } else {
+      this.goToSlide(this.currentSlide + 1);
+    }
+  }
+  setupKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      if (isTyping(e)) return;
+      switch(e.key) {
+        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': {
+          e.preventDefault();
+          this.advance();
+          break;
+        }
+        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+          e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+      }
+    });
+  }
+  setupTouchNav() {
+    let startY = 0;
+    document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const diff = startY - e.changedTouches[0].clientY;
+      if (Math.abs(diff) > 50) this.goToSlide(this.currentSlide + (diff > 0 ? 1 : -1));
+    }, { passive: true });
+  }
+  setupWheelNav() {
+    let timeout;
+    document.addEventListener('wheel', (e) => {
+      if (this.isScrolling) return;
+      this.isScrolling = true;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => { this.isScrolling = false; }, 550);
+      if (Math.abs(e.deltaY) > 30) this.goToSlide(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+    }, { passive: true });
+  }
+  setupProgressBar() {
+    this.progressBar = document.getElementById('progressBar');
+    this.updateProgressBar();
+  }
+  updateProgressBar() {
+    if (!this.progressBar) return;
+    this.progressBar.style.width = ((this.currentSlide + 1) / this.slides.length * 100) + '%';
+  }
+  setupNavDots() {
+    this.navDotsContainer = document.getElementById('navDots');
+    if (!this.navDotsContainer) return;
+    this.navDotsContainer.textContent = '';
+    this.slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dot.addEventListener('click', () => this.goToSlide(i));
+      this.navDotsContainer.appendChild(dot);
+    });
+  }
+  updateNavDots() {
+    if (!this.navDotsContainer) return;
+    this.navDotsContainer.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === this.currentSlide);
+    });
+  }
+}
+class InlineEditor {
+  constructor(notesEditor) {
+    this.notesEditor = notesEditor;
+    this.isActive = false;
+    this.setupHotzone();
+    this.setupKeyboard();
+  }
+  setupHotzone() {
+    const hotzone = document.getElementById('editHotzone');
+    const toggle = document.getElementById('editToggle');
+    let hideTimeout = null;
+    hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); toggle.classList.add('show'); });
+    hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.isActive) toggle.classList.remove('show'); }, 400); });
+    toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+    toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.isActive) toggle.classList.remove('show'); }, 400); });
+    toggle.addEventListener('click', () => this.toggleEditMode());
+    hotzone.addEventListener('click', () => this.toggleEditMode());
+  }
+  setupKeyboard() {
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'e' || e.key === 'E') && !isTyping(e)) this.toggleEditMode();
+    });
+  }
+  toggleEditMode() {
+    this.isActive = !this.isActive;
+    const toggle = document.getElementById('editToggle');
+    const banner = document.getElementById('editBanner');
+    if (this.isActive) {
+      document.body.classList.add('edit-active');
+      toggle.classList.add('active');
+      toggle.textContent = '\u2713';
+      banner.classList.add('active');
+      document.querySelectorAll('h1,h2,h3,p,li,span,strong,em,td').forEach(el => {
+        if (!el.closest('.nav-dots') && !el.closest('.edit-banner') && !el.closest('script') && !el.closest('style')) el.setAttribute('contenteditable', 'true');
+      });
+    } else {
+      document.body.classList.remove('edit-active');
+      toggle.classList.remove('active');
+      toggle.textContent = '\u270E';
+      banner.classList.remove('active');
+      document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    }
+  }
+  async saveFile() {
+    if (this.notesEditor) this.notesEditor.syncToDOM();
+    // Temporarily strip edit-mode artifacts to get clean HTML
+    const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+    editableEls.forEach(el => el.removeAttribute('contenteditable'));
+    document.body.classList.remove('edit-active');
+    const toggle = document.getElementById('editToggle');
+    const banner = document.getElementById('editBanner');
+    if (toggle) { toggle.classList.remove('active', 'show'); }
+    if (banner) { banner.classList.remove('active'); }
+    const notesPanel = document.getElementById('notesPanel');
+    const notesPanelWasActive = notesPanel && notesPanel.classList.contains('active');
+    if (notesPanel) notesPanel.classList.remove('active');
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    // Restore edit-mode state if it was active
+    if (this.isActive) {
+      document.body.classList.add('edit-active');
+      editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
+      if (toggle) { toggle.classList.add('active'); }
+      if (banner) { banner.classList.add('active'); }
+    }
+    if (notesPanelWasActive && notesPanel) notesPanel.classList.add('active');
+    try {
+      const res = await fetch('/save', { method: 'POST', body: html });
+      if (!res.ok) throw new Error(await res.text());
+      this.showSaveStatus('Saved!');
+    } catch (e) {
+      this.showSaveStatus('Save failed \u2014 is server.js running?');
+      console.error('Save failed:', e);
+    }
+  }
+  showSaveStatus(msg) {
+    const banner = document.getElementById('editBanner');
+    const prev = banner.textContent;
+    banner.textContent = msg;
+    banner.classList.add('active');
+    setTimeout(() => {
+      banner.textContent = prev;
+      if (!this.isActive) banner.classList.remove('active');
+    }, 1500);
+  }
+}
+class NotesEditor {
+  constructor(slidePresentation) {
+    this.sp = slidePresentation;
+    this.panel = document.getElementById('notesPanel');
+    this.textarea = document.getElementById('notesTextarea');
+    this.slideNumEl = document.getElementById('noteSlideNum');
+    this.totalEl = document.getElementById('noteTotalSlides');
+    this.statusEl = document.getElementById('noteStatus');
+    this.totalEl.textContent = this.sp.slides.length;
+    this.isOpen = false;
+    this.storagePrefix = 'slide-notes-';
+    this.originPrefix = 'slide-notes-origin-';
+    this.syncStorageWithDOM();
+    this.setupKeyboard();
+    this.setupAutoSave();
+    this.setupSlideTracking();
+  }
+  setupKeyboard() {
+    document.addEventListener('keydown', (e) => {
+      if (isTyping(e)) return;
+      if (e.key === 'n' || e.key === 'N') { e.preventDefault(); this.toggle(); }
+    });
+    this.textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { this.toggle(); e.preventDefault(); }
+    });
+  }
+  setupAutoSave() {
+    this.textarea.addEventListener('input', () => {
+      const idx = this.sp.currentSlide;
+      localStorage.setItem(this.storagePrefix + idx, this.textarea.value);
+      // Mark as user-edited (origin stays the same — only changes on file reload)
+      this.statusEl.textContent = 'Saved';
+      clearTimeout(this._statusTimeout);
+      this._statusTimeout = setTimeout(() => { this.statusEl.textContent = ''; }, 1500);
+    });
+  }
+  setupSlideTracking() {
+    let lastSlide = -1;
+    setInterval(() => {
+      if (this.sp.currentSlide !== lastSlide) {
+        lastSlide = this.sp.currentSlide;
+        this.loadNoteForSlide(lastSlide);
+      }
+    }, 300);
+  }
+  loadNoteForSlide(idx) {
+    this.slideNumEl.textContent = idx + 1;
+    // localStorage has already been synced with DOM in syncStorageWithDOM
+    const stored = localStorage.getItem(this.storagePrefix + idx);
+    if (stored !== null) {
+      this.textarea.value = stored;
+    } else {
+      const slide = this.sp.slides[idx];
+      const notesEl = slide ? slide.querySelector('.speaker-notes') : null;
+      this.textarea.value = notesEl ? notesEl.textContent.trim() : '';
+    }
+  }
+  // Compare stored "origin" (DOM content at last load) with current DOM.
+  // If DOM changed (file was updated externally), reset localStorage for that slide.
+  // If DOM is the same, keep the user's localStorage edits.
+  syncStorageWithDOM() {
+    this.sp.slides.forEach((slide, idx) => {
+      const notesEl = slide.querySelector('.speaker-notes');
+      const currentDOM = notesEl ? notesEl.textContent.trim() : '';
+      const storedOrigin = localStorage.getItem(this.originPrefix + idx);
+      const storedEdit = localStorage.getItem(this.storagePrefix + idx);
+
+      if (storedOrigin === null) {
+        // First time: seed both origin and edit from DOM
+        if (currentDOM) {
+          localStorage.setItem(this.originPrefix + idx, currentDOM);
+          localStorage.setItem(this.storagePrefix + idx, currentDOM);
+        }
+      } else if (storedOrigin !== currentDOM) {
+        // DOM changed externally (file was edited/saved/git pulled)
+        // Reset: new DOM content wins
+        localStorage.setItem(this.originPrefix + idx, currentDOM);
+        localStorage.setItem(this.storagePrefix + idx, currentDOM);
+      }
+      // else: DOM unchanged, keep user's localStorage edits
+    });
+  }
+  toggle() {
+    this.isOpen = !this.isOpen;
+    this.panel.classList.toggle('active', this.isOpen);
+    if (this.isOpen) {
+      this.loadNoteForSlide(this.sp.currentSlide);
+      this.textarea.focus();
+    }
+  }
+  syncToDOM() {
+    this.sp.slides.forEach((slide, idx) => {
+      const stored = localStorage.getItem(this.storagePrefix + idx);
+      if (stored !== null) {
+        let notesEl = slide.querySelector('.speaker-notes');
+        if (!notesEl) {
+          notesEl = document.createElement('div');
+          notesEl.className = 'speaker-notes';
+          slide.appendChild(notesEl);
+        }
+        notesEl.textContent = stored;
+        // Update origin so next load knows this was saved
+        localStorage.setItem(this.originPrefix + idx, stored);
+      }
+    });
+  }
+}
+class PresenterMode {
+  constructor(slidePresentation) {
+    this.sp = slidePresentation;
+    this.presenterWindow = null;
+    this.blackedOut = false;
+    this.timerInterval = null;
+    this.startTime = null;
+    this.totalSeconds = 30 * 60; // 30-minute countdown
+    this.channel = new BroadcastChannel('slide-presenter');
+    this.navigatingFromRemote = false;
+    // Compute section boundaries from data-section attributes on slides
+    this.sectionBoundaries = [];
+    this.sp.slides.forEach((slide, i) => {
+      if (slide.dataset.section) {
+        if (this.sectionBoundaries.length) this.sectionBoundaries[this.sectionBoundaries.length - 1].end = i - 1;
+        this.sectionBoundaries.push({ start: i, end: this.sp.slides.length - 1, label: slide.dataset.section, budget: slide.dataset.budget || '' });
+      }
+    });
+    this.hookSlideNavigation();
+    this.setupKeyboard();
+    this.setupChannelListener();
+  }
+
+  hookSlideNavigation() {
+    const origGoToSlide = this.sp.goToSlide.bind(this.sp);
+    this.sp.goToSlide = (index) => {
+      origGoToSlide(index);
+      if (!this.navigatingFromRemote) this.broadcastState();
+    };
+    // Second observer to broadcast on scroll-snap settle
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !this.navigatingFromRemote) this.broadcastState();
+      });
+    }, { threshold: 0.5 });
+    this.sp.slides.forEach(s => obs.observe(s));
+  }
+
+  setupKeyboard() {
+    document.addEventListener('keydown', (e) => {
+      if (isTyping(e)) return;
+      if (e.key === 's' || e.key === 'S') { if (!e.ctrlKey && !e.metaKey) this.openPresenterWindow(); }
+      if (e.key === 'b' || e.key === 'B') this.toggleBlackout();
+      if (e.key === 'f' || e.key === 'F') { if (!e.ctrlKey && !e.metaKey) this.toggleFullscreen(); }
+    });
+  }
+
+  setupChannelListener() {
+    this.channel.onmessage = (e) => {
+      if (e.data.type === 'navigate') {
+        this.navigatingFromRemote = true;
+        this.sp.goToSlide(e.data.index);
+        setTimeout(() => { this.navigatingFromRemote = false; }, 600);
+      } else if (e.data.type === 'advance') {
+        this.navigatingFromRemote = true;
+        this.sp.advance();
+        setTimeout(() => { this.navigatingFromRemote = false; }, 600);
+      }
+    };
+  }
+
+  broadcastState() {
+    const idx = this.sp.currentSlide;
+    const slide = this.sp.slides[idx];
+    const notesEl = slide ? slide.querySelector('.speaker-notes') : null;
+    // Read from localStorage first (latest edits), fall back to DOM
+    const storedNotes = localStorage.getItem('slide-notes-' + idx);
+    const notes = storedNotes || (notesEl ? notesEl.innerHTML : '');
+    const section = this.sectionBoundaries.find(s => idx >= s.start && idx <= s.end);
+    this.channel.postMessage({
+      type: 'slideUpdate',
+      index: idx,
+      total: this.sp.slides.length,
+      notes: notes,
+      section: section ? `${section.label} (${section.budget})` : '',
+      blackout: this.blackedOut
+    });
+  }
+
+  toggleBlackout() {
+    this.blackedOut = !this.blackedOut;
+    document.getElementById('blackoutOverlay').classList.toggle('active', this.blackedOut);
+    this.broadcastState();
+  }
+
+  toggleFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  }
+
+  openPresenterWindow() {
+    if (this.presenterWindow && !this.presenterWindow.closed) {
+      this.presenterWindow.focus();
+      return;
+    }
+    const doOpen = () => {
+      const html = this.buildPresenterHTML();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      this.presenterWindow = window.open(url, 'presenter', 'popup,width=900,height=1100,left=100,top=100,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes,noopener=no');
+      if (!this.startTime) {
+        this.startTime = Date.now();
+        this.timerInterval = setInterval(() => this.broadcastState(), 1000);
+      }
+      setTimeout(() => this.broadcastState(), 500);
+    };
+    // Chrome forces window.open into a new tab when the opener is fullscreen.
+    // Exit fullscreen first so the popup features take effect.
+    if (document.fullscreenElement) {
+      document.exitFullscreen().then(doOpen).catch(doOpen);
+    } else {
+      doOpen();
+    }
+  }
+
+  buildPresenterHTML() {
+    const parentURL = new URL(location.href);
+    parentURL.searchParams.set('mirror', '1');
+    parentURL.hash = '#' + (this.sp.currentSlide + 1);
+    const mirrorSrc = parentURL.toString();
+    return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Presenter View</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a1a; color: #e0e0e0; font-family: 'Nunito', sans-serif; height: 100vh; display: grid;
+  grid-template-rows: 30% 1fr auto; grid-template-columns: 1fr; gap: 0; overflow: hidden; }
+#notes { padding: 24px 32px; overflow-y: auto; font-size: 19px; line-height: 1.6; border-bottom: 1px solid #333; white-space: pre-line; }
+#notes:empty::after { content: '(no notes for this slide)'; color: #666; font-style: italic; }
+#previews { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; padding: 16px 32px; align-items: stretch; min-height: 0; }
+#previews .preview-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 8px; }
+#previews .preview-box { background: #111; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; min-height: 0; }
+#currentBox .mirror-wrap { flex: 1; position: relative; background: #000; border-radius: 4px; overflow: hidden; min-height: 0; }
+#currentBox iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+#nextBox { align-items: center; justify-content: center; text-align: center; }
+#previews .slide-num-display { font-size: 48px; font-weight: 700; color: #fff; line-height: 1; }
+#previews .slide-total { font-size: 14px; color: #888; margin-top: 4px; }
+#bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 32px;
+  background: #111; border-top: 1px solid #333; font-size: 14px; }
+#timer-group { display: flex; align-items: center; gap: 10px; }
+#timer { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 400; color: #e0e0e0; }
+#timer.urgent { font-weight: 700; }
+#resetTimer { background: transparent; color: #888; border: 1px solid #333; border-radius: 4px;
+  padding: 4px 10px; cursor: pointer; font-size: 11px; font-family: 'Nunito', sans-serif;
+  text-transform: uppercase; letter-spacing: 0.05em; }
+#resetTimer:hover { background: #333; color: #e0e0e0; }
+#section { color: #888; }
+#blackout-indicator { display: none; background: #cc342d; color: #fff; padding: 4px 12px; border-radius: 4px;
+  font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+#blackout-indicator.active { display: inline-block; }
+#nav { display: flex; gap: 8px; }
+#nav button { background: #333; color: #e0e0e0; border: none; border-radius: 4px; padding: 6px 16px;
+  cursor: pointer; font-size: 13px; font-family: 'Nunito', sans-serif; }
+#nav button:hover { background: #555; }
+</style></head><body>
+<div id="notes"></div>
+<div id="previews">
+  <div class="preview-box" id="currentBox">
+    <div class="preview-label">Current — <span id="currentNum">1</span><span id="slideTotal"></span></div>
+    <div class="mirror-wrap"><iframe id="mirror" title="Current slide" src="${mirrorSrc}"></iframe></div>
+  </div>
+  <div class="preview-box" id="nextBox">
+    <div class="preview-label">Next</div>
+    <div class="slide-num-display" id="nextNum">2</div>
+    <div class="slide-total" id="nextLabel"></div>
+  </div>
+</div>
+<div id="bar">
+  <div id="section"></div>
+  <div id="blackout-indicator">SCREEN BLANKED</div>
+  <div id="timer-group">
+    <div id="timer">30:00</div>
+    <button id="resetTimer" title="Reset timer to 30:00">Reset</button>
+  </div>
+  <div id="nav">
+    <button id="prevBtn">&larr; Prev</button>
+    <button id="nextBtn">Next &rarr;</button>
+  </div>
+</div>
+<script>
+const channel = new BroadcastChannel('slide-presenter');
+channel.onmessage = (e) => {
+  if (e.data.type !== 'slideUpdate') return;
+  const d = e.data;
+  document.getElementById('notes').innerHTML = d.notes;
+  document.getElementById('currentNum').textContent = d.index + 1;
+  document.getElementById('slideTotal').textContent = '/' + d.total;
+  document.getElementById('nextNum').textContent = d.index + 1 < d.total ? d.index + 2 : '—';
+  document.getElementById('nextLabel').textContent = d.index + 1 >= d.total ? 'End' : '';
+  document.getElementById('section').textContent = d.section;
+  document.getElementById('blackout-indicator').classList.toggle('active', d.blackout);
+  // Timer
+  if (d.elapsed !== undefined) {
+    // handled by parent via elapsed field
+  }
+};
+// Timer managed by parent broadcast — we just display what we get
+// But we also compute locally from the start timestamp
+let startTime = Date.now();
+setInterval(() => {
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const remaining = Math.max(0, 30 * 60 - elapsed);
+  const min = Math.floor(remaining / 60);
+  const sec = remaining % 60;
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  timerEl.classList.toggle('urgent', remaining <= 300);
+}, 1000);
+document.getElementById('resetTimer').addEventListener('click', () => {
+  startTime = Date.now();
+});
+// Nav buttons
+document.getElementById('prevBtn').addEventListener('click', () => {
+  const cur = parseInt(document.getElementById('currentNum').textContent) - 1;
+  channel.postMessage({ type: 'navigate', index: Math.max(0, cur - 1) });
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  channel.postMessage({ type: 'advance' });
+});
+document.addEventListener('keydown', (e) => {
+  const cur = parseInt(document.getElementById('currentNum').textContent) - 1;
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') channel.postMessage({ type: 'navigate', index: Math.max(0, cur - 1) });
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') channel.postMessage({ type: 'advance' });
+});
+<\/script></body></html>`;
+  }
+}
+
+const sp = new SlidePresentation();
+let notesEditor, editor;
+if (sp.isMirror) {
+  document.body.classList.add('mirror');
+  // Mirror instant-jumps instead of smooth-scrolling so the preview keeps up.
+  sp.goToSlide = function(i) {
+    if (i < 0 || i >= this.slides.length) return;
+    this.slides[i].scrollIntoView({ behavior: 'auto', block: 'start' });
+  }.bind(sp);
+  const mirrorChannel = new BroadcastChannel('slide-presenter');
+  mirrorChannel.onmessage = (e) => {
+    if (e.data.type === 'slideUpdate' && e.data.index !== sp.currentSlide) sp.goToSlide(e.data.index);
+  };
+} else {
+  notesEditor = new NotesEditor(sp);
+  editor = new InlineEditor(notesEditor);
+  new PresenterMode(sp);
+}
+// Global ⌘S / Ctrl+S — save everything (notes + slide content) to file via server
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    if (!editor) return;
+    e.preventDefault();
+    editor.saveFile();
+  }
+});
+</script>
+
+
+<browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><browser-mcp-container data-wxt-shadow-root=""></browser-mcp-container><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div>
+<div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div><div id="1p-menu-live-region" role="status" aria-live="polite" aria-atomic="true" aria-relevant="all" style="clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; overflow: hidden; position: fixed; top: 0px; left: 0px; white-space: nowrap; width: 1px; overflow-wrap: normal;">1Password menu is available. Press down arrow to select.</div></body></html>
