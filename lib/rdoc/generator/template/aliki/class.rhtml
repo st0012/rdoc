@@ -224,7 +224,7 @@
                 <span class="annotation-sigil" aria-hidden="true"></span>
                 <span class="annotation-title">Abstract method</span>
               </header>
-              <p class="annotation-lede">Subclasses are expected to implement this method.</p>
+              <p class="annotation-lede">Subclasses provide the implementation.</p>
               <%- if impls.any? %>
                 <ol class="annotation-tree" aria-label="Implementations of <%= method.full_name %>">
                   <%- impls.each do |impl|
