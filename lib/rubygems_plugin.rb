@@ -8,7 +8,14 @@
 # - RDoc is used as a default gem.
 # - RDoc is a old version that doesn't have rubygems_plugin.rb.
 
-require_relative 'rdoc/rubygems_hook'
+# rdoc/rubygems_hook pulls in the full RDoc library, so defer the require
+# until a hook actually fires to keep `gem` startup fast.
+Gem.done_installing do |installer, specs|
+  require_relative 'rdoc/rubygems_hook'
+  RDoc::RubyGemsHook.generate(installer, specs)
+end
 
-Gem.done_installing(&RDoc::RubyGemsHook.method(:generate))
-Gem.pre_uninstall(&RDoc::RubyGemsHook.method(:remove))
+Gem.pre_uninstall do |uninstaller|
+  require_relative 'rdoc/rubygems_hook'
+  RDoc::RubyGemsHook.remove(uninstaller)
+end
