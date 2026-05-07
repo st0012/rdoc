@@ -405,3 +405,5 @@ For server-specific E2E testing (endpoint checks, live-reload verification, file
 4. **Use `rake rerdoc`** to regenerate documentation (not just `rdoc`)
 5. **Verify generated files** with `rake verify_generated`
 6. **Don't edit generated files** directly (in `lib/rdoc/markdown/` and `lib/rdoc/rd/`)
+7. **Pull request descriptions** must be concise. Use 2–4 short paragraphs explaining the context, why the change is correct, and any notable side effect. Do not include a "Test plan" section. Do not append a Claude Code session link or any AI attribution.
+8. **Sync the fork before branching**: when this repository is a fork of `ruby/rdoc`, fast-forward the fork's `master` to `ruby/rdoc:master` before creating a new branch. Branching from a stale master invites merge conflicts and PRs that diverge from upstream history.
