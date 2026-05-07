@@ -9,7 +9,6 @@
 # - RDoc is a old version that doesn't have rubygems_plugin.rb.
 
 require_relative 'rdoc/rubygems_hook'
-require_relative 'rdoc/markdown'
 
 Gem.done_installing(&RDoc::RubyGemsHook.method(:generate))
 Gem.pre_uninstall(&RDoc::RubyGemsHook.method(:remove))
