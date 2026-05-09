@@ -56,7 +56,27 @@ rdoc.document options
 # see RDoc::RDoc
 ```
 
-You can specify the target files for document generation with `.document` file in the project root directory. `.document` file contains a list of file and directory names including comment lines starting with `#`. See [https://github.com/ruby/rdoc/blob/master/.document](https://github.com/ruby/rdoc/blob/master/.document) as an example.
+## Configuration
+
+RDoc has four ways to configure it. Three control *how RDoc runs*, and one controls *which files get documented*:
+
+- **`.rdoc_options`**: a YAML file at the project root. Recommended for gems and libraries; it's declarative, committed to the repo, and picked up by both the `rdoc` CLI and `RDoc::Task`.
+- **`RDoc::Task`**: a Rakefile API for projects that already use Rake.
+- **`RDOCOPT`**: an environment variable for personal CLI overrides.
+- **`.document`**: a per-directory file-selection list controlling which files RDoc parses. See [the project's `.document`](https://github.com/ruby/rdoc/blob/master/.document) as an example.
+
+A minimal `.rdoc_options` for most gems:
+
+```yaml
+title: MyGem
+main_page: README.md
+markup: markdown
+exclude:
+  - test/
+  - tmp/
+```
+
+For the full option reference (CLI flag ↔ `.rdoc_options` key ↔ `RDoc::Task` attribute, with defaults and gotchas), see **[Configuring RDoc](https://ruby.github.io/rdoc/doc/configuration_md.html)**.
 
 ## Writing Documentation
 
@@ -101,7 +121,7 @@ For standalone documentation files, we recommend writing `.md` files instead of 
 
 ### Specifying Markup Format
 
-**Per-file:** Add a `:markup:` directive at the top of a Ruby file:
+Add a `:markup:` directive at the top of a Ruby file to set its format:
 
 ```ruby
 # :markup: markdown
@@ -111,17 +131,7 @@ class MyClass
 end
 ```
 
-**Per-project:** Create a `.rdoc_options` file in your project root:
-
-```yaml
-markup: markdown
-```
-
-**Command line:**
-
-```bash
-rdoc --markup markdown
-```
+To set the markup format project-wide, use the `markup` key in `.rdoc_options`. See [Configuring RDoc](https://ruby.github.io/rdoc/doc/configuration_md.html) for details.
 
 ### Feature Differences
 
@@ -167,11 +177,7 @@ To use the Darkfish theme instead of the default Aliki theme:
 rdoc --format darkfish
 ```
 
-Or in your `.rdoc_options` file:
-
-```yaml
-generator_name: darkfish
-```
+For the persistent equivalent (`generator_name` in `.rdoc_options`) and other generator-related options, see [Configuring RDoc](https://ruby.github.io/rdoc/doc/configuration_md.html).
 
 There are also a few community-maintained themes for RDoc:
 
