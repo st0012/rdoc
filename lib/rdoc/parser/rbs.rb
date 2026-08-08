@@ -74,6 +74,8 @@ class RDoc::Parser::RBS < RDoc::Parser
   end
 
   def merge_comments(object, comment)
+    comment.owner = object
+
     document = RDoc::Markup::Document.new
     document.concat object.parse(object.comment).parts
     document << RDoc::Markup::Rule.new(1)

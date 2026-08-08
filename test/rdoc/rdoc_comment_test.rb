@@ -420,4 +420,29 @@ class RDocCommentTest < RDoc::TestCase
     assert_not_include rendered, '@override'
     assert_equal true, m.override
   end
+
+  def test_owner_invalidates_a_parsed_document
+    method = RDoc::AnyMethod.new 'render'
+    comment = RDoc::Comment.new "Render the object.\n\n@override\n", @top_level
+
+    assert_include comment.parse.parts.last.text, '@override'
+
+    comment.owner = method
+    rendered = comment.parse.parts.filter_map { |part| part.text if part.respond_to?(:text) }.join
+
+    assert_not_include rendered, '@override'
+    assert_equal true, method.override
+  end
+
+  def test_owner_preserves_an_explicit_document
+    method = RDoc::AnyMethod.new 'render'
+    document = RDoc::Markup::Document.new RDoc::Markup::Paragraph.new('Merged documentation.')
+    comment = RDoc::Comment.new "Render the object.\n\n@override\n", @top_level
+    comment.document = document
+
+    comment.owner = method
+
+    assert_same document, comment.parse
+    assert_equal true, method.override
+  end
 end

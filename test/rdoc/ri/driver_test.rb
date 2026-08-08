@@ -1648,20 +1648,6 @@ Foo::Bar#bother
     base_render = RDoc::AnyMethod.new 'render'
     base_render.abstract = true
     base.add_method base_render
-
-    button = ui.add_class RDoc::NormalClass, 'Button', 'UI::Component'
-    btn_render = RDoc::AnyMethod.new 'render'
-    btn_render.override = true
-    btn_render.override_target = 'UI::Component#render'
-    button.add_method btn_render
-
-    card = ui.add_class RDoc::NormalClass, 'Card', 'UI::Component'
-    card_render = RDoc::AnyMethod.new 'render'
-    card_render.override = true
-    card_render.override_target = 'UI::Component#render'
-    card.add_method card_render
-
-    store.build_abstract_index
     store
   end
 
@@ -1671,7 +1657,7 @@ Foo::Bar#bother
     store = util_store_with_override
     method = store.find_class_or_module('UI::Button').method_list.first
 
-    driver.send :render_method_annotations, out, store, method
+    driver.send :render_method_annotations, out, method
 
     rendered = out.parts.map(&:inspect).join("\n")
     assert_match %r{\(Overrides UI::Component#render\)}, rendered
@@ -1683,7 +1669,7 @@ Foo::Bar#bother
     method = RDoc::AnyMethod.new 'render'
     method.override = true
 
-    driver.send :render_method_annotations, out, RDoc::Store.new(RDoc::Options.new), method
+    driver.send :render_method_annotations, out, method
 
     rendered = out.parts.map(&:inspect).join("\n")
     assert_match %r{\(Overrides - no matching ancestor\)}, rendered
@@ -1695,28 +1681,38 @@ Foo::Bar#bother
     store = util_store_with_abstract
     klass = store.find_class_or_module('UI::Component')
 
-    driver.send :render_class_annotations, out, store, klass
+    driver.send :render_class_annotations, out, klass
 
     rendered = out.parts.map(&:inspect).join("\n")
-    assert_match %r{\(Abstract class - subclasses are expected to implement abstract methods\)},
+    assert_match %r{\(Abstract class - subclasses must implement the abstract methods\)},
                  rendered
-    assert_match %r{Concrete subclasses:}, rendered
-    assert_match %r{UI::Button}, rendered
-    assert_match %r{UI::Card},   rendered
   end
 
-  def test_render_method_emits_abstract_heading_and_implementations
+  def test_render_method_emits_abstract_heading
     driver = RDoc::RI::Driver.new
     out = RDoc::Markup::Document.new
     store = util_store_with_abstract
     method = store.find_class_or_module('UI::Component').method_list.first
 
-    driver.send :render_method_annotations, out, store, method
+    driver.send :render_method_annotations, out, method
 
     rendered = out.parts.map(&:inspect).join("\n")
-    assert_match %r{\(Abstract - subclasses are expected to implement\)}, rendered
-    assert_match %r{Implemented by:}, rendered
-    assert_match %r{UI::Button#render}, rendered
+    assert_match %r{\(Abstract - This method is intended to be overridden\.\)}, rendered
+  end
+
+  def test_render_class_annotations_uses_module_copy
+    driver = RDoc::RI::Driver.new
+    out = RDoc::Markup::Document.new
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'annotations.rb'
+    mod = top_level.add_module RDoc::NormalModule, 'Interface'
+    mod.abstract = true
+
+    driver.send :render_class_annotations, out, mod
+
+    rendered = out.parts.map(&:inspect).join("\n")
+    assert_match %r{\(Abstract module - classes and modules that include it must implement the abstract methods\)},
+                 rendered
   end
 
 end

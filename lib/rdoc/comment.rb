@@ -11,9 +11,7 @@
 
 class RDoc::Comment
 
-  autoload :Annotation,         "#{__dir__}/comment/annotation"
-  autoload :AnnotationRegistry, "#{__dir__}/comment/annotation_registry"
-  autoload :AnnotationScanner,  "#{__dir__}/comment/annotation_scanner"
+  autoload :AnnotationScanner, "#{__dir__}/comment/annotation_scanner"
 
   include RDoc::Text
 
@@ -33,15 +31,10 @@ class RDoc::Comment
   attr_accessor :line
 
   ##
-  # The CodeObject this comment is attached to. Set by parsers when they
-  # associate a comment with a method, class, module, include, etc. Used by
-  # AnnotationScanner during #parse to dispatch annotation handlers.
+  # The CodeObject this comment is attached to. Set when the comment is added
+  # to a code object. AnnotationScanner uses it during #parse.
   #
-  # The owner must be set *before* the comment is first parsed. If parse has
-  # already cached a document (e.g. RDoc::TomDoc#signature parses comments
-  # eagerly), changing the owner does not retroactively re-scan the comment.
-
-  attr_accessor :owner
+  attr_reader :owner
 
   ##
   # For duck-typing when merging classes at load time
@@ -62,7 +55,10 @@ class RDoc::Comment
   # Overrides the content returned by #parse.  Use when there is no #text
   # source for this comment
 
-  attr_writer   :document
+  def document=(document)
+    @document = document
+    @document_explicit = true
+  end
 
   ##
   # Creates a new comment with +text+ that is found in the RDoc::TopLevel
@@ -74,6 +70,7 @@ class RDoc::Comment
     @language = language
 
     @document   = nil
+    @document_explicit = false
     @format     = 'rdoc'
     @normalized = false
   end
@@ -112,6 +109,21 @@ class RDoc::Comment
   def format=(format)
     @format = format
     @document = nil
+    @document_explicit = false
+  end
+
+  ##
+  # Sets the CodeObject this comment documents. If the text contains an
+  # annotation supported by the new owner, a parsed document is invalidated so
+  # the annotation can be removed. A document supplied through #document= is
+  # preserved.
+
+  def owner=(owner)
+    return if @owner.equal?(owner)
+
+    @owner = owner
+    scanned_text = RDoc::Comment::AnnotationScanner.scan(@text, owner)
+    @document = nil if @document && !@document_explicit && scanned_text != @text
   end
 
   def inspect # :nodoc:
@@ -171,6 +183,7 @@ class RDoc::Comment
       @text.nil? and @document
 
     @document = nil
+    @document_explicit = false
     @text = text.nil? ? nil : text.dup
   end
 

@@ -1453,45 +1453,40 @@ class RDocStoreTest < XrefTestCase
   end
 
   def setup_annotation_fixture
-    @annot_store = RDoc::Store.new(RDoc::Options.new)
+    @annot_options = RDoc::Options.new
+    @annot_store = RDoc::Store.new(@annot_options)
     tl = @annot_store.add_file 'annotations.rb'
 
     ui = tl.add_module RDoc::NormalModule, 'UI'
 
     base = ui.add_class RDoc::NormalClass, 'Component'
-    base.abstract = true
+    base.add_comment RDoc::Comment.new("Component documentation.\n\n@abstract\n", tl), tl
     base_render = RDoc::AnyMethod.new 'render'
-    base_render.abstract = true
+    base_render.comment = RDoc::Comment.new("Render the component.\n\n@abstract\n", tl)
     base.add_method base_render
 
     button = ui.add_class RDoc::NormalClass, 'Button', 'UI::Component'
     btn_render = RDoc::AnyMethod.new 'render'
-    btn_render.override = true
+    btn_render.comment = RDoc::Comment.new("Render the button.\n\n@override\n", tl)
     button.add_method btn_render
 
     card = ui.add_class RDoc::NormalClass, 'Card', 'UI::Component'
     card_render = RDoc::AnyMethod.new 'render'
-    card_render.override = true
+    card_render.comment = RDoc::Comment.new("Render the card.\n\n@override\n", tl)
     card.add_method card_render
 
     orphan = ui.add_class RDoc::NormalClass, 'Orphan'
     orphan_meth = RDoc::AnyMethod.new 'nonexistent'
-    orphan_meth.override = true
+    orphan_meth.comment = RDoc::Comment.new("Not an override.\n\n@override\n", tl)
     orphan.add_method orphan_meth
 
     [base, button, card, orphan, base_render, btn_render, card_render, orphan_meth]
   end
 
   def capture_warnings
-    warnings = []
-    saved = RDoc.method(:warn)
-    RDoc.singleton_class.send(:remove_method, :warn) if RDoc.respond_to?(:warn)
-    RDoc.define_singleton_method(:warn) { |msg| warnings << msg }
-    yield
+    @annot_options.verbosity = 2
+    _, warnings = verbose_capture_output { yield }
     warnings
-  ensure
-    RDoc.singleton_class.send(:remove_method, :warn) if RDoc.respond_to?(:warn)
-    RDoc.define_singleton_method(:warn, saved) if saved
   end
 
   def test_resolve_overrides_sets_target_to_ancestor_method
@@ -1506,8 +1501,7 @@ class RDocStoreTest < XrefTestCase
     warnings = capture_warnings { @annot_store.resolve_overrides }
 
     assert_nil orphan_meth.override_target
-    assert(warnings.any? { |w| w.include?('@override on UI::Orphan#nonexistent') },
-           "expected warning, got: #{warnings.inspect}")
+    assert_include warnings, '@override on UI::Orphan#nonexistent'
   end
 
   def test_build_abstract_index_lists_implementations
@@ -1522,8 +1516,22 @@ class RDocStoreTest < XrefTestCase
     assert_includes impls, 'UI::Card#render'
   end
 
+  def test_build_abstract_index_skips_embedded_mixin_copies
+    _, button, = setup_annotation_fixture
+    embedded = RDoc::AnyMethod.new 'embedded_render'
+    embedded.override_target = 'UI::Component#render'
+    embedded.mixin_from = @annot_store.find_class_or_module('UI::Component')
+    button.add_method embedded
+
+    @annot_store.build_abstract_index
+
+    assert_not_include @annot_store.implementations_of('UI::Component#render'),
+                       'UI::Button#embedded_render'
+  end
+
   def test_build_abstract_index_lists_concrete_subclasses
-    setup_annotation_fixture
+    base, = setup_annotation_fixture
+    base.abstract = true
     @annot_store.build_abstract_index
 
     subs = @annot_store.subclasses_of('UI::Component')
@@ -1555,7 +1563,7 @@ class RDocStoreTest < XrefTestCase
     base = @annot_store.find_class_or_module('UI::Component')
     cm = RDoc::AnyMethod.new 'create', singleton: true
     base.add_method cm
-    found = @annot_store.find_method_named('UI::Component.create')
+    found = @annot_store.find_method_named('UI::Component::create')
     assert_equal 'create',         found.name
     assert_equal true,             found.singleton
   end
@@ -1576,6 +1584,181 @@ class RDocStoreTest < XrefTestCase
     assert_equal 'UI::Component#render', btn.override_target
 
     assert_includes @annot_store.subclasses_of('UI::Component'), 'UI::Button'
+  end
+
+  def test_resolve_overrides_uses_ruby_instance_method_lookup_order
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    top_level = store.add_file 'lookup.rb'
+
+    base = top_level.add_class RDoc::NormalClass, 'Base'
+    base.add_method RDoc::AnyMethod.new('render')
+
+    first = top_level.add_module RDoc::NormalModule, 'First'
+    first.add_method RDoc::AnyMethod.new('render')
+    last = top_level.add_module RDoc::NormalModule, 'Last'
+    nested = top_level.add_module RDoc::NormalModule, 'Nested'
+    nested.add_method RDoc::AnyMethod.new('render')
+    last.add_include RDoc::Include.new('Nested', '')
+
+    child = top_level.add_class RDoc::NormalClass, 'Child', 'Base'
+    child.add_include RDoc::Include.new('First', '')
+    child.add_include RDoc::Include.new('Last', '')
+    render = RDoc::AnyMethod.new 'render'
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    store.resolve_overrides
+
+    assert_equal 'Nested#render', render.override_target
+  end
+
+  def test_resolve_overrides_uses_ruby_singleton_method_lookup_order
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    top_level = store.add_file 'lookup.rb'
+
+    base = top_level.add_class RDoc::NormalClass, 'Base'
+    base.add_method RDoc::AnyMethod.new('render', singleton: true)
+
+    wrong = top_level.add_module RDoc::NormalModule, 'Wrong'
+    wrong.add_method RDoc::AnyMethod.new('render', singleton: true)
+    extension = top_level.add_module RDoc::NormalModule, 'Extension'
+    extension_render = RDoc::AnyMethod.new 'render'
+    extension.add_method extension_render
+
+    child = top_level.add_class RDoc::NormalClass, 'Child', 'Base'
+    child.add_include RDoc::Include.new('Wrong', '')
+    child.add_extend RDoc::Extend.new('Extension', '')
+    render = RDoc::AnyMethod.new 'render', singleton: true
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    fallback = top_level.add_class RDoc::NormalClass, 'Fallback', 'Base'
+    fallback.add_include RDoc::Include.new('Wrong', '')
+    fallback_render = RDoc::AnyMethod.new 'render', singleton: true
+    fallback_render.comment = RDoc::Comment.new "@override\n", top_level
+    fallback.add_method fallback_render
+
+    store.resolve_overrides
+
+    assert_equal 'Extension#render', render.override_target
+    assert_same extension_render, store.find_method_named(render.override_target)
+    assert_equal 'Base::render', fallback_render.override_target
+  end
+
+  def test_resolve_singleton_override_follows_superclass_extensions
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    top_level = store.add_file 'lookup.rb'
+
+    parent_extension = top_level.add_module RDoc::NormalModule, 'ParentExtension'
+    parent_extension.add_method RDoc::AnyMethod.new('render')
+    parent = top_level.add_class RDoc::NormalClass, 'Parent'
+    parent.add_extend RDoc::Extend.new('ParentExtension', '')
+    child = top_level.add_class RDoc::NormalClass, 'Child', 'Parent'
+    render = RDoc::AnyMethod.new 'render', singleton: true
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    store.resolve_overrides
+
+    assert_equal 'ParentExtension#render', render.override_target
+  end
+
+  def test_override_lookup_does_not_treat_self_include_as_an_ancestor
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+    mod = top_level.add_module RDoc::NormalModule, 'SelfIncluded'
+    mod.add_include RDoc::Include.new('SelfIncluded', '')
+    render = mod.add_method RDoc::AnyMethod.new('render')
+
+    assert_nil store.find_override_target(mod, render)
+  end
+
+  def test_singleton_override_lookup_allows_extend_self
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+    mod = top_level.add_module RDoc::NormalModule, 'ExtendedSelf'
+    instance_render = mod.add_method RDoc::AnyMethod.new('render')
+    mod.add_extend RDoc::Extend.new('ExtendedSelf', '')
+    singleton_render = mod.add_method RDoc::AnyMethod.new('render', singleton: true)
+
+    assert_equal instance_render.full_name,
+                 store.find_override_target(mod, singleton_render)
+  end
+
+  def test_resolve_annotations_reads_each_reopened_class_comment
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    first_file = store.add_file 'first.rb'
+    second_file = store.add_file 'second.rb'
+    component = first_file.add_class RDoc::NormalClass, 'Component'
+    component.add_comment RDoc::Comment.new("@abstract\n", first_file), first_file
+    component.add_comment RDoc::Comment.new("More documentation.\n", second_file), second_file
+
+    store.resolve_annotations
+
+    assert_equal true, component.abstract
+  end
+
+  def test_resolve_annotations_rebuilds_source_flags
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    top_level = store.add_file 'component.rb'
+    component = top_level.add_class RDoc::NormalClass, 'Component'
+    component.record_location top_level
+    top_level.add_to_classes_or_modules component
+    component.add_comment RDoc::Comment.new("@abstract\n", top_level), top_level
+
+    store.resolve_annotations
+    assert_equal true, component.abstract
+
+    store.clear_file_contributions 'component.rb', keep_position: true
+    component.add_comment RDoc::Comment.new("Concrete component.\n", top_level), top_level
+    store.resolve_annotations
+
+    assert_equal false, component.abstract
+  end
+
+  def test_resolve_annotations_does_not_parse_comments_eagerly
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    top_level = store.add_file 'component.rb'
+    component = top_level.add_class RDoc::NormalClass, 'Component'
+    comment = RDoc::Comment.new("@abstract\n", top_level)
+    comment.define_singleton_method(:parse) { raise 'comment was parsed eagerly' }
+    component.add_comment comment, top_level
+
+    store.resolve_annotations
+
+    assert_equal true, component.abstract
+  end
+
+  def test_resolve_annotations_preserves_loaded_flags
+    options = RDoc::Options.new
+    store = RDoc::Store.new options, type: :system
+    top_level = store.add_file 'component.rb'
+    component = top_level.add_class RDoc::NormalClass, 'Component'
+    component.abstract = true
+
+    store.resolve_annotations
+
+    assert_equal true, component.abstract
+  end
+
+  def test_abstract_module_is_not_indexed_as_a_superclass
+    options = RDoc::Options.new
+    store = RDoc::Store.new options
+    top_level = store.add_file 'component.rb'
+    interface = top_level.add_module RDoc::NormalModule, 'Interface'
+    interface.abstract = true
+    implementation = top_level.add_class RDoc::NormalClass, 'Implementation'
+    implementation.add_include RDoc::Include.new('Interface', '')
+
+    store.build_abstract_index
+
+    assert_equal [], store.subclasses_of('Interface')
   end
 
 end

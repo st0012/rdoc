@@ -20,6 +20,13 @@ class TestRDocCommentAnnotationScanner < RDoc::TestCase
     assert_equal true, @method.override
   end
 
+  def test_strips_annotation_lines_with_a_ruby_comment_prefix
+    out = RDoc::Comment::AnnotationScanner.scan "# @override\n", @method
+
+    assert_equal '', out
+    assert_equal true, @method.override
+  end
+
   def test_leaves_unknown_at_tags_in_place
     text = <<~TEXT
       Renders the component.
@@ -30,9 +37,7 @@ class TestRDocCommentAnnotationScanner < RDoc::TestCase
     assert_includes out, '@example Foo.new.render'
   end
 
-  def test_skips_handler_when_owner_kind_does_not_apply
-    # @override applies only to AnyMethod; passing a ClassModule should not
-    # invoke the handler, and the line should remain in the text.
+  def test_leaves_override_on_classes_in_place
     text = "@override\n"
     out = RDoc::Comment::AnnotationScanner.scan text, @klass
     assert_equal "@override\n", out
@@ -50,5 +55,13 @@ class TestRDocCommentAnnotationScanner < RDoc::TestCase
     text = "  description with leading spaces\n@override\n"
     out = RDoc::Comment::AnnotationScanner.scan text, @method
     assert_equal "  description with leading spaces\n", out
+  end
+
+  def test_leaves_annotation_with_trailing_text_in_place
+    text = "@abstract implement render\n"
+    out = RDoc::Comment::AnnotationScanner.scan text, @method
+
+    assert_equal text, out
+    assert_equal false, @method.abstract
   end
 end

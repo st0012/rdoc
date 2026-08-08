@@ -132,7 +132,9 @@ class RDoc::CodeObject
   def comment=(comment)
     @comment = case comment
                when NilClass               then ''
-               when RDoc::Comment          then comment.normalize
+               when RDoc::Comment          then
+                 comment.owner = self
+                 comment.normalize
                else
                  if comment and not comment.empty? then
                    normalize_comment comment

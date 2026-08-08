@@ -68,6 +68,7 @@ class RDoc::ClassModule < RDoc::Context
 
   def self.from_module(class_type, mod)
     klass = class_type.new mod.name
+    klass.abstract = mod.abstract
 
     mod.comment_location.each do |location, comments|
       comments.each { |comment| klass.add_comment comment, location }
@@ -146,6 +147,7 @@ class RDoc::ClassModule < RDoc::Context
     return unless document_self
 
     original = comment
+    comment.owner = self if comment.is_a?(RDoc::Comment)
 
     comment = case comment
               when RDoc::Comment then
@@ -489,6 +491,7 @@ class RDoc::ClassModule < RDoc::Context
   def merge(class_module)
     @parent      = class_module.parent
     @parent_name = class_module.parent_name
+    @abstract    = class_module.abstract
 
     other_document = parse class_module.comment_location
 

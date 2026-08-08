@@ -285,23 +285,7 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     @g.generate
     out = File.binread('Button.html')
 
-    assert_match %r{<div class="annotation-notice override">.*<span class="annotation-title">Override</span>.*<p class="annotation-lede">.*Base#render}m, out
-  end
-
-  def test_aliki_head_includes_annotations_css
-    head = File.read File.join(@options.template_dir, '_head.rhtml')
-    assert_match %r{annotations\.css}, head
-  end
-
-  def test_annotations_css_defines_notice_and_tree
-    css = File.read File.join(@options.template_dir, 'css/annotations.css')
-    assert_match %r{\.annotation-notice\b}, css
-    assert_match %r{\.annotation-notice\.unresolved\b}, css
-    assert_match %r{\.annotation-notice\.class-level\b}, css
-    assert_match %r{\.annotation-sigil\b}, css
-    assert_match %r{\.annotation-title\b}, css
-    assert_match %r{\.annotation-lede\b}, css
-    assert_match %r{\.annotation-tree\b}, css
+    assert_match %r{<div class="annotation-notice override">.*<p class="annotation-lede">.*<span class="annotation-title">Overrides:</span>.*Base#render}m, out
   end
 
   def test_end_to_end_aliki_generation_for_annotation_fixtures
@@ -321,19 +305,22 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
       end
 
       button_html = File.read File.join(out_dir, 'UI/Button.html')
-      assert_match %r{<div class="annotation-notice override">.*<span class="annotation-title">Override</span>.*UI::Component#render}m,
+      assert_match %r{<div class="annotation-notice override">.*<p class="annotation-lede">.*<span class="annotation-title">Overrides:</span>.*UI::Component#render}m,
                    button_html
 
       component_html = File.read File.join(out_dir, 'UI/Component.html')
-      assert_match %r{<span class="annotation-title">Abstract class</span>}, component_html
-      assert_match %r{<ol class="annotation-tree"[^>]*>.*Button.*Card}m,
+      assert_match %r{<span class="annotation-title">Abstract class:</span>}, component_html
+      assert_match %r{Subclasses must implement the abstract methods}, component_html
+      assert_match %r{<ul class="annotation-links"[^>]*>.*Button.*Card}m,
                    component_html
       # Common namespace is stripped: the branches show 'Button' / 'Card', not 'UI::Button'.
-      assert_match %r{<li><a[^>]*>Button</a></li>}, component_html
-      assert_no_match %r{<li><a[^>]*>UI::Button</a></li>}, component_html
+      assert_match %r{<li>\s*<a[^>]*>Button</a>\s*</li>}, component_html
+      assert_no_match %r{<li>\s*<a[^>]*>UI::Button</a>\s*</li>}, component_html
 
       orphan_html = File.read File.join(out_dir, 'UI/Orphan.html')
       assert_match %r{<div class="annotation-notice override unresolved">},
+                   orphan_html
+      assert_match %r{Marked as an override, but no matching ancestor method is documented\.},
                    orphan_html
     end
   end
@@ -358,10 +345,11 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     h1 = out[/<h1\b.*?<\/h1>/m]
     assert_match %r{<h1[^>]*page-title[^>]*>.*<span class="page-title-kind">class</span>.*<span class="page-title-name">Base</span>.*</h1>}m, h1
     refute_match %r{annotation}, h1
-    assert_match %r{<div class="annotation-notice abstract class-level">.*<span class="annotation-title">Abstract class</span>.*Subclasses inherit}m, out
-    assert_match %r{<ol class="annotation-tree"[^>]*>}, out
-    assert_match %r{<li><a[^>]*>Button</a></li>}, out
-    assert_match %r{<li><a[^>]*>Card</a></li>}, out
+    assert_match %r{<div class="annotation-notice abstract class-level">.*<p class="annotation-lede">.*<span class="annotation-title">Abstract class:</span>.*Subclasses must implement the abstract methods}m, out
+    assert_match %r{<div class="annotation-list-label">Known subclasses</div>}, out
+    assert_match %r{<ul class="annotation-links"[^>]*>}, out
+    assert_match %r{<li>\s*<a[^>]*>Button</a>\s*</li>}, out
+    assert_match %r{<li>\s*<a[^>]*>Card</a>\s*</li>}, out
   end
 
   def test_class_template_renders_method_abstract_notice
@@ -383,7 +371,47 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     @g.generate
     out = File.binread('Base.html')
 
-    assert_match %r{<div class="annotation-notice abstract">.*<span class="annotation-title">Abstract method</span>.*Subclasses are expected to implement this method}m, out
-    assert_match %r{<ol class="annotation-tree"[^>]*>.*<li><a[^>]*>Button#render</a></li>}m, out
+    assert_match %r{<div class="annotation-notice abstract">.*<p class="annotation-lede">.*<span class="annotation-title">Abstract method:</span>.*This method is intended to be overridden}m, out
+    assert_match %r{<div class="annotation-list-label">Known overrides</div>}, out
+    assert_match %r{<ul class="annotation-links"[^>]*>.*<li>\s*<a[^>]*>Button#render</a>\s*</li>}m, out
+  end
+
+  def test_class_template_uses_module_copy_for_abstract_module
+    interface = @top_level.add_module RDoc::NormalModule, 'Interface'
+    interface.abstract = true
+    render = RDoc::AnyMethod.new 'render'
+    render.abstract = true
+    interface.add_method render
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Interface.html')
+
+    assert_match %r{<span class="annotation-title">Abstract module:</span>}, out
+    assert_match %r{Classes and modules that include this module must implement the abstract methods}, out
+    assert_match %r{This method is intended to be overridden}, out
+  end
+
+  def test_class_template_links_and_escapes_singleton_override_target
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    comparison = RDoc::AnyMethod.new '<=>', singleton: true
+    comparison.record_location @top_level
+    base.add_method comparison
+
+    child = @top_level.add_class RDoc::NormalClass, 'Child', 'Base'
+    override = RDoc::AnyMethod.new '<=>', singleton: true
+    override.record_location @top_level
+    override.override = true
+    override.override_target = 'Base::<=>'
+    child.add_method override
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Child.html')
+
+    assert_match %r{<a href="[^"]+">Base::&lt;=&gt;</a>}, out
+    assert_not_include out, '>Base::<=></a>'
   end
 end

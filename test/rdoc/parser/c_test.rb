@@ -1425,6 +1425,35 @@ class RDocParserCTest < RDoc::TestCase
     assert_equal "a comment for bar", baz.comment.text
   end
 
+  def test_find_body_applies_override_annotation
+    content = <<~C
+      /*
+       * Document-method: render
+       *
+       * Renders the component.
+       *
+       * @override
+       */
+      VALUE
+      render() {
+      }
+
+      void
+      Init_Component(void) {
+        VALUE component = rb_define_class("Component", rb_cObject);
+        rb_define_method(component, "render", render, 0);
+      }
+    C
+
+    component = util_get_class content, 'component'
+    render = component.method_list.first
+    document = render.comment.parse
+    text = document.parts.filter_map { |part| part.text if part.respond_to?(:text) }.join
+
+    assert_equal true, render.override
+    assert_not_include text, '@override'
+  end
+
   def test_find_body_document_method_equals
     content = <<~C
       /*

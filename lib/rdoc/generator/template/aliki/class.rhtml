@@ -38,20 +38,31 @@
   </h1>
 
   <%- if klass.abstract %>
-    <%- subs = @store.subclasses_of(klass.full_name) %>
+    <%- subs = @store.subclasses_of(klass.full_name)
+        abstract_kind = klass.module? ? 'module' : 'class' %>
     <div class="annotation-notice abstract class-level">
-      <header class="annotation-head">
-        <span class="annotation-sigil" aria-hidden="true"></span>
-        <span class="annotation-title">Abstract class</span>
-      </header>
-      <p class="annotation-lede">Subclasses inherit from this base class and implement its abstract methods.</p>
+      <p class="annotation-lede">
+        <span class="annotation-title">Abstract <%= abstract_kind %>:</span>
+        <%- if klass.module? %>
+          Classes and modules that include this module must implement the abstract methods.
+        <%- else %>
+          Subclasses must implement the abstract methods.
+        <%- end %>
+      </p>
       <%- if subs.any? %>
-        <ol class="annotation-tree" aria-label="Concrete subclasses of <%= klass.full_name %>">
+        <div class="annotation-list-label">Known subclasses</div>
+        <ul class="annotation-links" aria-label="Known subclasses of <%= h klass.full_name %>">
           <%- subs.each do |sub|
             klazz = @store.find_class_or_module(sub) %>
-            <li><a href="<%= klazz ? klass.aref_to(klazz.path) : '#' %>"><%= shorten.call(sub) %></a></li>
+            <li>
+              <%- if klazz %>
+                <a href="<%= h klass.aref_to(klazz.path) %>"><%= h shorten.call(sub) %></a>
+              <%- else %>
+                <code><%= h shorten.call(sub) %></code>
+              <%- end %>
+            </li>
           <%- end %>
-        </ol>
+        </ul>
       <%- end %>
     </div>
   <%- end %>
@@ -207,44 +218,45 @@
           <%- if method.override && method.override_target %>
             <%- target = @store.find_method_named(method.override_target) %>
             <div class="annotation-notice override">
-              <header class="annotation-head">
-                <span class="annotation-sigil" aria-hidden="true"></span>
-                <span class="annotation-title">Override</span>
-              </header>
               <p class="annotation-lede">
-                Overrides
+                <span class="annotation-title">Overrides:</span>
                 <%- if target %>
-                  <a href="<%= klass.aref_to(target.path) %>"><%= method.override_target %></a>.
+                  <a href="<%= h klass.aref_to(target.path) %>"><%= h method.override_target %></a>.
                 <%- else %>
-                  <code><%= method.override_target %></code>.
+                  <code><%= h method.override_target %></code>.
                 <%- end %>
               </p>
             </div>
           <%- elsif method.override %>
             <div class="annotation-notice override unresolved">
-              <header class="annotation-head">
-                <span class="annotation-sigil" aria-hidden="true"></span>
-                <span class="annotation-title">Override</span>
-              </header>
-              <p class="annotation-lede">No matching ancestor method documented.</p>
+              <p class="annotation-lede">
+                <span class="annotation-title">Override:</span>
+                Marked as an override, but no matching ancestor method is documented.
+              </p>
             </div>
           <%- end %>
 
           <%- if method.abstract %>
             <%- impls = @store.implementations_of(method.full_name) %>
             <div class="annotation-notice abstract">
-              <header class="annotation-head">
-                <span class="annotation-sigil" aria-hidden="true"></span>
-                <span class="annotation-title">Abstract method</span>
-              </header>
-              <p class="annotation-lede">Subclasses are expected to implement this method.</p>
+              <p class="annotation-lede">
+                <span class="annotation-title">Abstract method:</span>
+                This method is intended to be overridden.
+              </p>
               <%- if impls.any? %>
-                <ol class="annotation-tree" aria-label="Implementations of <%= method.full_name %>">
+                <div class="annotation-list-label">Known overrides</div>
+                <ul class="annotation-links" aria-label="Known overrides of <%= h method.full_name %>">
                   <%- impls.each do |impl|
                     imp = @store.find_method_named(impl) %>
-                    <li><a href="<%= imp ? klass.aref_to(imp.path) : '#' %>"><%= shorten.call(impl) %></a></li>
+                    <li>
+                      <%- if imp %>
+                        <a href="<%= h klass.aref_to(imp.path) %>"><%= h shorten.call(impl) %></a>
+                      <%- else %>
+                        <code><%= h shorten.call(impl) %></code>
+                      <%- end %>
+                    </li>
                   <%- end %>
-                </ol>
+                </ul>
               <%- end %>
             </div>
           <%- end %>

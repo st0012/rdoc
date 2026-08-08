@@ -79,6 +79,7 @@ of various types:
 - {Heading}[rdoc-ref:rdoc@Headings]: a heading.
 - {Horizontal rule}[rdoc-ref:rdoc@Horizontal+Rules]: a line across the rendered page.
 - {Directive}[rdoc-ref:rdoc@Directives]: various special directions for the rendering.
+- {Annotation}[rdoc-ref:rdoc@Annotations]: information about an abstract object or an overridden method.
 - {Text Markup}[rdoc-ref:rdoc@Text+Markup]: text to be rendered in a special way.
 
 About the blocks:
@@ -454,6 +455,47 @@ Rendered HTML:
 
   -- Also not a horizontal rule.
   ---
+
+== Annotations
+
+Annotations describe relationships that RDoc cannot determine from source code
+alone. Put an annotation on its own line in a class, module, or method comment.
+RDoc removes the annotation line from the displayed comment.
+
+Use <tt>@abstract</tt> on a class, module, or method:
+
+  # A component that subclasses must implement.
+  #
+  # @abstract
+  class Component
+    # Renders the component.
+    #
+    # @abstract
+    def render
+      raise NotImplementedError
+    end
+  end
+
+Use <tt>@override</tt> on a method that replaces an ancestor method:
+
+  class Button < Component
+    # Renders the button.
+    #
+    # @override
+    def render
+      "<button>Save</button>"
+    end
+  end
+
+RDoc resolves instance methods through included modules and superclasses in
+Ruby's method lookup order. For singleton methods, RDoc checks extended modules
+and superclass singleton methods. If the ancestor method is documented, Aliki
+and +ri+ show a link or the full method name. Aliki also lists known subclasses
+and known overrides while it generates a complete documentation set.
+
+The annotations are supported in Ruby, C, and RBS source comments. They do not
+take arguments. A line such as <tt>@abstract because subclasses differ</tt>
+remains part of the displayed comment.
 
 == Directives
 

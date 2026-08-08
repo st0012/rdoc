@@ -45,7 +45,8 @@ class RDoc::AnyMethod < RDoc::MethodAttr
 
   ##
   # Resolved full name of the ancestor method this method overrides, e.g.
-  # +"UI::Component#render"+. Set by RDoc::Store#resolve_annotations.
+  # +"UI::Component#render"+ or +"UI::Component::build"+. Set by
+  # RDoc::Store#resolve_annotations.
   # +nil+ when +@override+ is absent or no ancestor match was found.
 
   attr_accessor :override_target
@@ -76,6 +77,7 @@ class RDoc::AnyMethod < RDoc::MethodAttr
   ##
   # Adds +an_alias+ as an alias for this method in +context+.
 
+  # @override
   def add_alias(an_alias, context = nil)
     method = self.class.new an_alias.new_name, singleton: singleton
 
@@ -93,6 +95,7 @@ class RDoc::AnyMethod < RDoc::MethodAttr
   ##
   # Prefix for +aref+ is 'method'.
 
+  # @override
   def aref_prefix
     'method'
   end

@@ -1824,4 +1824,40 @@ class RDocClassModuleTest < XrefTestCase
     loaded = Marshal.load Marshal.dump cm
     assert_equal true, loaded.abstract
   end
+
+  def test_marshal_load_version_3_defaults_abstract_to_false
+    cm = @top_level.add_class RDoc::NormalClass, 'Component'
+    dump = cm.marshal_dump
+    dump[0] = 3
+    dump.pop
+
+    loaded = RDoc::NormalClass.allocate
+    loaded.marshal_load dump
+
+    assert_equal false, loaded.abstract
+  end
+
+  def test_from_module_preserves_abstract
+    mod = @top_level.add_module RDoc::NormalModule, 'Component'
+    mod.abstract = true
+
+    klass = RDoc::ClassModule.from_module RDoc::NormalClass, mod
+
+    assert_equal true, klass.abstract
+  end
+
+  def test_merge_uses_incoming_abstract_value
+    old_file = @store.add_file 'old.rb'
+    existing = old_file.add_class RDoc::NormalClass, 'Component'
+    existing.abstract = true
+
+    current_store = RDoc::Store.new RDoc::Options.new
+    current_file = current_store.add_file 'current.rb'
+    incoming = current_file.add_class RDoc::NormalClass, 'Component'
+    incoming.abstract = false
+
+    existing.merge incoming
+
+    assert_equal false, existing.abstract
+  end
 end

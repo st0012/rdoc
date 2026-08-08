@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 ##
 # Abstract class representing either a method or an attribute.
+# @abstract
 
 class RDoc::MethodAttr < RDoc::CodeObject
 
@@ -200,6 +201,7 @@ class RDoc::MethodAttr < RDoc::CodeObject
   # - adds the method or attribute to #aliases
   # - adds the method or attribute to +context+.
 
+  # @abstract
   def add_alias(an_alias, context)
     raise NotImplementedError
   end
@@ -216,6 +218,7 @@ class RDoc::MethodAttr < RDoc::CodeObject
   ##
   # Prefix for +aref+, defined by subclasses.
 
+  # @abstract
   def aref_prefix
     raise NotImplementedError
   end

@@ -527,18 +527,15 @@ class RDoc::Store
   # the ancestor chain. Sets RDoc::AnyMethod#override_target to the resolved
   # full name, or leaves it +nil+ and emits a warning when no match is found.
   #
-  # Comments are eagerly parsed first so the AnnotationScanner has populated
-  # +override+/+abstract+ flags before we read them.
-
   def resolve_overrides
-    force_parse_annotation_comments
+    scan_annotation_comments
 
     all_classes_and_modules.each do |klass|
       klass.method_list.each do |method|
         next unless method.override
         method.override_target = find_override_target(klass, method)
         unless method.override_target
-          RDoc.warn(
+          @options.warn(
             "@override on #{method.full_name} - no matching method in ancestors"
           )
         end
@@ -547,50 +544,61 @@ class RDoc::Store
   end
 
   ##
-  # Walks +klass+'s ancestor chain (superclass + included modules, recursively)
-  # looking for a method with the same name and singleton-ness as +method+.
-  # Returns the matching method's +full_name+ or +nil+.
+  # Walks +klass+'s Ruby method lookup chain and returns the full name of the
+  # first method that +method+ overrides.
 
   def find_override_target(klass, method) # :nodoc:
-    each_recursive_ancestor(klass) do |ancestor|
+    each_override_ancestor(klass, method.singleton) do |ancestor, singleton|
       hit = ancestor.method_list.find do |m|
-        m.name == method.name && m.singleton == method.singleton
+        m.name == method.name && m.singleton == singleton
       end
       return hit.full_name if hit
     end
     nil
   end
 
-  # Yields every transitive ancestor (superclass + included modules) of +klass+
-  # exactly once, breadth-first. Skips +klass+ itself.
+  # Yields [owner, singleton] pairs in Ruby method lookup order. Instance
+  # lookup visits the last included module first, then its ancestors, then the
+  # superclass. Singleton lookup visits extended modules as instance-method
+  # owners before moving to the superclass's singleton methods.
 
-  def each_recursive_ancestor(klass) # :nodoc:
-    return enum_for(__method__, klass) unless block_given?
+  def each_override_ancestor(klass, singleton, visited = nil, &block) # :nodoc:
+    return enum_for(__method__, klass, singleton, visited) unless block
 
-    visited = { klass.full_name => true }
-    queue = ancestor_class_modules(klass)
-    until queue.empty?
-      ancestor = queue.shift
-      next if visited[ancestor.full_name]
-      visited[ancestor.full_name] = true
-      yield ancestor
-      queue.concat ancestor_class_modules(ancestor)
+    visited ||= { [klass.full_name, singleton] => true }
+
+    direct_override_ancestors(klass, singleton).each do |ancestor, ancestor_singleton|
+      key = [ancestor.full_name, ancestor_singleton]
+      next if visited[key]
+
+      visited[key] = true
+      block.call ancestor, ancestor_singleton
+      each_override_ancestor ancestor, ancestor_singleton, visited, &block
     end
   end
 
-  def ancestor_class_modules(klass) # :nodoc:
+  def direct_override_ancestors(klass, singleton) # :nodoc:
     result = []
+
+    mixins = singleton ? klass.extends : klass.includes
+    mixins.reverse_each do |mixin|
+      mod = resolve_mixin(klass, mixin)
+      result << [mod, false] if mod
+    end
+
     if klass.type == 'class'
-      sc = klass.superclass
-      sc = resolve_class_module_name(klass, sc) if sc.is_a?(String)
-      result << sc if sc
+      superclass = klass.superclass
+      superclass = resolve_class_module_name(klass, superclass) if superclass.is_a?(String)
+      result << [superclass, singleton] if superclass
     end
-    klass.includes.each do |incl|
-      mod = incl.module
-      mod = resolve_class_module_name(klass, mod) if mod.is_a?(String)
-      result << mod if mod
-    end
+
     result
+  end
+
+  def resolve_mixin(klass, mixin) # :nodoc:
+    mod = mixin.module
+    mod = resolve_class_module_name(klass, mod) if mod.is_a?(String)
+    mod
   end
 
   def resolve_class_module_name(klass, name) # :nodoc:
@@ -598,23 +606,44 @@ class RDoc::Store
   end
 
   ##
-  # Runs all annotation resolution passes. Call after parsing is complete
-  # and before generation. Order matters: resolve_overrides must populate
-  # override_target before build_abstract_index reads it for the
-  # implementations index.
+  # Runs all annotation resolution passes after parsing and before generation.
 
   def resolve_annotations
     resolve_overrides
     build_abstract_index
   end
 
-  def force_parse_annotation_comments # :nodoc:
+  def scan_annotation_comments # :nodoc:
+    reset_source_annotations if type.nil?
+
     all_classes_and_modules.each do |klass|
-      klass.comment.parse if klass.comment.is_a?(RDoc::Comment) && klass.comment.text
+      klass.comment_location.each_value do |comments|
+        comments.each { |comment| scan_annotation_comment comment, klass }
+      end
+
       klass.method_list.each do |method|
-        method.comment.parse if method.comment.is_a?(RDoc::Comment) && method.comment.text
+        scan_annotation_comment method.comment, method
       end
     end
+  end
+
+  def reset_source_annotations # :nodoc:
+    all_classes_and_modules.each do |klass|
+      klass.abstract = false
+
+      klass.method_list.each do |method|
+        method.abstract = false
+        method.override = false
+        method.override_target = nil
+      end
+    end
+  end
+
+  def scan_annotation_comment(comment, owner) # :nodoc:
+    text = comment.is_a?(RDoc::Comment) ? comment.text : comment.to_s
+    return if text.nil? || text.empty?
+
+    RDoc::Comment::AnnotationScanner.scan text, owner
   end
 
   ##
@@ -624,9 +653,8 @@ class RDoc::Store
   # Populates an internal hash of method full name to Array of method
   # full names that override it (queried via #implementations_of).
   #
-  # Populates an internal hash of class/module full name to Array of full
-  # names of concrete subclasses (where the ancestor is +abstract+; queried
-  # via #subclasses_of).
+  # Populates an internal hash of class full name to Array of known subclass
+  # names (where the superclass is +abstract+; queried via #subclasses_of).
 
   def build_abstract_index
     @abstract_implementations = Hash.new { |h, k| h[k] = [] }
@@ -634,11 +662,12 @@ class RDoc::Store
 
     all_classes_and_modules.each do |klass|
       klass.method_list.each do |method|
+        next if method.mixin_from
         next unless method.override_target
         @abstract_implementations[method.override_target] << method.full_name
       end
 
-      each_recursive_ancestor(klass) do |ancestor|
+      each_superclass(klass) do |ancestor|
         next unless ancestor.abstract
         @abstract_subclasses[ancestor.full_name] << klass.full_name
       end
@@ -648,18 +677,44 @@ class RDoc::Store
     @abstract_subclasses.each_value(&:uniq!)
   end
 
+  def each_superclass(klass) # :nodoc:
+    return enum_for(__method__, klass) unless block_given?
+
+    visited = {}
+    current = klass
+
+    while current.type == 'class'
+      superclass = current.superclass
+      superclass = resolve_class_module_name(current, superclass) if superclass.is_a?(String)
+      break unless superclass&.type == 'class'
+      break if visited[superclass.full_name]
+
+      visited[superclass.full_name] = true
+      yield superclass
+      current = superclass
+    end
+  end
+
   ##
   # Resolves a fully-qualified method name like +"UI::Component#render"+ or
-  # +"Foo.bar"+ back to the RDoc::AnyMethod (or compatible) instance.
+  # +"UI::Component::build"+ back to the RDoc::AnyMethod (or compatible)
+  # instance.
   # Returns +nil+ when the parent class/module isn't documented or when no
   # matching method exists.
 
   def find_method_named(full_name)
-    parent_name, sep, method_name = full_name.rpartition(/[#.]/)
-    return nil if sep.empty?
+    if full_name.include? '#'
+      parent_name, sep, method_name = full_name.rpartition '#'
+      singleton = false
+    else
+      parent_name, sep, method_name = full_name.rpartition '::'
+      singleton = true
+    end
+
+    return nil if sep.empty? || parent_name.empty? || method_name.empty?
     klass = find_class_or_module(parent_name) or return nil
     klass.method_list.find do |m|
-      m.name == method_name && m.singleton == (sep == '.')
+      m.name == method_name && m.singleton == singleton
     end
   end
 
@@ -672,9 +727,8 @@ class RDoc::Store
   end
 
   ##
-  # Returns the full names of concrete subclasses of +class_full_name+
-  # (where +class_full_name+ is an +@abstract+ class). Empty array if
-  # the class is unknown or has no subclasses.
+  # Returns the full names of known subclasses of +class_full_name+. Empty
+  # array if the class is unknown or has no subclasses.
 
   def subclasses_of(class_full_name)
     (@abstract_subclasses || {}).fetch(class_full_name, [])

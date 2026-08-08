@@ -472,22 +472,21 @@ or the PAGER environment variable.
     out << RDoc::Markup::BlankLine.new
 
     classes.each do |klass|
-      next unless klass.respond_to?(:store) && klass.store.respond_to?(:subclasses_of)
-      render_class_annotations out, klass.store, klass
+      render_class_annotations out, klass
     end
   end
 
-  def render_class_annotations(out, store, klass) # :nodoc:
+  def render_class_annotations(out, klass) # :nodoc:
     return unless klass.respond_to?(:abstract) && klass.abstract
 
+    description = if klass.module?
+                    "Abstract module - classes and modules that include it must implement the abstract methods"
+                  else
+                    "Abstract class - subclasses must implement the abstract methods"
+                  end
+
     out << RDoc::Markup::BlankLine.new
-    out << RDoc::Markup::Heading.new(4,
-      "(Abstract class - subclasses are expected to implement abstract methods)")
-    subs = store.subclasses_of(klass.full_name)
-    if subs.any?
-      out << RDoc::Markup::IndentedParagraph.new(2,
-        "Concrete subclasses:\n  #{subs.join(', ')}")
-    end
+    out << RDoc::Markup::Heading.new(4, "(#{description})")
     out << RDoc::Markup::Rule.new(1)
   end
 
@@ -1437,7 +1436,7 @@ or the PAGER environment variable.
     sig = method.type_signature_lines || store.rbs_signature_for(method)
     render_method_type_signature out, sig if sig
     render_method_superclass out, method
-    render_method_annotations out, store, method
+    render_method_annotations out, method
     if method.is_alias_for
       al = method.is_alias_for
       alias_for = store.load_method al.parent_name, "#{al.name_prefix}#{al.name}"
@@ -1487,7 +1486,7 @@ or the PAGER environment variable.
     out << RDoc::Markup::Rule.new(1)
   end
 
-  def render_method_annotations(out, store, method) # :nodoc:
+  def render_method_annotations(out, method) # :nodoc:
     return unless method.respond_to?(:override) && method.respond_to?(:abstract)
 
     if method.override_target
@@ -1501,14 +1500,10 @@ or the PAGER environment variable.
     end
 
     if method.abstract
+      description = "Abstract - This method is intended to be overridden."
+
       out << RDoc::Markup::BlankLine.new
-      out << RDoc::Markup::Heading.new(4,
-        "(Abstract - subclasses are expected to implement)")
-      impls = store.implementations_of(method.full_name)
-      if impls.any?
-        out << RDoc::Markup::IndentedParagraph.new(2,
-          "Implemented by:\n  #{impls.join(', ')}")
-      end
+      out << RDoc::Markup::Heading.new(4, "(#{description})")
       out << RDoc::Markup::Rule.new(1)
     end
   end

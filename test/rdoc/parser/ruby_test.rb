@@ -2785,6 +2785,34 @@ class RDocParserRubyTest < RDoc::TestCase
     assert_equal expected, m.comment.parse
   end
 
+  def test_tomdoc_meta_with_abstract_annotation
+    util_parser <<~RUBY
+      # :markup: tomdoc
+
+      class C
+
+        # Signature
+        #
+        #   build(args)
+        #
+        # @abstract
+        #
+        # args - The arguments.
+
+      end
+    RUBY
+
+    method = @top_level.classes.first.method_list.first
+    document_text = method.comment.parse.parts.filter_map do |part|
+      part.text if part.respond_to?(:text)
+    end.join
+
+    assert_equal true, method.abstract
+    assert_equal "build(args)\n", method.call_seq
+    assert_not_include document_text, '@abstract'
+    assert_not_include document_text, 'build(args)'
+  end
+
   def test_tomdoc_postprocess
     RDoc::TomDoc.add_post_processor
     util_parser <<~RUBY

@@ -357,11 +357,14 @@ class RDoc::Parser::Ruby < RDoc::Parser
 
   def parse_comment_tomdoc(container, comment, line_no, start_line)
     return if document_suppressed?
+
+    meth = RDoc::AnyMethod.new nil
+    comment.owner = meth
     return unless signature = RDoc::TomDoc.signature(comment)
 
     name, = signature.split %r%[ \(]%, 2
 
-    meth = RDoc::AnyMethod.new name
+    meth.name = name
     record_location(meth)
     meth.line = start_line
     meth.call_seq = signature
@@ -373,7 +376,6 @@ class RDoc::Parser::Ruby < RDoc::Parser
     tokens.each { |token| meth.token_stream << token }
 
     container.add_method meth
-    comment.owner = meth if comment.is_a?(RDoc::Comment)
     meth.comment = comment
     @stats.add_method meth
   end
@@ -681,7 +683,6 @@ class RDoc::Parser::Ruby < RDoc::Parser
       ie = @container.add(rdoc_class, resolved_name || name, '')
       ie.store = @store
       ie.line = line_no
-      comment.owner = ie if comment.is_a?(RDoc::Comment)
       ie.comment = comment
       record_location(ie)
     end
@@ -728,7 +729,6 @@ class RDoc::Parser::Ruby < RDoc::Parser
 
   private def internal_add_method(method_name, container, comment:, dont_rename_initialize: false, directives:, modifier_comment_lines: nil, line_no:, visibility:, singleton:, params:, calls_super:, block_params:, tokens:, type_signature_lines: nil) # :nodoc:
     meth = RDoc::AnyMethod.new(method_name, singleton: singleton)
-    comment.owner = meth if comment.is_a?(RDoc::Comment)
     meth.comment = comment
     handle_code_object_directives(meth, directives) if directives
     modifier_comment_lines&.each do |line|
@@ -943,7 +943,6 @@ class RDoc::Parser::Ruby < RDoc::Parser
         record_location(mod)
       end
       if comment
-        comment.owner = mod if comment.is_a?(RDoc::Comment)
         mod.add_comment(comment, @top_level)
       end
     end
