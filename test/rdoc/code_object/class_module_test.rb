@@ -631,6 +631,18 @@ class RDocClassModuleTest < XrefTestCase
     assert_match(/class comment/, snippet)
   end
 
+  def test_search_snippet_removes_abstract_annotation
+    tl = @store.add_file 'file.rb'
+    cm = tl.add_class RDoc::NormalClass, 'Component'
+    cm.add_comment RDoc::Comment.new("Component documentation.\n\n@abstract\n", tl), tl
+
+    snippet = cm.search_snippet
+
+    assert_match(/Component documentation/, snippet)
+    assert_not_include snippet, '@abstract'
+    assert_equal true, cm.abstract
+  end
+
   def test_comment_location_is_hash_after_marshal
     @store.path = Dir.tmpdir
     tl = @store.add_file 'file.rb'

@@ -459,8 +459,9 @@ Rendered HTML:
 == Annotations
 
 Annotations describe relationships that RDoc cannot determine from source code
-alone. Put an annotation on its own line in a class, module, or method comment.
-RDoc removes the annotation line from the displayed comment.
+alone. Put an annotation on its own line at the comment margin in a class,
+module, or method comment. RDoc removes the annotation line from the displayed
+comment.
 
 Use <tt>@abstract</tt> on a class, module, or method:
 

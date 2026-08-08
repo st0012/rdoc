@@ -208,12 +208,15 @@
           </div>
         <%- end %>
 
-        <%- unless method.skip_description? %>
+        <%- skip_description = method.skip_description? %>
+        <%- unless skip_description && !method.override && !method.abstract %>
         <div class="method-description">
-          <%- if method.mixin_from %>
+          <%- unless skip_description %>
+            <%- if method.mixin_from %>
             <div class="mixin-from">
               <%= method.singleton ? "Extended" : "Included" %> from <a href="<%= klass.aref_to(method.mixin_from.path) %>"><%= method.mixin_from.full_name %></a>
             </div>
+            <%- end %>
           <%- end %>
           <%- if method.override && method.override_target %>
             <%- target = @store.find_method_named(method.override_target) %>
@@ -260,6 +263,7 @@
               <%- end %>
             </div>
           <%- end %>
+          <%- unless skip_description %>
           <%- if method.comment %>
           <%= method.description.strip %>
           <%- else %>
@@ -270,6 +274,7 @@
               Calls superclass method
               <%= method.superclass_method_link %>
             </div>
+          <%- end %>
           <%- end %>
         </div>
         <%- end %>

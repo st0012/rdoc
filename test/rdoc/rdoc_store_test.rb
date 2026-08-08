@@ -1613,6 +1613,108 @@ class RDocStoreTest < XrefTestCase
     assert_equal 'Nested#render', render.override_target
   end
 
+  def test_resolve_overrides_deduplicates_diamond_mixin_ancestors
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+
+    common = top_level.add_module RDoc::NormalModule, 'Common'
+    common.add_method RDoc::AnyMethod.new('render')
+    first = top_level.add_module RDoc::NormalModule, 'First'
+    first.add_include RDoc::Include.new('Common', '')
+    first.add_method RDoc::AnyMethod.new('render')
+    last = top_level.add_module RDoc::NormalModule, 'Last'
+    last.add_include RDoc::Include.new('Common', '')
+
+    child = top_level.add_class RDoc::NormalClass, 'Child'
+    child.add_include RDoc::Include.new('First', '')
+    child.add_include RDoc::Include.new('Last', '')
+    render = RDoc::AnyMethod.new 'render'
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    store.resolve_overrides
+
+    assert_equal 'First#render', render.override_target
+  end
+
+  def test_resolve_overrides_inserts_wrapper_ancestors_at_existing_module
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+
+    top_level.add_module RDoc::NormalModule, 'Shared'
+    tail = top_level.add_module RDoc::NormalModule, 'Tail'
+    tail.add_method RDoc::AnyMethod.new('render')
+    middle = top_level.add_module RDoc::NormalModule, 'Middle'
+    middle.add_method RDoc::AnyMethod.new('render')
+    wrapper = top_level.add_module RDoc::NormalModule, 'Wrapper'
+    wrapper.add_include RDoc::Include.new('Tail', '')
+    wrapper.add_include RDoc::Include.new('Shared', '')
+
+    child = top_level.add_class RDoc::NormalClass, 'Child'
+    child.add_include RDoc::Include.new('Shared', '')
+    child.add_include RDoc::Include.new('Middle', '')
+    child.add_include RDoc::Include.new('Wrapper', '')
+    render = RDoc::AnyMethod.new 'render'
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    store.resolve_overrides
+
+    assert_equal 'Middle#render', render.override_target
+  end
+
+  def test_resolve_overrides_keeps_includes_before_superclass_boundary
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+
+    top_level.add_module RDoc::NormalModule, 'Shared'
+    tail = top_level.add_module RDoc::NormalModule, 'Tail'
+    tail.add_method RDoc::AnyMethod.new('render')
+    wrapper = top_level.add_module RDoc::NormalModule, 'Wrapper'
+    wrapper.add_include RDoc::Include.new('Tail', '')
+    wrapper.add_include RDoc::Include.new('Shared', '')
+    base = top_level.add_class RDoc::NormalClass, 'Base'
+    base.add_include RDoc::Include.new('Shared', '')
+    base.add_method RDoc::AnyMethod.new('render')
+
+    child = top_level.add_class RDoc::NormalClass, 'Child', 'Base'
+    child.add_include RDoc::Include.new('Wrapper', '')
+    render = RDoc::AnyMethod.new 'render'
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    store.resolve_overrides
+
+    assert_equal 'Tail#render', render.override_target
+  end
+
+  def test_resolve_overrides_keeps_mixin_insertion_cursor_monotonic
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+
+    y = top_level.add_module RDoc::NormalModule, 'Y'
+    y.add_method RDoc::AnyMethod.new('render')
+    top_level.add_module RDoc::NormalModule, 'A'
+    b = top_level.add_module RDoc::NormalModule, 'B'
+    b.add_method RDoc::AnyMethod.new('render')
+    wrapper = top_level.add_module RDoc::NormalModule, 'Wrapper'
+    wrapper.add_include RDoc::Include.new('Y', '')
+    wrapper.add_include RDoc::Include.new('A', '')
+    wrapper.add_include RDoc::Include.new('B', '')
+
+    child = top_level.add_class RDoc::NormalClass, 'Child'
+    child.add_include RDoc::Include.new('B', '')
+    child.add_include RDoc::Include.new('A', '')
+    child.add_include RDoc::Include.new('Wrapper', '')
+    render = RDoc::AnyMethod.new 'render'
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method render
+
+    store.resolve_overrides
+
+    assert_equal 'B#render', render.override_target
+  end
+
   def test_resolve_overrides_uses_ruby_singleton_method_lookup_order
     options = RDoc::Options.new
     store = RDoc::Store.new options
@@ -1664,6 +1766,53 @@ class RDocStoreTest < XrefTestCase
     store.resolve_overrides
 
     assert_equal 'ParentExtension#render', render.override_target
+  end
+
+  def test_resolve_overrides_skips_embedded_mixin_copies
+    options = RDoc::Options.new
+    options.embed_mixins = true
+    store = RDoc::Store.new options
+    top_level = store.add_file 'lookup.rb'
+
+    base = top_level.add_module RDoc::NormalModule, 'Base'
+    base.add_method RDoc::AnyMethod.new('render')
+    extension = top_level.add_module RDoc::NormalModule, 'Extension'
+    extension.add_include RDoc::Include.new('Base', '')
+    render = RDoc::AnyMethod.new 'render'
+    render.comment = RDoc::Comment.new "@override\n", top_level
+    extension.add_method render
+    child = top_level.add_class RDoc::NormalClass, 'Child'
+    child.add_include RDoc::Include.new('Extension', '')
+
+    store.complete :public
+
+    embedded = child.method_list.find { |method| method.mixin_from == extension }
+    assert_equal 'Base#render', render.override_target
+    assert_equal false, embedded.override
+    assert_nil embedded.override_target
+  end
+
+  def test_resolve_overrides_matches_readable_and_writable_attributes
+    store = RDoc::Store.new RDoc::Options.new
+    top_level = store.add_file 'lookup.rb'
+    base = top_level.add_class RDoc::NormalClass, 'Base'
+    name_attr = base.add_attribute RDoc::Attr.new('name', 'R', '')
+    value_attr = base.add_attribute RDoc::Attr.new('value', 'W', '')
+    child = top_level.add_class RDoc::NormalClass, 'Child', 'Base'
+
+    name = RDoc::AnyMethod.new 'name'
+    name.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method name
+    value = RDoc::AnyMethod.new 'value='
+    value.comment = RDoc::Comment.new "@override\n", top_level
+    child.add_method value
+
+    store.resolve_overrides
+
+    assert_equal 'Base#name', name.override_target
+    assert_equal 'Base#value=', value.override_target
+    assert_same name_attr, store.find_method_named(name.override_target)
+    assert_same value_attr, store.find_method_named(value.override_target)
   end
 
   def test_override_lookup_does_not_treat_self_include_as_an_ancestor

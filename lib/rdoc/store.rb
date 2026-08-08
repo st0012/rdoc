@@ -532,6 +532,7 @@ class RDoc::Store
 
     all_classes_and_modules.each do |klass|
       klass.method_list.each do |method|
+        next if method.mixin_from
         next unless method.override
         method.override_target = find_override_target(klass, method)
         unless method.override_target
@@ -549,12 +550,32 @@ class RDoc::Store
 
   def find_override_target(klass, method) # :nodoc:
     each_override_ancestor(klass, method.singleton) do |ancestor, singleton|
-      hit = ancestor.method_list.find do |m|
-        m.name == method.name && m.singleton == singleton
-      end
-      return hit.full_name if hit
+      hit = find_override_member ancestor, method.name, singleton
+      return qualified_method_name(ancestor, method.name, singleton) if hit
     end
     nil
+  end
+
+  def find_override_member(klass, name, singleton) # :nodoc:
+    method = klass.method_list.find do |candidate|
+      candidate.name == name && candidate.singleton == singleton
+    end
+    return method if method
+
+    writer = name.end_with?('=')
+    attribute_name = writer ? name.delete_suffix('=') : name
+    access = writer ? 'W' : 'R'
+
+    klass.attributes.find do |attribute|
+      attribute.name == attribute_name &&
+        attribute.singleton == singleton &&
+        attribute.rw.include?(access)
+    end
+  end
+
+  def qualified_method_name(klass, name, singleton) # :nodoc:
+    separator = singleton ? '::' : '#'
+    "#{klass.full_name}#{separator}#{name}"
   end
 
   # Yields [owner, singleton] pairs in Ruby method lookup order. Instance
@@ -565,34 +586,71 @@ class RDoc::Store
   def each_override_ancestor(klass, singleton, visited = nil, &block) # :nodoc:
     return enum_for(__method__, klass, singleton, visited) unless block
 
-    visited ||= { [klass.full_name, singleton] => true }
-
-    direct_override_ancestors(klass, singleton).each do |ancestor, ancestor_singleton|
-      key = [ancestor.full_name, ancestor_singleton]
-      next if visited[key]
-
-      visited[key] = true
-      block.call ancestor, ancestor_singleton
-      each_override_ancestor ancestor, ancestor_singleton, visited, &block
-    end
+    build_override_ancestor_chain(klass, singleton, visited || {}).each(&block)
   end
 
-  def direct_override_ancestors(klass, singleton) # :nodoc:
-    result = []
+  def build_override_ancestor_chain(klass, singleton, visited) # :nodoc:
+    key = [klass.full_name, singleton]
+    return [] if visited[key]
 
-    mixins = singleton ? klass.extends : klass.includes
-    mixins.reverse_each do |mixin|
-      mod = resolve_mixin(klass, mixin)
-      result << [mod, false] if mod
-    end
+    visited = visited.merge(key => true)
+    ancestors = []
+    superclass_boundary = nil
 
     if klass.type == 'class'
       superclass = klass.superclass
       superclass = resolve_class_module_name(klass, superclass) if superclass.is_a?(String)
-      result << [superclass, singleton] if superclass
+      if superclass
+        ancestors.concat expand_override_ancestor(superclass, singleton, visited)
+        superclass_boundary = 0
+      end
     end
 
-    result
+    mixins = singleton ? klass.extends : klass.includes
+    mixins.each do |mixin|
+      mod = resolve_mixin(klass, mixin)
+      next unless mod
+
+      mixin_ancestors = expand_override_ancestor(mod, false, visited)
+      superclass_boundary = insert_override_ancestors(
+        ancestors, mixin_ancestors, superclass_boundary
+      )
+    end
+
+    ancestors
+  end
+
+  def expand_override_ancestor(ancestor, singleton, visited) # :nodoc:
+    key = [ancestor.full_name, singleton]
+    return [] if visited[key]
+
+    [[ancestor, singleton]] +
+      build_override_ancestor_chain(ancestor, singleton, visited)
+  end
+
+  # Replays Ruby's mixin insertion rules. Existing entries move the local
+  # insertion cursor, but entries in the superclass chain do not.
+  def insert_override_ancestors(ancestors, additions, superclass_boundary) # :nodoc:
+    insertion = 0
+
+    additions.each do |addition|
+      key = [addition[0].full_name, addition[1]]
+      existing = ancestors.index do |ancestor, ancestor_singleton|
+        [ancestor.full_name, ancestor_singleton] == key
+      end
+
+      if existing
+        if superclass_boundary.nil? || existing < superclass_boundary
+          insertion = [insertion, existing + 1].max
+        end
+      else
+        ancestors.insert insertion, addition
+        superclass_boundary += 1 if superclass_boundary
+        insertion += 1
+      end
+    end
+
+    superclass_boundary
   end
 
   def resolve_mixin(klass, mixin) # :nodoc:
@@ -622,6 +680,13 @@ class RDoc::Store
       end
 
       klass.method_list.each do |method|
+        if method.mixin_from
+          method.abstract = false
+          method.override = false
+          method.override_target = nil
+          next
+        end
+
         scan_annotation_comment method.comment, method
       end
     end
@@ -713,9 +778,7 @@ class RDoc::Store
 
     return nil if sep.empty? || parent_name.empty? || method_name.empty?
     klass = find_class_or_module(parent_name) or return nil
-    klass.method_list.find do |m|
-      m.name == method_name && m.singleton == singleton
-    end
+    find_override_member klass, method_name, singleton
   end
 
   ##

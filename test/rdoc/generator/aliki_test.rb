@@ -376,6 +376,24 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     assert_match %r{<ul class="annotation-links"[^>]*>.*<li>\s*<a[^>]*>Button#render</a>\s*</li>}m, out
   end
 
+  def test_class_template_renders_annotation_when_alias_hides_description
+    each_line = RDoc::AnyMethod.new 'each_line'
+    each_line.record_location @top_level
+    each_line.call_seq = "each()"
+    each_line.abstract = true
+    @klass.add_method each_line
+    aliaz = RDoc::Alias.new 'each_line', 'each', ''
+    aliaz.record_location @top_level
+    each_line.add_alias aliaz, @klass
+
+    assert_equal true, each_line.skip_description?
+
+    @g.generate
+    out = File.binread('Klass.html')
+
+    assert_match %r{<span class="annotation-title">Abstract method:</span>.*This method is intended to be overridden}m, out
+  end
+
   def test_class_template_uses_module_copy_for_abstract_module
     interface = @top_level.add_module RDoc::NormalModule, 'Interface'
     interface.abstract = true

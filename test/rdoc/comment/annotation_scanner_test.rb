@@ -57,6 +57,22 @@ class TestRDocCommentAnnotationScanner < RDoc::TestCase
     assert_equal "  description with leading spaces\n", out
   end
 
+  def test_leaves_indented_annotation_examples_in_place
+    text = "Example:\n\n  @override\n"
+    out = RDoc::Comment::AnnotationScanner.scan text, @method
+
+    assert_equal text, out
+    assert_equal false, @method.override
+  end
+
+  def test_leaves_tab_indented_raw_annotation_examples_in_place
+    text = "#\t@override\n"
+    out = RDoc::Comment::AnnotationScanner.scan text, @method
+
+    assert_equal text, out
+    assert_equal false, @method.override
+  end
+
   def test_leaves_annotation_with_trailing_text_in_place
     text = "@abstract implement render\n"
     out = RDoc::Comment::AnnotationScanner.scan text, @method

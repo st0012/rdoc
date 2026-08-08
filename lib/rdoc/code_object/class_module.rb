@@ -662,7 +662,7 @@ class RDoc::ClassModule < RDoc::Context
 
       RDoc::Markup::Document.new(*docs)
     when RDoc::Comment then
-      doc = super comment_location.text, comment_location.format
+      doc = comment_location.parse
       doc.file = comment_location.location
       doc
     when RDoc::Markup::Document then

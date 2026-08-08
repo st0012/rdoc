@@ -6,7 +6,7 @@
 # +code_object+ and returns the text with those annotation lines removed.
 
 class RDoc::Comment::AnnotationScanner
-  ANNOTATION_LINE = /\A[ \t]*(?:#[ \t]*)?@(abstract|override)[ \t]*\z/
+  ANNOTATION_LINE = /\A(?:# ?)?@(abstract|override)[ \t]*\z/
 
   def self.scan(text, code_object)
     return text if text.nil? || text.empty?

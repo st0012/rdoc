@@ -2813,6 +2813,32 @@ class RDocParserRubyTest < RDoc::TestCase
     assert_not_include document_text, 'build(args)'
   end
 
+  def test_tomdoc_meta_preserves_indented_annotation_example
+    util_parser <<~RUBY
+      # :markup: tomdoc
+
+      class C
+
+        # Signature
+        #
+        #   build(args)
+        #
+        # Example:
+        #
+        #   @override
+
+      end
+    RUBY
+
+    method = @top_level.classes.first.method_list.first
+    verbatim = method.comment.parse.parts
+                     .grep(RDoc::Markup::Verbatim)
+                     .map(&:text).join
+
+    assert_equal false, method.override
+    assert_include verbatim, '@override'
+  end
+
   def test_tomdoc_postprocess
     RDoc::TomDoc.add_post_processor
     util_parser <<~RUBY
