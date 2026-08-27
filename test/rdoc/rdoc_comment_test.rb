@@ -403,4 +403,46 @@ class RDocCommentTest < RDoc::TestCase
     assert_equal "comment1\n-\ncomment2\n+\n --\n comment3\n ++\n---\ncomment4", text.chomp
     assert_equal({ 'bar' => ['bar-value', 14] }, directives)
   end
+
+  def test_parse_strips_override_annotation_and_marks_owner
+    m = RDoc::AnyMethod.new 'render'
+    comment = RDoc::Comment.new(<<~TEXT, @top_level)
+      Returns the rendered HTML.
+
+      @override
+    TEXT
+    comment.owner = m
+
+    document = comment.parse
+    rendered = document.parts.flat_map { |p| p.respond_to?(:text) ? [p.text] : [] }.join
+
+    assert_includes rendered, 'Returns the rendered HTML'
+    assert_not_include rendered, '@override'
+    assert_equal true, m.override
+  end
+
+  def test_owner_invalidates_a_parsed_document
+    method = RDoc::AnyMethod.new 'render'
+    comment = RDoc::Comment.new "Render the object.\n\n@override\n", @top_level
+
+    assert_include comment.parse.parts.last.text, '@override'
+
+    comment.owner = method
+    rendered = comment.parse.parts.filter_map { |part| part.text if part.respond_to?(:text) }.join
+
+    assert_not_include rendered, '@override'
+    assert_equal true, method.override
+  end
+
+  def test_owner_preserves_an_explicit_document
+    method = RDoc::AnyMethod.new 'render'
+    document = RDoc::Markup::Document.new RDoc::Markup::Paragraph.new('Merged documentation.')
+    comment = RDoc::Comment.new "Render the object.\n\n@override\n", @top_level
+    comment.document = document
+
+    comment.owner = method
+
+    assert_same document, comment.parse
+    assert_equal true, method.override
+  end
 end

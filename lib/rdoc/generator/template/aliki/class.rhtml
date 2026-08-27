@@ -14,6 +14,8 @@
 </nav>
 
 <main role="main" aria-labelledby="<%= h klass.aref %>">
+  <%- host_ns = klass.full_name.split('::')[0..-2].join('::')
+      shorten = ->(name) { host_ns.empty? || !name.start_with?("#{host_ns}::") ? name : name.sub("#{host_ns}::", '') } %>
   <%# If nesting level is 1, breadcrumb list is not needed %>
   <% if breadcrumb.size > 1 %>
     <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
@@ -34,6 +36,36 @@
     <span class="page-title-kind"><%= klass.type %></span>
     <span class="page-title-name"><%= klass.full_name %></span>
   </h1>
+
+  <%- if klass.abstract %>
+    <%- subs = @store.subclasses_of(klass.full_name)
+        abstract_kind = klass.module? ? 'module' : 'class' %>
+    <div class="annotation-notice abstract class-level">
+      <p class="annotation-lede">
+        <span class="annotation-title">Abstract <%= abstract_kind %>:</span>
+        <%- if klass.module? %>
+          Classes and modules that include this module must implement the abstract methods.
+        <%- else %>
+          Subclasses must implement the abstract methods.
+        <%- end %>
+      </p>
+      <%- if subs.any? %>
+        <div class="annotation-list-label">Known subclasses</div>
+        <ul class="annotation-links" aria-label="Known subclasses of <%= h klass.full_name %>">
+          <%- subs.each do |sub|
+            klazz = @store.find_class_or_module(sub) %>
+            <li>
+              <%- if klazz %>
+                <a href="<%= h klass.aref_to(klazz.path) %>"><%= h shorten.call(sub) %></a>
+              <%- else %>
+                <code><%= h shorten.call(sub) %></code>
+              <%- end %>
+            </li>
+          <%- end %>
+        </ul>
+      <%- end %>
+    </div>
+  <%- end %>
 
   <section class="description">
     <%= klass.description %>
@@ -176,13 +208,62 @@
           </div>
         <%- end %>
 
-        <%- unless method.skip_description? %>
+        <%- skip_description = method.skip_description? %>
+        <%- unless skip_description && !method.override && !method.abstract %>
         <div class="method-description">
-          <%- if method.mixin_from %>
+          <%- unless skip_description %>
+            <%- if method.mixin_from %>
             <div class="mixin-from">
               <%= method.singleton ? "Extended" : "Included" %> from <a href="<%= klass.aref_to(method.mixin_from.path) %>"><%= method.mixin_from.full_name %></a>
             </div>
+            <%- end %>
           <%- end %>
+          <%- if method.override && method.override_target %>
+            <%- target = @store.find_method_named(method.override_target) %>
+            <div class="annotation-notice override">
+              <p class="annotation-lede">
+                <span class="annotation-title">Overrides:</span>
+                <%- if target %>
+                  <a href="<%= h klass.aref_to(target.path) %>"><%= h method.override_target %></a>.
+                <%- else %>
+                  <code><%= h method.override_target %></code>.
+                <%- end %>
+              </p>
+            </div>
+          <%- elsif method.override %>
+            <div class="annotation-notice override unresolved">
+              <p class="annotation-lede">
+                <span class="annotation-title">Override:</span>
+                Marked as an override, but no matching ancestor method is documented.
+              </p>
+            </div>
+          <%- end %>
+
+          <%- if method.abstract %>
+            <%- impls = @store.implementations_of(method.full_name) %>
+            <div class="annotation-notice abstract">
+              <p class="annotation-lede">
+                <span class="annotation-title">Abstract method:</span>
+                This method is intended to be overridden.
+              </p>
+              <%- if impls.any? %>
+                <div class="annotation-list-label">Known overrides</div>
+                <ul class="annotation-links" aria-label="Known overrides of <%= h method.full_name %>">
+                  <%- impls.each do |impl|
+                    imp = @store.find_method_named(impl) %>
+                    <li>
+                      <%- if imp %>
+                        <a href="<%= h klass.aref_to(imp.path) %>"><%= h shorten.call(impl) %></a>
+                      <%- else %>
+                        <code><%= h shorten.call(impl) %></code>
+                      <%- end %>
+                    </li>
+                  <%- end %>
+                </ul>
+              <%- end %>
+            </div>
+          <%- end %>
+          <%- unless skip_description %>
           <%- if method.comment %>
           <%= method.description.strip %>
           <%- else %>
@@ -193,6 +274,7 @@
               Calls superclass method
               <%= method.superclass_method_link %>
             </div>
+          <%- end %>
           <%- end %>
         </div>
         <%- end %>

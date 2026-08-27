@@ -164,6 +164,30 @@ class RDocParserRBSTest < RDoc::TestCase
     assert_include html, '<a href="https://example.com/rbs-docs">RBS method docs</a>'
   end
 
+  def test_scan_applies_annotation_when_extending_method_documentation
+    ruby_top_level = @store.add_file 'sample.rb'
+    sample = ruby_top_level.add_class RDoc::NormalClass, 'Sample'
+
+    greet = RDoc::AnyMethod.new 'greet'
+    greet.comment = 'Ruby method docs.'
+    sample.add_method greet
+
+    util_parser(<<~RBS).scan
+      class Sample
+        # RBS method docs.
+        #
+        # @abstract
+        def greet: () -> String
+      end
+    RBS
+
+    html = RDoc::Markup::ToHtml.new.convert greet.parse(greet.comment)
+
+    assert_equal true, greet.abstract
+    assert_include html, '<p>RBS method docs.</p>'
+    assert_not_include html, '@abstract'
+  end
+
   def test_scan_extends_existing_attribute_documentation
     ruby_top_level = @store.add_file 'sample.rb'
     sample = ruby_top_level.add_class RDoc::NormalClass, 'Sample'

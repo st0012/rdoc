@@ -21,8 +21,11 @@ class RDoc::ClassModule < RDoc::Context
   #   * Added in_files
   #   * Added parent name
   #   * Complete Constant dump
+  # 4::
+  #   RDoc 8.0
+  #   * Added abstract
 
-  MARSHAL_VERSION = 3 # :nodoc:
+  MARSHAL_VERSION = 4 # :nodoc:
 
   ##
   # Constants that are aliases for this class or module
@@ -53,6 +56,11 @@ class RDoc::ClassModule < RDoc::Context
   attr_accessor :is_alias_for
 
   ##
+  # True if this class or module has an +@abstract+ annotation
+
+  attr_accessor :abstract
+
+  ##
   # Return a RDoc::ClassModule of class +class_type+ that is a copy
   # of module +module+. Used to promote modules to classes.
   #--
@@ -60,6 +68,7 @@ class RDoc::ClassModule < RDoc::Context
 
   def self.from_module(class_type, mod)
     klass = class_type.new mod.name
+    klass.abstract = mod.abstract
 
     mod.comment_location.each do |location, comments|
       comments.each { |comment| klass.add_comment comment, location }
@@ -124,6 +133,7 @@ class RDoc::ClassModule < RDoc::Context
     @name             = name
     @superclass       = superclass
     @comment_location = {} # Hash of { location => [comments] }
+    @abstract         = false
 
     super()
   end
@@ -137,6 +147,7 @@ class RDoc::ClassModule < RDoc::Context
     return unless document_self
 
     original = comment
+    comment.owner = self if comment.is_a?(RDoc::Comment)
 
     comment = case comment
               when RDoc::Comment then
@@ -382,6 +393,7 @@ class RDoc::ClassModule < RDoc::Context
       end,
       parent.full_name,
       parent.class,
+      @abstract,
     ]
   end
 
@@ -468,6 +480,7 @@ class RDoc::ClassModule < RDoc::Context
 
     @parent_name  = array[12]
     @parent_class = array[13]
+    @abstract     = array[14] || false
   end
 
   ##
@@ -478,6 +491,7 @@ class RDoc::ClassModule < RDoc::Context
   def merge(class_module)
     @parent      = class_module.parent
     @parent_name = class_module.parent_name
+    @abstract    = class_module.abstract
 
     other_document = parse class_module.comment_location
 
@@ -648,7 +662,7 @@ class RDoc::ClassModule < RDoc::Context
 
       RDoc::Markup::Document.new(*docs)
     when RDoc::Comment then
-      doc = super comment_location.text, comment_location.format
+      doc = comment_location.parse
       doc.file = comment_location.location
       doc
     when RDoc::Markup::Document then

@@ -470,6 +470,24 @@ or the PAGER environment variable.
 
     out << RDoc::Markup::Heading.new(1, heading)
     out << RDoc::Markup::BlankLine.new
+
+    classes.each do |klass|
+      render_class_annotations out, klass
+    end
+  end
+
+  def render_class_annotations(out, klass) # :nodoc:
+    return unless klass.respond_to?(:abstract) && klass.abstract
+
+    description = if klass.module?
+                    "Abstract module - classes and modules that include it must implement the abstract methods"
+                  else
+                    "Abstract class - subclasses must implement the abstract methods"
+                  end
+
+    out << RDoc::Markup::BlankLine.new
+    out << RDoc::Markup::Heading.new(4, "(#{description})")
+    out << RDoc::Markup::Rule.new(1)
   end
 
   ##
@@ -1418,6 +1436,7 @@ or the PAGER environment variable.
     sig = method.type_signature_lines || store.rbs_signature_for(method)
     render_method_type_signature out, sig if sig
     render_method_superclass out, method
+    render_method_annotations out, method
     if method.is_alias_for
       al = method.is_alias_for
       alias_for = store.load_method al.parent_name, "#{al.name_prefix}#{al.name}"
@@ -1465,6 +1484,28 @@ or the PAGER environment variable.
     out << RDoc::Markup::BlankLine.new
     out << RDoc::Markup::Heading.new(4, "(Uses superclass method #{method.superclass_method})")
     out << RDoc::Markup::Rule.new(1)
+  end
+
+  def render_method_annotations(out, method) # :nodoc:
+    return unless method.respond_to?(:override) && method.respond_to?(:abstract)
+
+    if method.override_target
+      out << RDoc::Markup::BlankLine.new
+      out << RDoc::Markup::Heading.new(4, "(Overrides #{method.override_target})")
+      out << RDoc::Markup::Rule.new(1)
+    elsif method.override
+      out << RDoc::Markup::BlankLine.new
+      out << RDoc::Markup::Heading.new(4, "(Overrides - no matching ancestor)")
+      out << RDoc::Markup::Rule.new(1)
+    end
+
+    if method.abstract
+      description = "Abstract - This method is intended to be overridden."
+
+      out << RDoc::Markup::BlankLine.new
+      out << RDoc::Markup::Heading.new(4, "(#{description})")
+      out << RDoc::Markup::Rule.new(1)
+    end
   end
 
   ##

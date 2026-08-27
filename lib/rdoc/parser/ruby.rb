@@ -357,11 +357,14 @@ class RDoc::Parser::Ruby < RDoc::Parser
 
   def parse_comment_tomdoc(container, comment, line_no, start_line)
     return if document_suppressed?
+
+    meth = RDoc::AnyMethod.new nil
+    comment.owner = meth
     return unless signature = RDoc::TomDoc.signature(comment)
 
     name, = signature.split %r%[ \(]%, 2
 
-    meth = RDoc::AnyMethod.new name
+    meth.name = name
     record_location(meth)
     meth.line = start_line
     meth.call_seq = signature
@@ -939,7 +942,9 @@ class RDoc::Parser::Ruby < RDoc::Parser
         mark_container_documentable(owner) if mod.document_self && owner.is_a?(RDoc::ClassModule)
         record_location(mod)
       end
-      mod.add_comment(comment, @top_level) if comment
+      if comment
+        mod.add_comment(comment, @top_level)
+      end
     end
     mod
   end

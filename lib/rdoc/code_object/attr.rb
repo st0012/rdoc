@@ -44,6 +44,7 @@ class RDoc::Attr < RDoc::MethodAttr
   ##
   # Add +an_alias+ as an attribute in +context+.
 
+  # @override
   def add_alias(an_alias, context)
     access_type = an_alias.new_name.end_with?('=') ? 'W' : 'R'
     new_attr = self.class.new(an_alias.new_name, access_type, comment, singleton: singleton)
@@ -59,6 +60,7 @@ class RDoc::Attr < RDoc::MethodAttr
   ##
   # The #aref prefix for attributes
 
+  # @override
   def aref_prefix
     'attribute'
   end

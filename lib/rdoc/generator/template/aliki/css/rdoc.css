@@ -1555,6 +1555,95 @@ main .method-header ~ .method-description {
   padding-left: var(--space-2);
 }
 
+/* @override and @abstract relationship notices */
+main .annotation-notice {
+  --annotation-title-color: var(--color-text-primary);
+
+  margin-block: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  line-height: var(--line-height-normal);
+}
+
+main .method-description > .annotation-notice:first-child {
+  margin-block-start: 0;
+}
+
+main .annotation-notice.unresolved {
+  --annotation-title-color: var(--color-text-tertiary);
+
+  color: var(--color-text-tertiary);
+  background: transparent;
+  border-style: dashed;
+}
+
+main .annotation-notice.class-level {
+  margin-block: var(--space-4) var(--space-6);
+}
+
+main .annotation-lede {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+main .annotation-title {
+  margin-inline-end: var(--space-2);
+  color: var(--annotation-title-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+main .annotation-lede a,
+main .annotation-links a {
+  font-family: var(--font-code);
+  color: var(--color-link-default);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--color-border-default);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  overflow-wrap: anywhere;
+}
+
+main .annotation-lede a:hover,
+main .annotation-lede a:focus-visible,
+main .annotation-links a:hover,
+main .annotation-links a:focus-visible {
+  color: var(--color-link-hover);
+  border-bottom-color: var(--color-link-hover);
+}
+
+main .annotation-lede a:focus-visible,
+main .annotation-links a:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+main .annotation-list-label {
+  margin-block-start: var(--space-3);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+main .annotation-notice .annotation-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  font-size: var(--font-size-sm);
+}
+
+main .annotation-notice .annotation-links li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
 main .aliases {
   margin-top: var(--space-4);
   padding-top: var(--space-1);

@@ -266,4 +266,170 @@ class RDocGeneratorAlikiTest < RDoc::TestCase
     content = File.binread('index.html')
     assert_include content, '<html lang="ja">'
   end
+
+  def test_class_template_renders_method_override_notice
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    base_render = RDoc::AnyMethod.new 'render'
+    base_render.record_location @top_level
+    base.add_method base_render
+
+    button = @top_level.add_class RDoc::NormalClass, 'Button', 'Base'
+    btn_render = RDoc::AnyMethod.new 'render'
+    btn_render.record_location @top_level
+    button.add_method btn_render
+    btn_render.override = true
+    btn_render.override_target = 'Base#render'
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Button.html')
+
+    assert_match %r{<div class="annotation-notice override">.*<p class="annotation-lede">.*<span class="annotation-title">Overrides:</span>.*Base#render}m, out
+  end
+
+  def test_end_to_end_aliki_generation_for_annotation_fixtures
+    fixture_dir = File.expand_path('../test_data/annotations', __dir__)
+    Dir.mktmpdir 'rdoc-annot' do |tmp|
+      out_dir = File.join(tmp, 'site')
+      options = RDoc::Options.new
+      options.parse ['--format=aliki', '--output', out_dir, '--quiet', fixture_dir]
+      rdoc = RDoc::RDoc.new
+      orig_stderr = $stderr
+      $stderr = File.open(File::NULL, 'w')
+      begin
+        rdoc.document options
+      ensure
+        $stderr.close
+        $stderr = orig_stderr
+      end
+
+      button_html = File.read File.join(out_dir, 'UI/Button.html')
+      assert_match %r{<div class="annotation-notice override">.*<p class="annotation-lede">.*<span class="annotation-title">Overrides:</span>.*UI::Component#render}m,
+                   button_html
+
+      component_html = File.read File.join(out_dir, 'UI/Component.html')
+      assert_match %r{<span class="annotation-title">Abstract class:</span>}, component_html
+      assert_match %r{Subclasses must implement the abstract methods}, component_html
+      assert_match %r{<ul class="annotation-links"[^>]*>.*Button.*Card}m,
+                   component_html
+      # Common namespace is stripped: the branches show 'Button' / 'Card', not 'UI::Button'.
+      assert_match %r{<li>\s*<a[^>]*>Button</a>\s*</li>}, component_html
+      assert_no_match %r{<li>\s*<a[^>]*>UI::Button</a>\s*</li>}, component_html
+
+      orphan_html = File.read File.join(out_dir, 'UI/Orphan.html')
+      assert_match %r{<div class="annotation-notice override unresolved">},
+                   orphan_html
+      assert_match %r{Marked as an override, but no matching ancestor method is documented\.},
+                   orphan_html
+    end
+  end
+
+  def test_class_template_renders_class_level_abstract_panel
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    base.abstract = true
+    base.record_location @top_level
+
+    button = @top_level.add_class RDoc::NormalClass, 'Button', 'Base'
+    button.record_location @top_level
+    card   = @top_level.add_class RDoc::NormalClass, 'Card', 'Base'
+    card.record_location @top_level
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Base.html')
+
+    # The H1 stays clean - no annotation markup nested inside (avoids
+    # polluting the on-this-page TOC).
+    h1 = out[/<h1\b.*?<\/h1>/m]
+    assert_match %r{<h1[^>]*page-title[^>]*>.*<span class="page-title-kind">class</span>.*<span class="page-title-name">Base</span>.*</h1>}m, h1
+    refute_match %r{annotation}, h1
+    assert_match %r{<div class="annotation-notice abstract class-level">.*<p class="annotation-lede">.*<span class="annotation-title">Abstract class:</span>.*Subclasses must implement the abstract methods}m, out
+    assert_match %r{<div class="annotation-list-label">Known subclasses</div>}, out
+    assert_match %r{<ul class="annotation-links"[^>]*>}, out
+    assert_match %r{<li>\s*<a[^>]*>Button</a>\s*</li>}, out
+    assert_match %r{<li>\s*<a[^>]*>Card</a>\s*</li>}, out
+  end
+
+  def test_class_template_renders_method_abstract_notice
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    base_render = RDoc::AnyMethod.new 'render'
+    base_render.record_location @top_level
+    base_render.abstract = true
+    base.add_method base_render
+
+    button = @top_level.add_class RDoc::NormalClass, 'Button', 'Base'
+    btn_render = RDoc::AnyMethod.new 'render'
+    btn_render.record_location @top_level
+    btn_render.override = true
+    btn_render.override_target = 'Base#render'
+    button.add_method btn_render
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Base.html')
+
+    assert_match %r{<div class="annotation-notice abstract">.*<p class="annotation-lede">.*<span class="annotation-title">Abstract method:</span>.*This method is intended to be overridden}m, out
+    assert_match %r{<div class="annotation-list-label">Known overrides</div>}, out
+    assert_match %r{<ul class="annotation-links"[^>]*>.*<li>\s*<a[^>]*>Button#render</a>\s*</li>}m, out
+  end
+
+  def test_class_template_renders_annotation_when_alias_hides_description
+    each_line = RDoc::AnyMethod.new 'each_line'
+    each_line.record_location @top_level
+    each_line.call_seq = "each()"
+    each_line.abstract = true
+    @klass.add_method each_line
+    aliaz = RDoc::Alias.new 'each_line', 'each', ''
+    aliaz.record_location @top_level
+    each_line.add_alias aliaz, @klass
+
+    assert_equal true, each_line.skip_description?
+
+    @g.generate
+    out = File.binread('Klass.html')
+
+    assert_match %r{<span class="annotation-title">Abstract method:</span>.*This method is intended to be overridden}m, out
+  end
+
+  def test_class_template_uses_module_copy_for_abstract_module
+    interface = @top_level.add_module RDoc::NormalModule, 'Interface'
+    interface.abstract = true
+    render = RDoc::AnyMethod.new 'render'
+    render.abstract = true
+    interface.add_method render
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Interface.html')
+
+    assert_match %r{<span class="annotation-title">Abstract module:</span>}, out
+    assert_match %r{Classes and modules that include this module must implement the abstract methods}, out
+    assert_match %r{This method is intended to be overridden}, out
+  end
+
+  def test_class_template_links_and_escapes_singleton_override_target
+    base = @top_level.add_class RDoc::NormalClass, 'Base'
+    comparison = RDoc::AnyMethod.new '<=>', singleton: true
+    comparison.record_location @top_level
+    base.add_method comparison
+
+    child = @top_level.add_class RDoc::NormalClass, 'Child', 'Base'
+    override = RDoc::AnyMethod.new '<=>', singleton: true
+    override.record_location @top_level
+    override.override = true
+    override.override_target = 'Base::<=>'
+    child.add_method override
+
+    @store.build_abstract_index
+
+    @g.generate
+    out = File.binread('Child.html')
+
+    assert_match %r{<a href="[^"]+">Base::&lt;=&gt;</a>}, out
+    assert_not_include out, '>Base::<=></a>'
+  end
 end

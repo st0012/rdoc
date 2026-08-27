@@ -2785,6 +2785,60 @@ class RDocParserRubyTest < RDoc::TestCase
     assert_equal expected, m.comment.parse
   end
 
+  def test_tomdoc_meta_with_abstract_annotation
+    util_parser <<~RUBY
+      # :markup: tomdoc
+
+      class C
+
+        # Signature
+        #
+        #   build(args)
+        #
+        # @abstract
+        #
+        # args - The arguments.
+
+      end
+    RUBY
+
+    method = @top_level.classes.first.method_list.first
+    document_text = method.comment.parse.parts.filter_map do |part|
+      part.text if part.respond_to?(:text)
+    end.join
+
+    assert_equal true, method.abstract
+    assert_equal "build(args)\n", method.call_seq
+    assert_not_include document_text, '@abstract'
+    assert_not_include document_text, 'build(args)'
+  end
+
+  def test_tomdoc_meta_preserves_indented_annotation_example
+    util_parser <<~RUBY
+      # :markup: tomdoc
+
+      class C
+
+        # Signature
+        #
+        #   build(args)
+        #
+        # Example:
+        #
+        #   @override
+
+      end
+    RUBY
+
+    method = @top_level.classes.first.method_list.first
+    verbatim = method.comment.parse.parts
+                     .grep(RDoc::Markup::Verbatim)
+                     .map(&:text).join
+
+    assert_equal false, method.override
+    assert_include verbatim, '@override'
+  end
+
   def test_tomdoc_postprocess
     RDoc::TomDoc.add_post_processor
     util_parser <<~RUBY
@@ -3021,6 +3075,52 @@ class RDocParserRubyTest < RDoc::TestCase
     # ...but a warning must be emitted so it doesn't slip through silently.
     # The format includes the file and line so authors can find the typo.
     assert_match %r{:\d+: invalid RBS type signature: "\(String ->"}, err
+  end
+
+  def test_override_annotation_marks_method_and_strips_from_comment
+    util_parser <<~RUBY
+      class Button < Component
+        # Render the button.
+        #
+        # @override
+        def render(context)
+          "<button>\#{context}</button>"
+        end
+      end
+    RUBY
+
+    button = @top_level.classes.find { |c| c.full_name == 'Button' }
+    render = button.method_list.find { |m| m.name == 'render' }
+
+    rendered = render.comment.parse.parts.flat_map { |p| p.respond_to?(:text) ? [p.text] : [] }.join
+    assert_equal true, render.override
+    assert_not_include rendered, '@override'
+  end
+
+  def test_abstract_annotation_marks_class_and_method
+    util_parser <<~RUBY
+      # Base class for renderable UI components.
+      #
+      # @abstract
+      class Component
+        # Render the component to HTML.
+        #
+        # @abstract
+        def render(context)
+          raise NotImplementedError
+        end
+      end
+    RUBY
+
+    component = @top_level.classes.find { |c| c.full_name == 'Component' }
+    render = component.method_list.find { |m| m.name == 'render' }
+
+    component.comment.parse if component.comment.is_a?(RDoc::Comment)
+    component.comment_location.each_value { |comments| comments.each { |comment| comment.parse if comment.is_a?(RDoc::Comment) } }
+    render.comment.parse
+
+    assert_equal true, component.abstract
+    assert_equal true, render.abstract
   end
 
   def util_parser(content)

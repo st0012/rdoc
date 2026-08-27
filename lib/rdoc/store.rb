@@ -515,6 +515,281 @@ class RDoc::Store
   #
   # See also RDoc::Context#remove_from_documentation?
 
+  ##
+  # Resolves <tt>@override</tt> targets on every annotated method by walking
+  # the ancestor chain. Sets RDoc::AnyMethod#override_target to the resolved
+  # full name, or leaves it +nil+ and emits a warning when no match is found.
+  #
+  def resolve_overrides
+    scan_annotation_comments
+
+    all_classes_and_modules.each do |klass|
+      klass.method_list.each do |method|
+        next if method.mixin_from
+        next unless method.override
+        method.override_target = find_override_target(klass, method)
+        unless method.override_target
+          @options.warn(
+            "@override on #{method.full_name} - no matching method in ancestors"
+          )
+        end
+      end
+    end
+  end
+
+  ##
+  # Walks +klass+'s Ruby method lookup chain and returns the full name of the
+  # first method that +method+ overrides.
+
+  def find_override_target(klass, method) # :nodoc:
+    each_override_ancestor(klass, method.singleton) do |ancestor, singleton|
+      hit = find_override_member ancestor, method.name, singleton
+      return qualified_method_name(ancestor, method.name, singleton) if hit
+    end
+    nil
+  end
+
+  def find_override_member(klass, name, singleton) # :nodoc:
+    method = klass.method_list.find do |candidate|
+      candidate.name == name && candidate.singleton == singleton
+    end
+    return method if method
+
+    writer = name.end_with?('=')
+    attribute_name = writer ? name.delete_suffix('=') : name
+    access = writer ? 'W' : 'R'
+
+    klass.attributes.find do |attribute|
+      attribute.name == attribute_name &&
+        attribute.singleton == singleton &&
+        attribute.rw.include?(access)
+    end
+  end
+
+  def qualified_method_name(klass, name, singleton) # :nodoc:
+    separator = singleton ? '::' : '#'
+    "#{klass.full_name}#{separator}#{name}"
+  end
+
+  # Yields [owner, singleton] pairs in Ruby method lookup order. Instance
+  # lookup visits the last included module first, then its ancestors, then the
+  # superclass. Singleton lookup visits extended modules as instance-method
+  # owners before moving to the superclass's singleton methods.
+
+  def each_override_ancestor(klass, singleton, visited = nil, &block) # :nodoc:
+    return enum_for(__method__, klass, singleton, visited) unless block
+
+    build_override_ancestor_chain(klass, singleton, visited || {}).each(&block)
+  end
+
+  def build_override_ancestor_chain(klass, singleton, visited) # :nodoc:
+    key = [klass.full_name, singleton]
+    return [] if visited[key]
+
+    visited = visited.merge(key => true)
+    ancestors = []
+    superclass_boundary = nil
+
+    if klass.type == 'class'
+      superclass = klass.superclass
+      superclass = resolve_class_module_name(klass, superclass) if superclass.is_a?(String)
+      if superclass
+        ancestors.concat expand_override_ancestor(superclass, singleton, visited)
+        superclass_boundary = 0
+      end
+    end
+
+    mixins = singleton ? klass.extends : klass.includes
+    mixins.each do |mixin|
+      mod = resolve_mixin(klass, mixin)
+      next unless mod
+
+      mixin_ancestors = expand_override_ancestor(mod, false, visited)
+      superclass_boundary = insert_override_ancestors(
+        ancestors, mixin_ancestors, superclass_boundary
+      )
+    end
+
+    ancestors
+  end
+
+  def expand_override_ancestor(ancestor, singleton, visited) # :nodoc:
+    key = [ancestor.full_name, singleton]
+    return [] if visited[key]
+
+    [[ancestor, singleton]] +
+      build_override_ancestor_chain(ancestor, singleton, visited)
+  end
+
+  # Replays Ruby's mixin insertion rules. Existing entries move the local
+  # insertion cursor, but entries in the superclass chain do not.
+  def insert_override_ancestors(ancestors, additions, superclass_boundary) # :nodoc:
+    insertion = 0
+
+    additions.each do |addition|
+      key = [addition[0].full_name, addition[1]]
+      existing = ancestors.index do |ancestor, ancestor_singleton|
+        [ancestor.full_name, ancestor_singleton] == key
+      end
+
+      if existing
+        if superclass_boundary.nil? || existing < superclass_boundary
+          insertion = [insertion, existing + 1].max
+        end
+      else
+        ancestors.insert insertion, addition
+        superclass_boundary += 1 if superclass_boundary
+        insertion += 1
+      end
+    end
+
+    superclass_boundary
+  end
+
+  def resolve_mixin(klass, mixin) # :nodoc:
+    mod = mixin.module
+    mod = resolve_class_module_name(klass, mod) if mod.is_a?(String)
+    mod
+  end
+
+  def resolve_class_module_name(klass, name) # :nodoc:
+    find_class_or_module(name) || klass.find_module_named(name)
+  end
+
+  ##
+  # Runs all annotation resolution passes after parsing and before generation.
+
+  def resolve_annotations
+    resolve_overrides
+    build_abstract_index
+  end
+
+  def scan_annotation_comments # :nodoc:
+    reset_source_annotations if type.nil?
+
+    all_classes_and_modules.each do |klass|
+      klass.comment_location.each_value do |comments|
+        comments.each { |comment| scan_annotation_comment comment, klass }
+      end
+
+      klass.method_list.each do |method|
+        if method.mixin_from
+          method.abstract = false
+          method.override = false
+          method.override_target = nil
+          next
+        end
+
+        scan_annotation_comment method.comment, method
+      end
+    end
+  end
+
+  def reset_source_annotations # :nodoc:
+    all_classes_and_modules.each do |klass|
+      klass.abstract = false
+
+      klass.method_list.each do |method|
+        method.abstract = false
+        method.override = false
+        method.override_target = nil
+      end
+    end
+  end
+
+  def scan_annotation_comment(comment, owner) # :nodoc:
+    text = comment.is_a?(RDoc::Comment) ? comment.text : comment.to_s
+    return if text.nil? || text.empty?
+
+    RDoc::Comment::AnnotationScanner.scan text, owner
+  end
+
+  ##
+  # Builds reverse indexes for <tt>@abstract</tt> methods and classes. Run
+  # this after #resolve_overrides so override_target values are populated.
+  #
+  # Populates an internal hash of method full name to Array of method
+  # full names that override it (queried via #implementations_of).
+  #
+  # Populates an internal hash of class full name to Array of known subclass
+  # names (where the superclass is +abstract+; queried via #subclasses_of).
+
+  def build_abstract_index
+    @abstract_implementations = Hash.new { |h, k| h[k] = [] }
+    @abstract_subclasses      = Hash.new { |h, k| h[k] = [] }
+
+    all_classes_and_modules.each do |klass|
+      klass.method_list.each do |method|
+        next if method.mixin_from
+        next unless method.override_target
+        @abstract_implementations[method.override_target] << method.full_name
+      end
+
+      each_superclass(klass) do |ancestor|
+        next unless ancestor.abstract
+        @abstract_subclasses[ancestor.full_name] << klass.full_name
+      end
+    end
+
+    @abstract_implementations.each_value(&:uniq!)
+    @abstract_subclasses.each_value(&:uniq!)
+  end
+
+  def each_superclass(klass) # :nodoc:
+    return enum_for(__method__, klass) unless block_given?
+
+    visited = {}
+    current = klass
+
+    while current.type == 'class'
+      superclass = current.superclass
+      superclass = resolve_class_module_name(current, superclass) if superclass.is_a?(String)
+      break unless superclass&.type == 'class'
+      break if visited[superclass.full_name]
+
+      visited[superclass.full_name] = true
+      yield superclass
+      current = superclass
+    end
+  end
+
+  ##
+  # Resolves a fully-qualified method name like +"UI::Component#render"+ or
+  # +"UI::Component::build"+ back to the RDoc::AnyMethod (or compatible)
+  # instance.
+  # Returns +nil+ when the parent class/module isn't documented or when no
+  # matching method exists.
+
+  def find_method_named(full_name)
+    if full_name.include? '#'
+      parent_name, sep, method_name = full_name.rpartition '#'
+      singleton = false
+    else
+      parent_name, sep, method_name = full_name.rpartition '::'
+      singleton = true
+    end
+
+    return nil if sep.empty? || parent_name.empty? || method_name.empty?
+    klass = find_class_or_module(parent_name) or return nil
+    find_override_member klass, method_name, singleton
+  end
+
+  ##
+  # Returns the full names of methods that override +method_full_name+.
+  # Empty array if the method is unknown or has no implementations.
+
+  def implementations_of(method_full_name)
+    (@abstract_implementations || {}).fetch(method_full_name, [])
+  end
+
+  ##
+  # Returns the full names of known subclasses of +class_full_name+. Empty
+  # array if the class is unknown or has no subclasses.
+
+  def subclasses_of(class_full_name)
+    (@abstract_subclasses || {}).fetch(class_full_name, [])
+  end
+
   def complete(min_visibility)
     fix_basic_object_inheritance
 
@@ -532,6 +807,8 @@ class RDoc::Store
     unique_classes_and_modules.each do |cm|
       cm.complete min_visibility
     end
+
+    resolve_annotations
 
     @files_hash.each_key do |file_name|
       tl = @files_hash[file_name]

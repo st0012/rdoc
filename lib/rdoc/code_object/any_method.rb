@@ -15,8 +15,10 @@ class RDoc::AnyMethod < RDoc::MethodAttr
   #   Added is_alias_for
   # 4::
   #   Added type_signature_lines (serialized as joined string)
+  # 5::
+  #   Added override, override_target, abstract
 
-  MARSHAL_VERSION = 4 # :nodoc:
+  MARSHAL_VERSION = 5 # :nodoc:
 
   ##
   # Don't rename \#initialize to \::new
@@ -36,6 +38,24 @@ class RDoc::AnyMethod < RDoc::MethodAttr
 
   attr_accessor :calls_super
 
+  ##
+  # True if this method has an +@override+ annotation in its comment
+
+  attr_accessor :override
+
+  ##
+  # Resolved full name of the ancestor method this method overrides, e.g.
+  # +"UI::Component#render"+ or +"UI::Component::build"+. Set by
+  # RDoc::Store#resolve_annotations.
+  # +nil+ when +@override+ is absent or no ancestor match was found.
+
+  attr_accessor :override_target
+
+  ##
+  # True if this method has an +@abstract+ annotation in its comment
+
+  attr_accessor :abstract
+
   include RDoc::TokenStream
 
   ##
@@ -48,12 +68,16 @@ class RDoc::AnyMethod < RDoc::MethodAttr
     @dont_rename_initialize = false
     @token_stream = nil
     @calls_super = false
+    @override = false
+    @override_target = nil
+    @abstract = false
     @superclass_method = nil
   end
 
   ##
   # Adds +an_alias+ as an alias for this method in +context+.
 
+  # @override
   def add_alias(an_alias, context = nil)
     method = self.class.new an_alias.new_name, singleton: singleton
 
@@ -71,6 +95,7 @@ class RDoc::AnyMethod < RDoc::MethodAttr
   ##
   # Prefix for +aref+ is 'method'.
 
+  # @override
   def aref_prefix
     'method'
   end
@@ -170,6 +195,9 @@ class RDoc::AnyMethod < RDoc::MethodAttr
       @section.title,
       is_alias_for,
       @type_signature_lines&.join("\n"),
+      @override,
+      @override_target,
+      @abstract,
     ]
   end
 
@@ -209,6 +237,9 @@ class RDoc::AnyMethod < RDoc::MethodAttr
     @section_title = array[14]
     @is_alias_for  = array[15]
     @type_signature_lines = array[16]&.split("\n")
+    @override        = array[17] || false
+    @override_target = array[18]
+    @abstract        = array[19] || false
 
     array[8].each do |new_name, document|
       add_alias RDoc::Alias.new(@name, new_name, RDoc::Comment.from_document(document), singleton: @singleton)
